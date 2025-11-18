@@ -1,0 +1,40 @@
+//- Flash Messages Component
+if successMessage && successMessage.length > 0
+  each msg in successMessage
+    .bg-green-50.border-l-4.border-green-500.p-4.mb-4.rounded-r-lg.shadow-sm(role="alert")
+      .flex.items-center
+        i.lucide.lucide-check-circle.text-green-500.mr-3(data-lucide="check-circle")
+        .flex-1
+          p.text-green-800.font-medium= msg
+        button.text-green-500.hover_text-green-700(onclick="this.parentElement.parentElement.remove()")
+          i.lucide.lucide-x(data-lucide="x")
+
+if errorMessage && errorMessage.length > 0
+  each msg in errorMessage
+    .bg-red-50.border-l-4.border-red-500.p-4.mb-4.rounded-r-lg.shadow-sm(role="alert")
+      .flex.items-center
+        i.lucide.lucide-alert-circle.text-red-500.mr-3(data-lucide="alert-circle")
+        .flex-1
+          p.text-red-800.font-medium= msg
+        button.text-red-500.hover_text-red-700(onclick="this.parentElement.parentElement.remove()")
+          i.lucide.lucide-x(data-lucide="x")
+
+if warningMessage && warningMessage.length > 0
+  each msg in warningMessage
+    .bg-yellow-50.border-l-4.border-yellow-500.p-4.mb-4.rounded-r-lg.shadow-sm(role="alert")
+      .flex.items-center
+        i.lucide.lucide-alert-triangle.text-yellow-500.mr-3(data-lucide="alert-triangle")
+        .flex-1
+          p.text-yellow-800.font-medium= msg
+        button.text-yellow-500.hover_text-yellow-700(onclick="this.parentElement.parentElement.remove()")
+          i.lucide.lucide-x(data-lucide="x")
+
+if infoMessage && infoMessage.length > 0
+  each msg in infoMessage
+    .bg-blue-50.border-l-4.border-blue-500.p-4.mb-4.rounded-r-lg.shadow-sm(role="alert")
+      .flex.items-center
+        i.lucide.lucide-info.text-blue-500.mr-3(data-lucide="info")
+        .flex-1
+          p.text-blue-800.font-medium= msg
+        button.text-blue-500.hover_text-blue-700(onclick="this.parentElement.parentElement.remove()")
+          i.lucide.lucide-x(data-lucide="x")

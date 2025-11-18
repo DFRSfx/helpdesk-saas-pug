@@ -1,0 +1,92 @@
+extends ../layout/layout
+
+block content
+  //- Header
+  .flex.items-center.justify-between.mb-8
+    div
+      h1.text-3xl.font-bold.text-gray-900 Create New Ticket
+      p.text-gray-600.mt-2 Describe your issue and we'll help you resolve it
+    
+    a.inline-flex.items-center.px-4.py-2.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50.transition-colors(href="/tickets")
+      i.lucide.lucide-arrow-left.mr-2.w-4.h-4(data-lucide="arrow-left")
+      | Back to Tickets
+  
+  //- Form
+  .max-w-4xl
+    .bg-white.rounded-xl.shadow-sm.p-8.border.border-gray-200
+      form(method="POST" action="/tickets/create" enctype="multipart/form-data")
+        .space-y-6
+          //- Subject
+          div
+            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="subject") 
+              | Subject 
+              span.text-red-500 *
+            input#subject.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.transition-all(
+              type="text"
+              name="subject"
+              required
+              placeholder="Brief description of your issue"
+              maxlength="255"
+            )
+          
+          //- Description
+          div
+            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="description") 
+              | Description 
+              span.text-red-500 *
+            textarea#description.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.transition-all(
+              name="description"
+              rows="8"
+              required
+              placeholder="Provide detailed information about your issue..."
+            )
+            p.text-xs.text-gray-500.mt-2 Please provide as much detail as possible to help us resolve your issue quickly.
+          
+          .grid.grid-cols-1.md_grid-cols-3.gap-6
+            //- Priority
+            div
+              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="priority") Priority
+              select#priority.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="priority")
+                option(value="low") Low
+                option(value="medium" selected) Medium
+                option(value="high") High
+                option(value="critical") Critical
+            
+            //- Department
+            div
+              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="department_id") Department
+              select#department_id.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="department_id")
+                option(value="") Select Department
+                each dept in departments
+                  option(value=dept.id)= dept.name
+            
+            //- Category
+            div
+              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="category") Category
+              input#category.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(
+                type="text"
+                name="category"
+                placeholder="e.g., Bug, Feature Request"
+              )
+          
+          //- Attachments
+          div
+            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="attachments") Attachments
+            .border-2.border-dashed.border-gray-300.rounded-lg.p-6.text-center.hover_border-indigo-400.transition-colors
+              input#attachments.hidden(
+                type="file"
+                name="attachments"
+                multiple
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+              )
+              label.cursor-pointer(for="attachments")
+                i.lucide.lucide-upload.text-gray-400.w-12.h-12.mx-auto.mb-3(data-lucide="upload")
+                p.text-sm.text-gray-600 
+                  span.text-indigo-600.font-semibold Click to upload
+                  |  or drag and drop
+                p.text-xs.text-gray-500.mt-1 PNG, JPG, PDF, DOC up to 10MB (Max 5 files)
+          
+          //- Actions
+          .flex.items-center.justify-end.space-x-4.pt-6.border-t.border-gray-200
+            a.px-6.py-3.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50.transition-colors(href="/tickets") Cancel
+            button.px-8.py-3.bg-gradient-to-r.from-indigo-600.to-purple-600.text-white.font-semibold.rounded-lg.hover_from-indigo-700.hover_to-purple-700.transition-all.shadow-lg.hover_shadow-xl(type="submit") Create Ticket

@@ -1,0 +1,81 @@
+//- Sidebar Navigation
+aside#sidebar.fixed.left-0.top-16.bottom-0.w-64.bg-white.border-r.border-gray-200.overflow-y-auto.transform.-translate-x-full.md_translate-x-0.transition-transform.duration-300.z-40
+  nav.p-4.space-y-1
+    //- Dashboard
+    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+      href="/dashboard"
+      class=currentPath === '/dashboard' ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+    )
+      i.lucide.w-5.h-5.mr-3(data-lucide="layout-dashboard")
+      span Dashboard
+    
+    //- Tickets
+    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+      href="/tickets"
+      class=currentPath.startsWith('/tickets') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+    )
+      i.lucide.w-5.h-5.mr-3(data-lucide="ticket")
+      span Tickets
+      span.ml-auto.px-2.py-1.text-xs.font-semibold.text-white.bg-indigo-600.rounded-full 12
+    
+    //- Create Ticket (Customers)
+    if currentUser.role === 'customer'
+      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-green-50.hover_text-green-600.transition-colors(
+        href="/tickets/create"
+      )
+        i.lucide.w-5.h-5.mr-3(data-lucide="plus-circle")
+        span New Ticket
+    
+    //- Departments
+    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+      href="/departments"
+      class=currentPath.startsWith('/departments') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+    )
+      i.lucide.w-5.h-5.mr-3(data-lucide="building-2")
+      span Departments
+    
+    //- Users (Admin & Agent)
+    if currentUser.role === 'admin' || currentUser.role === 'agent'
+      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+        href="/users"
+        class=currentPath.startsWith('/users') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+      )
+        i.lucide.w-5.h-5.mr-3(data-lucide="users")
+        span Users
+    
+    //- Audit Logs (Admin only)
+    if currentUser.role === 'admin'
+      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+        href="/audit"
+        class=currentPath.startsWith('/audit') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+      )
+        i.lucide.w-5.h-5.mr-3(data-lucide="file-text")
+        span Audit Logs
+    
+    .border-t.border-gray-200.my-4
+    
+    //- Settings
+    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+      href="#"
+    )
+      i.lucide.w-5.h-5.mr-3(data-lucide="settings")
+      span Settings
+
+//- Mobile menu overlay
+#mobile-overlay.fixed.inset-0.bg-black.bg-opacity-50.z-30.hidden.md_hidden
+
+script.
+  // Mobile menu toggle
+  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+  const sidebar = document.getElementById('sidebar');
+  const mobileOverlay = document.getElementById('mobile-overlay');
+  
+  mobileMenuToggle?.addEventListener('click', () => {
+    sidebar.classList.toggle('-translate-x-full');
+    mobileOverlay.classList.toggle('hidden');
+  });
+  
+  mobileOverlay?.addEventListener('click', () => {
+    sidebar.classList.add('-translate-x-full');
+    mobileOverlay.classList.add('hidden');
+  });

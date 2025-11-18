@@ -1,0 +1,144 @@
+extends ../layout/layout
+
+block content
+  //- Header
+  .flex.items-center.justify-between.mb-8
+    div
+      h1.text-3xl.font-bold.text-gray-900 Support Tickets
+      p.text-gray-600.mt-2 Manage and track all support tickets
+    
+    if user.role === 'customer' || user.role === 'agent' || user.role === 'admin'
+      a.inline-flex.items-center.px-6.py-3.bg-gradient-to-r.from-indigo-600.to-purple-600.text-white.font-semibold.rounded-lg.hover_from-indigo-700.hover_to-purple-700.transition-all.shadow-lg.hover_shadow-xl(href="/tickets/create")
+        i.lucide.lucide-plus.mr-2.w-5.h-5(data-lucide="plus")
+        | New Ticket
+  
+  //- Filters
+  .bg-white.rounded-xl.shadow-sm.p-6.mb-6.border.border-gray-200
+    form.grid.grid-cols-1.md_grid-cols-4.gap-4(method="GET" action="/tickets")
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Search
+        input.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(
+          type="text"
+          name="search"
+          placeholder="Search tickets..."
+          value=filters.search || ''
+        )
+      
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Status
+        select.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="status")
+          option(value="" selected=!filters.status) All Statuses
+          option(value="open" selected=filters.status === 'open') Open
+          option(value="in_progress" selected=filters.status === 'in_progress') In Progress
+          option(value="waiting" selected=filters.status === 'waiting') Waiting
+          option(value="escalated" selected=filters.status === 'escalated') Escalated
+          option(value="resolved" selected=filters.status === 'resolved') Resolved
+          option(value="closed" selected=filters.status === 'closed') Closed
+      
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Priority
+        select.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="priority")
+          option(value="" selected=!filters.priority) All Priorities
+          option(value="critical" selected=filters.priority === 'critical') Critical
+          option(value="high" selected=filters.priority === 'high') High
+          option(value="medium" selected=filters.priority === 'medium') Medium
+          option(value="low" selected=filters.priority === 'low') Low
+      
+      div.flex.items-end
+        button.w-full.px-6.py-2.bg-indigo-600.text-white.font-semibold.rounded-lg.hover_bg-indigo-700.transition-colors(type="submit") Filter
+  
+  //- Tickets List
+  .bg-white.rounded-xl.shadow-sm.border.border-gray-200.overflow-hidden
+    if tickets && tickets.length > 0
+      .overflow-x-auto
+        table.min-w-full.divide-y.divide-gray-200
+          thead.bg-gray-50
+            tr
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Ticket
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Customer
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Status
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Priority
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Assigned
+              th.px-6.py-3.text-left.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Created
+              th.px-6.py-3.text-right.text-xs.font-semibold.text-gray-700.uppercase.tracking-wider Actions
+          
+          tbody.bg-white.divide-y.divide-gray-200
+            each ticket in tickets
+              tr.hover_bg-gray-50.transition-colors
+                td.px-6.py-4.whitespace-nowrap
+                  .flex.flex-col
+                    a.text-sm.font-semibold.text-indigo-600.hover_text-indigo-800(href=`/tickets/${ticket.id}`)= ticket.ticket_number
+                    p.text-sm.text-gray-900.mt-1.line-clamp-1= ticket.subject
+                
+                td.px-6.py-4.whitespace-nowrap
+                  p.text-sm.text-gray-900= ticket.customer_name
+                
+                td.px-6.py-4.whitespace-nowrap
+                  case ticket.status
+                    when 'open'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-orange-100.text-orange-800 Open
+                    when 'in_progress'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-blue-100.text-blue-800 In Progress
+                    when 'waiting'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-yellow-100.text-yellow-800 Waiting
+                    when 'escalated'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-red-100.text-red-800 Escalated
+                    when 'resolved'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-green-100.text-green-800 Resolved
+                    when 'closed'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-gray-100.text-gray-800 Closed
+                
+                td.px-6.py-4.whitespace-nowrap
+                  case ticket.priority
+                    when 'critical'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-red-100.text-red-800 Critical
+                    when 'high'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-orange-100.text-orange-800 High
+                    when 'medium'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-yellow-100.text-yellow-800 Medium
+                    when 'low'
+                      span.px-3.py-1.inline-flex.text-xs.leading-5.font-semibold.rounded-full.bg-green-100.text-green-800 Low
+                
+                td.px-6.py-4.whitespace-nowrap
+                  if ticket.agent_name
+                    p.text-sm.text-gray-900= ticket.agent_name
+                  else
+                    span.text-sm.text-gray-400.italic Unassigned
+                
+                td.px-6.py-4.whitespace-nowrap.text-sm.text-gray-500
+                  = new Date(ticket.created_at).toLocaleDateString()
+                
+                td.px-6.py-4.whitespace-nowrap.text-right.text-sm.font-medium
+                  a.text-indigo-600.hover_text-indigo-900(href=`/tickets/${ticket.id}`) View
+      
+      //- Pagination
+      if totalPages > 1
+        .px-6.py-4.bg-gray-50.border-t.border-gray-200
+          .flex.items-center.justify-between
+            p.text-sm.text-gray-700
+              | Showing 
+              span.font-semibold= ((currentPage - 1) * 20) + 1
+              |  to 
+              span.font-semibold= Math.min(currentPage * 20, total)
+              |  of 
+              span.font-semibold= total
+              |  results
+            
+            .flex.space-x-2
+              if currentPage > 1
+                a.px-4.py-2.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50(href=`/tickets?page=${currentPage - 1}`) Previous
+              
+              each page in Array.from({length: Math.min(5, totalPages)}, (_, i) => i + Math.max(1, currentPage - 2))
+                if page <= totalPages
+                  a.px-4.py-2.border.rounded-lg.text-sm.font-medium(
+                    href=`/tickets?page=${page}`
+                    class=page === currentPage ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-300 text-gray-700 hover:bg-gray-50'
+                  )= page
+              
+              if currentPage < totalPages
+                a.px-4.py-2.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50(href=`/tickets?page=${currentPage + 1}`) Next
+    else
+      .text-center.py-12
+        i.lucide.lucide-inbox.text-gray-400.w-16.h-16.mx-auto.mb-4(data-lucide="inbox")
+        p.text-gray-500.text-lg.font-medium No tickets found
+        p.text-gray-400.text-sm.mt-2 Try adjusting your filters or create a new ticket

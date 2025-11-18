@@ -1,0 +1,56 @@
+{
+  "name": "supportdesk-pro",
+  "version": "1.0.0",
+  "description": "Enterprise-grade Customer Support Ticketing System built with Node.js, Express, and MySQL",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "db:setup": "mysql -u root -p < database/schema.sql",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DFRSfx/mini-zendesk-redo.git"
+  },
+  "keywords": [
+    "support",
+    "ticketing",
+    "helpdesk",
+    "customer-service",
+    "zendesk",
+    "nodejs",
+    "express",
+    "mysql"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "bugs": {
+    "url": "https://github.com/DFRSfx/mini-zendesk-redo/issues"
+  },
+  "homepage": "https://github.com/DFRSfx/mini-zendesk-redo#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "connect-flash": "^0.1.1",
+    "cookie-parser": "^1.4.7",
+    "csurf": "^1.11.0",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.2.1",
+    "express-session": "^1.18.2",
+    "express-validator": "^7.3.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3",
+    "pug": "^3.0.3",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

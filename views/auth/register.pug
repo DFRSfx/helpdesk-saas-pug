@@ -1,0 +1,76 @@
+extends ../layout/layout
+
+block content
+  .min-h-screen.flex.items-center.justify-center.bg-gradient-to-br.from-indigo-50.via-purple-50.to-pink-50.py-12.px-4.sm_px-6.lg_px-8
+    .max-w-md.w-full.space-y-8
+      //- Header
+      .text-center
+        .mx-auto.w-16.h-16.bg-gradient-to-br.from-indigo-600.to-purple-600.rounded-2xl.flex.items-center.justify-center.shadow-lg
+          i.lucide.lucide-user-plus.text-white.w-8.h-8(data-lucide="user-plus")
+        h2.mt-6.text-4xl.font-extrabold.text-gray-900 Create Account
+        p.mt-2.text-sm.text-gray-600 Join #{appName} today
+        
+      //- Registration Form
+      .bg-white.rounded-2xl.shadow-xl.p-8
+        form.space-y-6(action="/auth/register" method="POST")
+          .grid.grid-cols-2.gap-4
+            div
+              label.block.text-sm.font-semibold.text-gray-700(for="first_name") First Name
+              input#first_name.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+                type="text"
+                name="first_name"
+                required
+                placeholder="John"
+              )
+            
+            div
+              label.block.text-sm.font-semibold.text-gray-700(for="last_name") Last Name
+              input#last_name.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+                type="text"
+                name="last_name"
+                required
+                placeholder="Doe"
+              )
+          
+          div
+            label.block.text-sm.font-semibold.text-gray-700(for="email") Email Address
+            input#email.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+              type="email"
+              name="email"
+              required
+              placeholder="john.doe@example.com"
+            )
+          
+          div
+            label.block.text-sm.font-semibold.text-gray-700(for="phone") Phone Number (Optional)
+            input#phone.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+              type="tel"
+              name="phone"
+              placeholder="+1 (555) 123-4567"
+            )
+          
+          div
+            label.block.text-sm.font-semibold.text-gray-700(for="password") Password
+            input#password.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+              type="password"
+              name="password"
+              required
+              placeholder="Minimum 6 characters"
+              minlength="6"
+            )
+          
+          button.group.relative.w-full.flex.justify-center.py-3.px-4.border.border-transparent.text-sm.font-semibold.rounded-lg.text-white.bg-gradient-to-r.from-indigo-600.to-purple-600.hover_from-indigo-700.hover_to-purple-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-indigo-500.transition-all.shadow-lg.hover_shadow-xl(type="submit")
+            span.flex.items-center
+              | Create Account
+              i.lucide.lucide-arrow-right.ml-2.w-4.h-4.group-hover_translate-x-1.transition-transform(data-lucide="arrow-right")
+        
+        .mt-6
+          .relative
+            .absolute.inset-0.flex.items-center
+              .w-full.border-t.border-gray-300
+            .relative.flex.justify-center.text-sm
+              span.px-2.bg-white.text-gray-500 Already have an account?
+          
+          .mt-6
+            a.w-full.flex.justify-center.py-3.px-4.border-2.border-indigo-600.text-sm.font-semibold.rounded-lg.text-indigo-600.hover_bg-indigo-50.transition-all(href="/auth/login")
+              | Sign in instead

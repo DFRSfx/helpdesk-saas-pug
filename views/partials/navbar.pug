@@ -1,0 +1,54 @@
+//- Top Navigation Bar
+nav.fixed.top-0.left-0.right-0.bg-white.border-b.border-gray-200.z-50.shadow-sm
+  .flex.items-center.justify-between.h-16.px-4.md_px-6
+    .flex.items-center.space-x-4
+      //- Mobile menu toggle
+      button#mobile-menu-toggle.md_hidden.p-2.rounded-lg.hover_bg-gray-100(type="button")
+        i.lucide.lucide-menu(data-lucide="menu")
+      
+      //- Logo and Brand
+      a.flex.items-center.space-x-3(href="/dashboard")
+        .bg-gradient-to-br.from-indigo-600.to-purple-600.p-2.rounded-lg
+          i.lucide.lucide-headphones.text-white.w-6.h-6(data-lucide="headphones")
+        span.text-xl.font-bold.bg-gradient-to-r.from-indigo-600.to-purple-600.bg-clip-text.text-transparent.hidden.sm_block= appName
+    
+    //- Search Bar (Desktop)
+    .flex-1.max-w-2xl.mx-8.hidden.lg_block
+      .relative
+        input.w-full.px-4.py-2.pl-10.pr-4.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
+          type="search"
+          placeholder="Search tickets, users, or departments..."
+          name="search"
+        )
+        i.lucide.lucide-search.absolute.left-3.top-2_5.text-gray-400.w-5.h-5(data-lucide="search")
+    
+    //- Right side actions
+    .flex.items-center.space-x-4
+      //- Notifications
+      button.relative.p-2.rounded-lg.hover_bg-gray-100(type="button" id="notifications-btn")
+        i.lucide.lucide-bell.w-6.h-6.text-gray-600(data-lucide="bell")
+        span.absolute.top-1.right-1.w-2.h-2.bg-red-500.rounded-full
+      
+      //- User Menu
+      .relative.group
+        button.flex.items-center.space-x-3.p-2.rounded-lg.hover_bg-gray-100(type="button")
+          .w-8.h-8.rounded-full.bg-gradient-to-br.from-indigo-500.to-purple-600.flex.items-center.justify-center
+            span.text-white.font-semibold.text-sm= currentUser.name.charAt(0).toUpperCase()
+          .hidden.md_block.text-left
+            p.text-sm.font-semibold.text-gray-700= currentUser.name
+            p.text-xs.text-gray-500.capitalize= currentUser.role
+          i.lucide.lucide-chevron-down.w-4.h-4.text-gray-600(data-lucide="chevron-down")
+        
+        //- Dropdown Menu
+        .absolute.right-0.mt-2.w-56.bg-white.rounded-lg.shadow-lg.border.border-gray-200.opacity-0.invisible.group-hover_opacity-100.group-hover_visible.transition-all.duration-200
+          .py-2
+            a.flex.items-center.px-4.py-2.text-sm.text-gray-700.hover_bg-gray-50(href=`/users/${currentUser.id}`)
+              i.lucide.lucide-user.w-4.h-4.mr-3(data-lucide="user")
+              | My Profile
+            a.flex.items-center.px-4.py-2.text-sm.text-gray-700.hover_bg-gray-50(href=`/users/${currentUser.id}/change-password`)
+              i.lucide.lucide-key.w-4.h-4.mr-3(data-lucide="key")
+              | Change Password
+            .border-t.border-gray-200.my-2
+            a.flex.items-center.px-4.py-2.text-sm.text-red-600.hover_bg-red-50(href="/auth/logout")
+              i.lucide.lucide-log-out.w-4.h-4.mr-3(data-lucide="log-out")
+              | Logout

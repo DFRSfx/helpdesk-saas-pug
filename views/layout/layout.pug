@@ -1,0 +1,46 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    meta(http-equiv="X-UA-Compatible" content="ie=edge")
+    title= title + ' | ' + appName
+    
+    //- Tailwind CSS CDN (for development - use build process in production)
+    script(src="https://cdn.tailwindcss.com")
+    
+    //- Lucide Icons
+    script(src="https://unpkg.com/lucide@latest")
+    
+    //- Custom CSS
+    link(rel="stylesheet" href="/css/style.css")
+    
+    //- Fonts
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="preconnect" href="https://fonts.gstatic.com" crossorigin)
+    link(href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet")
+    
+    style.
+      * { font-family: 'Inter', sans-serif; }
+      
+  body.bg-gray-50.min-h-screen
+    if isAuthenticated
+      include ../partials/navbar
+      .flex.h-screen.pt-16
+        include ../partials/sidebar
+        
+        main.flex-1.overflow-y-auto.p-6.md_p-8(class="ml-0 md:ml-64")
+          include ../partials/flash_messages
+          block content
+    else
+      main
+        block content
+    
+    //- Initialize Lucide Icons
+    script.
+      lucide.createIcons();
+    
+    //- Custom JavaScript
+    script(src="/js/main.js")
+    
+    block scripts
