@@ -1,0 +1,74 @@
+extends ../layout/layout
+
+block content
+  .max-w-3xl.mx-auto
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      h2.text-2xl.font-bold.text-gray-900.mb-6 Create New Department
+
+      form(action="/departments" method="POST")
+        .space-y-6
+          //- Name
+          div
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="name")
+              | Department Name
+              span.text-red-500 *
+            input#name.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              type="text"
+              name="name"
+              required
+              placeholder="e.g., Technical Support, Billing, Sales"
+            )
+
+          //- Description
+          div
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="description")
+              | Description
+              span.text-gray-500.text-xs.font-normal (Optional)
+            textarea#description.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              name="description"
+              rows="4"
+              placeholder="Describe the purpose and responsibilities of this department..."
+            )
+
+          //- Status
+          div
+            label.flex.items-center
+              input#is_active.mr-2(type="checkbox" name="is_active" value="true" checked)
+              span.text-sm.text-gray-700 Active (Department can receive tickets)
+
+          //- Assign agents
+          div
+            label.block.text-sm.font-medium.text-gray-700.mb-2
+              | Assign Agents
+              span.text-gray-500.text-xs.font-normal (Optional)
+            if agents && agents.length > 0
+              .space-y-2.max-h-60.overflow-y-auto.border.border-gray-300.rounded-lg.p-4
+                each agent in agents
+                  label.flex.items-center.p-2.hover_bg-gray-50.rounded.cursor-pointer
+                    input.mr-3(type="checkbox" name="agent_ids[]" value=agent.id)
+                    .flex.items-center
+                      .w-8.h-8.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold.text-sm.mr-3
+                        = agent.name.charAt(0).toUpperCase()
+                      div
+                        .text-sm.font-medium.text-gray-900= agent.name
+                        .text-xs.text-gray-500= agent.email
+            else
+              .text-sm.text-gray-500.italic No agents available
+
+          //- Submit buttons
+          .flex.items-center.justify-end.space-x-4.pt-6.border-t.border-gray-200
+            a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(href="/departments")
+              | Cancel
+            button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+              | Create Department
+
+block scripts
+  script.
+    // Auto-resize textarea
+    const textarea = document.getElementById('description');
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+    }

@@ -1,0 +1,137 @@
+extends ../layout/layout
+
+block content
+  //- Include shared header
+  include ./partials/tickets-header
+
+  //- Tickets table
+  .max-w-7xl.mx-auto.px-6.py-6
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.overflow-hidden
+      if tickets && tickets.length > 0
+        .overflow-x-auto
+          table.min-w-full.divide-y.divide-gray-200
+            thead.bg-gray-50
+              tr
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider ID
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Subject
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Status
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Priority
+                if isAdmin() || isAgent()
+                  th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Customer
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Department
+                if isAdmin() || isAgent()
+                  th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Assigned To
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Created
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Actions
+
+            tbody.bg-white.divide-y.divide-gray-200
+              each ticket in tickets
+                tr.hover_bg-gray-50.transition-colors
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.font-medium.text-blue-600 ##{ticket.id}
+
+                  td.px-6.py-4
+                    .text-sm.font-medium.text-gray-900= ticket.subject
+                    if ticket.description
+                      .text-xs.text-gray-500.truncate.max-w-xs= ticket.description.substring(0, 80) + (ticket.description.length > 80 ? '...' : '')
+
+                  td.px-6.py-4.whitespace-nowrap
+                    - const statusColors = { open: 'bg-blue-100 text-blue-800', in_progress: 'bg-yellow-100 text-yellow-800', resolved: 'bg-green-100 text-green-800', closed: 'bg-gray-100 text-gray-800' }
+                    span.px-2.py-1.text-xs.font-semibold.rounded-full(class=statusColors[ticket.status] || 'bg-gray-100 text-gray-800')
+                      = ticket.status.replace('_', ' ').toUpperCase()
+
+                  td.px-6.py-4.whitespace-nowrap
+                    - const priorityColors = { low: 'bg-gray-100 text-gray-800', medium: 'bg-blue-100 text-blue-800', high: 'bg-orange-100 text-orange-800', urgent: 'bg-red-100 text-red-800' }
+                    span.px-2.py-1.text-xs.font-semibold.rounded-full(class=priorityColors[ticket.priority] || 'bg-gray-100 text-gray-800')
+                      = ticket.priority.toUpperCase()
+
+                  if isAdmin() || isAgent()
+                    td.px-6.py-4.whitespace-nowrap
+                      .text-sm.text-gray-900= ticket.customer_name || 'N/A'
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-900= ticket.department_name || 'N/A'
+
+                  if isAdmin() || isAgent()
+                    td.px-6.py-4.whitespace-nowrap
+                      if ticket.assigned_agent_name
+                        .text-sm.text-gray-900= ticket.assigned_agent_name
+                      else
+                        span.text-sm.text-gray-400.italic Unassigned
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-500(title=formatDate(ticket.created_at))= timeAgo(ticket.created_at)
+
+                  td.px-6.py-4.whitespace-nowrap.text-sm.font-medium
+                    .flex.items-center.space-x-2
+                      a.text-blue-600.hover_text-blue-900(href=`/tickets/${ticket.id}`)
+                        svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z")
+                      if isAdmin() || isAgent()
+                        a.text-green-600.hover_text-green-900(href=`/tickets/${ticket.id}/edit`)
+                          svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
+
+      else
+        .p-8.text-center
+          svg.mx-auto.h-12.w-12.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+          p.mt-2.text-sm.text-gray-500 No tickets found
+          a.mt-4.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href="/tickets/create")
+            svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+            | Create Your First Ticket
+
+    //- Pagination
+    if pagination && pagination.totalPages > 1
+      .mt-6.flex.items-center.justify-between.bg-white.px-6.py-3.rounded-lg.shadow-sm.border.border-gray-200
+        .flex.items-center
+          p.text-sm.text-gray-700
+            | Showing
+            span.font-medium= pagination.startItem
+            |  to
+            span.font-medium= pagination.endItem
+            |  of
+            span.font-medium= pagination.totalItems
+            |  results
+
+        .flex.items-center.space-x-2
+          if pagination.currentPage > 1
+            a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+              href=`?page=${pagination.currentPage - 1}${search ? '&search=' + search : ''}${status ? '&status=' + status : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+            )
+              | Previous
+          else
+            span.px-3.py-2.text-sm.font-medium.text-gray-400.bg-gray-100.border.border-gray-300.rounded-lg.cursor-not-allowed Previous
+
+          .flex.items-center.space-x-1
+            - let startPage = Math.max(1, pagination.currentPage - 2)
+            - let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2)
+
+            if startPage > 1
+              a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(href=`?page=1${search ? '&search=' + search : ''}${status ? '&status=' + status : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`) 1
+              if startPage > 2
+                span.px-3.py-2.text-sm.text-gray-700 ...
+
+            - for (let i = startPage; i <= endPage; i++)
+              if i === pagination.currentPage
+                span.px-3.py-2.text-sm.font-medium.text-white.bg-blue-600.border.border-blue-600.rounded-lg= i
+              else
+                a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+                  href=`?page=${i}${search ? '&search=' + search : ''}${status ? '&status=' + status : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+                )= i
+
+            if endPage < pagination.totalPages
+              if endPage < pagination.totalPages - 1
+                span.px-3.py-2.text-sm.text-gray-700 ...
+              a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+                href=`?page=${pagination.totalPages}${search ? '&search=' + search : ''}${status ? '&status=' + status : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+              )= pagination.totalPages
+
+          if pagination.currentPage < pagination.totalPages
+            a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+              href=`?page=${pagination.currentPage + 1}${search ? '&search=' + search : ''}${status ? '&status=' + status : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+            )
+              | Next
+          else

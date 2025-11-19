@@ -1,0 +1,215 @@
+extends ../layout/layout
+
+block content
+  .max-w-7xl.mx-auto
+    //- Ticket header
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      .flex.flex-col.md_flex-row.md_items-start.md_justify-between.gap-4
+        div
+          .flex.items-center.space-x-3.mb-2
+            h2.text-2xl.font-bold.text-gray-900= ticket.subject
+            - const statusColors = { open: 'bg-blue-100 text-blue-800', in_progress: 'bg-yellow-100 text-yellow-800', resolved: 'bg-green-100 text-green-800', closed: 'bg-gray-100 text-gray-800' }
+            span.px-3.py-1.text-sm.font-semibold.rounded-full(class=statusColors[ticket.status])
+              = ticket.status.replace('_', ' ').toUpperCase()
+
+          .flex.items-center.space-x-4.text-sm.text-gray-600
+            span.flex.items-center
+              svg.w-4.h-4.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z")
+              | Ticket ##{ticket.id}
+
+            span.flex.items-center
+              svg.w-4.h-4.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+              = 'Created ' + timeAgo(ticket.created_at)
+
+            if ticket.updated_at && ticket.updated_at !== ticket.created_at
+              span.flex.items-center
+                svg.w-4.h-4.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15")
+                = 'Updated ' + timeAgo(ticket.updated_at)
+
+        .flex.items-center.space-x-3
+          a.px-4.py-2.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.transition-colors(href="/tickets")
+            | Back to Tickets
+
+          if isAdmin() || isAgent() || (isCustomer() && ticket.customer_id === currentUser.id && ticket.status !== 'closed')
+            a.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href=`/tickets/${ticket.id}/edit`)
+              | Edit Ticket
+
+    .grid.grid-cols-1.lg_grid-cols-3.gap-6
+      //- Main content
+      .lg_col-span-2.space-y-6
+        //- Ticket details
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          h3.text-lg.font-semibold.text-gray-900.mb-4 Description
+          .prose.max-w-none.text-gray-700#ticket-description
+            = ticket.description
+
+        //- Attachments
+        if attachments && attachments.length > 0
+          .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+            h3.text-lg.font-semibold.text-gray-900.mb-4 Attachments
+            .grid.grid-cols-1.md_grid-cols-2.gap-4
+              each attachment in attachments
+                .flex.items-center.justify-between.p-3.border.border-gray-200.rounded-lg.hover_bg-gray-50.transition-colors
+                  .flex.items-center.space-x-3
+                    - const isImage = /\.(jpg|jpeg|png|gif|svg)$/i.test(attachment.filename)
+                    if isImage
+                      svg.w-8.h-8.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z")
+                    else
+                      svg.w-8.h-8.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z")
+
+                    div
+                      .text-sm.font-medium.text-gray-900= attachment.filename
+                      .text-xs.text-gray-500= (attachment.file_size / 1024).toFixed(2) + ' KB'
+
+                  a.text-blue-600.hover_text-blue-800(href=attachment.file_path download=attachment.filename)
+                    svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4")
+
+        //- Messages/Responses
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          h3.text-lg.font-semibold.text-gray-900.mb-4 Conversation
+
+          if messages && messages.length > 0
+            .space-y-4
+              each message in messages
+                .border-l-4.pl-4.py-2(class=message.is_internal ? 'border-yellow-500 bg-yellow-50' : 'border-blue-500')
+                  .flex.items-start.justify-between
+                    .flex.items-center.space-x-2
+                      .w-8.h-8.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold.text-sm
+                        = message.user_name ? message.user_name.charAt(0).toUpperCase() : '?'
+                      div
+                        .font-semibold.text-gray-900= message.user_name || 'Unknown'
+                        .text-xs.text-gray-500= formatDate(message.created_at)
+
+                    if message.is_internal
+                      span.px-2.py-1.text-xs.font-semibold.bg-yellow-200.text-yellow-800.rounded Internal Note
+
+                  .mt-2.text-gray-700.prose.max-w-none.message-content(data-message=message.message)
+                    = message.message
+          else
+            .text-center.py-8.text-gray-500
+              p No messages yet
+
+          //- Add message form
+          if ticket.status !== 'closed'
+            .mt-6.pt-6.border-t.border-gray-200
+              form(action=`/tickets/${ticket.id}/messages` method="POST" enctype="multipart/form-data")
+                .space-y-4
+                  div
+                    label.block.text-sm.font-medium.text-gray-700.mb-2(for="message") Add Response
+                    textarea#message.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                      name="message"
+                      rows="4"
+                      required
+                      placeholder="Type your message here... (Supports Markdown)"
+                    )
+
+                  if isAdmin() || isAgent()
+                    .flex.items-center
+                      input#is_internal.mr-2(type="checkbox" name="is_internal" value="true")
+                      label.text-sm.text-gray-700(for="is_internal") Internal Note (Only visible to agents and admins)
+
+                  div
+                    label.block.text-sm.font-medium.text-gray-700.mb-2(for="message_attachments") Attachments (Optional)
+                    input#message_attachments.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.file_py-2.file_px-4.file_border-0.file_text-sm.file_font-semibold.file_bg-blue-50.file_text-blue-700.hover_file_bg-blue-100(
+                      type="file"
+                      name="attachments"
+                      multiple
+                      accept="image/*,.pdf,.doc,.docx,.txt,.zip"
+                    )
+
+                  .flex.justify-end
+                    button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+                      | Send Message
+
+      //- Sidebar
+      .space-y-6
+        //- Ticket info
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          h3.text-lg.font-semibold.text-gray-900.mb-4 Ticket Information
+
+          .space-y-4
+            div
+              .text-sm.text-gray-600 Priority
+              - const priorityColors = { low: 'bg-gray-100 text-gray-800', medium: 'bg-blue-100 text-blue-800', high: 'bg-orange-100 text-orange-800', urgent: 'bg-red-100 text-red-800' }
+              span.inline-block.px-3.py-1.text-sm.font-semibold.rounded-full.mt-1(class=priorityColors[ticket.priority])
+                = ticket.priority.toUpperCase()
+
+            div
+              .text-sm.text-gray-600 Department
+              .font-medium.text-gray-900.mt-1= ticket.department_name || 'N/A'
+
+            div
+              .text-sm.text-gray-600 Customer
+              .font-medium.text-gray-900.mt-1= ticket.customer_name || 'N/A'
+              if ticket.customer_email
+                .text-xs.text-gray-500= ticket.customer_email
+
+            if isAdmin() || isAgent()
+              div
+                .text-sm.text-gray-600 Assigned Agent
+                if ticket.assigned_agent_name
+                  .font-medium.text-gray-900.mt-1= ticket.assigned_agent_name
+                else
+                  .text-sm.text-gray-500.italic.mt-1 Unassigned
+
+            if ticket.resolved_at
+              div
+                .text-sm.text-gray-600 Resolved At
+                .font-medium.text-gray-900.mt-1= formatDate(ticket.resolved_at)
+
+            if ticket.closed_at
+              div
+                .text-sm.text-gray-600 Closed At
+                .font-medium.text-gray-900.mt-1= formatDate(ticket.closed_at)
+
+        //- Audit log
+        if isAdmin() || isAgent()
+          if auditLogs && auditLogs.length > 0
+            .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+              h3.text-lg.font-semibold.text-gray-900.mb-4 Activity Log
+
+              .space-y-3.max-h-96.overflow-y-auto
+                each log in auditLogs
+                  .flex.items-start.space-x-2
+                    .w-2.h-2.bg-blue-600.rounded-full.mt-2.flex-shrink-0
+                    div.flex-1
+                      .text-sm.text-gray-900= log.action
+                      .text-xs.text-gray-500= log.user_name + ' • ' + timeAgo(log.created_at)
+                      if log.details
+                        .text-xs.text-gray-600.mt-1= log.details
+
+block scripts
+  script.
+    // Render markdown in description and messages
+    if (typeof marked !== 'undefined') {
+      // Render ticket description
+      const descElement = document.getElementById('ticket-description');
+      if (descElement) {
+        const rawText = descElement.textContent;
+        descElement.innerHTML = marked.parse(rawText);
+      }
+
+      // Render all messages
+      const messageElements = document.querySelectorAll('.message-content');
+      messageElements.forEach(el => {
+        const rawText = el.getAttribute('data-message');
+        if (rawText) {
+          el.innerHTML = marked.parse(rawText);
+        }
+      });
+    }
+
+    // Auto-resize textarea
+    const textarea = document.getElementById('message');
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+    }

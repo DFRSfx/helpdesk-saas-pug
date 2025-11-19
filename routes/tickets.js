@@ -1,53 +1,34 @@
-/**
- * Ticket Routes
- * Handles all ticket-related routes (view, create, update, messages, assignments)
- */
-
 const express = require('express');
 const router = express.Router();
-const TicketController = require('../controllers/ticketController');
-const { isAuthenticated, isAgentOrAdmin } = require('../middlewares/authMiddleware');
-const { uploadTicketAttachments, handleUploadError } = require('../middlewares/uploadMiddleware');
-const { ticketValidation, messageValidation, idValidation } = require('../middlewares/validation');
+const ticketController = require('../controllers/ticketController');
+const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
+const { ticketValidation, validate } = require('../middlewares/validation');
+const upload = require('../middlewares/uploadMiddleware');
 
 // All ticket routes require authentication
 router.use(isAuthenticated);
 
 // List tickets
-router.get('/', TicketController.index);
+router.get('/', ticketController.index);
 
 // Create ticket
-router.get('/create', TicketController.showCreate);
-router.post('/create', 
-  uploadTicketAttachments.array('attachments', 5),
-  ticketValidation,
-  TicketController.create,
-  handleUploadError
-);
+router.get('/create', ticketController.showCreate);
+router.post('/create', ticketValidation.create, validate, ticketController.create);
 
-// View single ticket
-router.get('/:id', idValidation, TicketController.show);
+// View ticket
+router.get('/:id', ticketController.show);
 
 // Edit ticket (agents and admins only)
-router.get('/:id/edit', isAgentOrAdmin, idValidation, TicketController.showEdit);
-router.post('/:id/edit', isAgentOrAdmin, idValidation, ticketValidation, TicketController.update);
+router.get('/:id/edit', hasRole('admin', 'agent'), ticketController.showEdit);
+router.post('/:id/edit', hasRole('admin', 'agent'), ticketValidation.update, validate, ticketController.update);
 
-// Add message/reply to ticket
-router.post('/:id/reply', 
-  idValidation,
-  uploadTicketAttachments.array('attachments', 5),
-  messageValidation,
-  TicketController.addMessage,
-  handleUploadError
-);
+// Add message to ticket
+router.post('/:id/message', ticketController.addMessage);
 
-// Assign ticket to agent (agents and admins only)
-router.post('/:id/assign', isAgentOrAdmin, idValidation, TicketController.assign);
+// Add attachment to ticket
+router.post('/:id/attachment', upload.single('file'), ticketController.addAttachment);
 
-// Update ticket status
-router.post('/:id/status', isAgentOrAdmin, idValidation, TicketController.updateStatus);
-
-// Delete ticket (admins only - implement isAdmin check in controller)
-router.post('/:id/delete', isAgentOrAdmin, idValidation, TicketController.delete);
+// Delete ticket (admin only)
+router.post('/:id/delete', hasRole('admin'), ticketController.delete);
 
 module.exports = router;

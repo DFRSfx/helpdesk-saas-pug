@@ -1,0 +1,171 @@
+extends ../layout/layout
+
+block content
+  .max-w-4xl.mx-auto
+    .grid.grid-cols-1.lg_grid-cols-3.gap-6
+      //- Profile sidebar
+      .lg_col-span-1
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          .flex.flex-col.items-center
+            .w-24.h-24.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-bold.text-3xl.mb-4
+              = currentUser.name.charAt(0).toUpperCase()
+
+            h2.text-xl.font-bold.text-gray-900.text-center= currentUser.name
+            p.text-sm.text-gray-600.text-center= currentUser.email
+
+            - const roleColors = { customer: 'bg-blue-100 text-blue-800', agent: 'bg-green-100 text-green-800', admin: 'bg-purple-100 text-purple-800' }
+            span.mt-2.px-3.py-1.text-sm.font-semibold.rounded-full(class=roleColors[currentUser.role])
+              = currentUser.role.toUpperCase()
+
+          .mt-6.pt-6.border-t.border-gray-200.space-y-3
+            div
+              .text-sm.text-gray-600 Member Since
+              .font-medium.text-gray-900= formatDate(currentUser.created_at)
+
+            if currentUser.department_name
+              div
+                .text-sm.text-gray-600 Department
+                .font-medium.text-gray-900= currentUser.department_name
+
+            if stats
+              div
+                .text-sm.text-gray-600 Total Tickets
+                .font-medium.text-gray-900= stats.totalTickets || 0
+
+              if currentUser.role === 'agent' || currentUser.role === 'admin'
+                div
+                  .text-sm.text-gray-600 Tickets Resolved
+                  .font-medium.text-green-600= stats.resolvedTickets || 0
+
+      //- Main content
+      .lg_col-span-2.space-y-6
+        //- Profile information
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          h3.text-lg.font-semibold.text-gray-900.mb-4 Profile Information
+
+          form(action="/users/profile" method="POST")
+            .space-y-4
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="name")
+                  | Full Name
+                  span.text-red-500 *
+                input#name.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  type="text"
+                  name="name"
+                  value=currentUser.name
+                  required
+                )
+
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="email")
+                  | Email Address
+                  span.text-red-500 *
+                input#email.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  type="email"
+                  name="email"
+                  value=currentUser.email
+                  required
+                )
+
+              .flex.justify-end
+                button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+                  | Update Profile
+
+        //- Change password
+        .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+          h3.text-lg.font-semibold.text-gray-900.mb-4 Change Password
+
+          form(action="/users/profile/password" method="POST")
+            .space-y-4
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="current_password")
+                  | Current Password
+                  span.text-red-500 *
+                input#current_password.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  type="password"
+                  name="current_password"
+                  required
+                  placeholder="Enter current password"
+                )
+
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="new_password")
+                  | New Password
+                  span.text-red-500 *
+                input#new_password.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  type="password"
+                  name="new_password"
+                  required
+                  minlength="6"
+                  placeholder="At least 6 characters"
+                )
+                p.mt-1.text-xs.text-gray-500 Minimum 6 characters
+
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="confirm_password")
+                  | Confirm New Password
+                  span.text-red-500 *
+                input#confirm_password.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  type="password"
+                  name="confirm_password"
+                  required
+                  minlength="6"
+                  placeholder="Re-enter new password"
+                )
+
+              .flex.justify-end
+                button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+                  | Change Password
+
+        //- Activity summary
+        if recentActivity && recentActivity.length > 0
+          .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+            h3.text-lg.font-semibold.text-gray-900.mb-4 Recent Activity
+
+            .space-y-3
+              each activity in recentActivity
+                .flex.items-start.space-x-3.p-3.border.border-gray-200.rounded-lg
+                  .flex-shrink-0
+                    - const actionIcons = { created: 'M12 4v16m8-8H4', updated: 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15', resolved: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' }
+                    svg.w-5.h-5.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d=actionIcons[activity.action] || "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")
+
+                  div.flex-1
+                    .text-sm.text-gray-900= activity.description
+                    .text-xs.text-gray-500= timeAgo(activity.created_at)
+
+                  if activity.ticket_id
+                    a.text-blue-600.hover_text-blue-800(href=`/tickets/${activity.ticket_id}`)
+                      svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+
+block scripts
+  script.
+    // Password validation
+    const passwordForm = document.querySelector('form[action="/users/profile/password"]');
+    if (passwordForm) {
+      const newPassword = document.getElementById('new_password');
+      const confirmPassword = document.getElementById('confirm_password');
+
+      passwordForm.addEventListener('submit', function(e) {
+        if (newPassword.value !== confirmPassword.value) {
+          e.preventDefault();
+          alert('New passwords do not match!');
+          confirmPassword.focus();
+          return false;
+        }
+      });
+
+      // Real-time password match indicator
+      confirmPassword.addEventListener('input', function() {
+        if (this.value === newPassword.value && this.value.length > 0) {
+          this.classList.remove('border-red-300');
+          this.classList.add('border-green-300');
+        } else if (this.value.length > 0) {
+          this.classList.remove('border-green-300');
+          this.classList.add('border-red-300');
+        } else {
+          this.classList.remove('border-green-300', 'border-red-300');
+        }
+      });
+    }

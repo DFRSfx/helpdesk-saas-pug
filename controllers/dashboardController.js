@@ -1,286 +1,210 @@
-/**
- * Dashboard Controller
- * Handles dashboard views and analytics for different user roles
- */
-
 const Ticket = require('../models/Ticket');
-const User = require('../models/User');
 const Department = require('../models/Department');
+const User = require('../models/User');
 const Audit = require('../models/Audit');
+const db = require('../config/database');
 
-class DashboardController {
-  /**
-   * Show main dashboard
-   * GET /dashboard
-   * Different views based on user role (admin, agent, customer)
-   */
-  static async index(req, res) {
-    try {
-      const userRole = req.session.userRole;
+// Main dashboard (role-based)
+exports.index = async (req, res, next) => {
+  try {
+    const user = res.locals.currentUser;
 
-      switch (userRole) {
-        case 'admin':
-          return await DashboardController.adminDashboard(req, res);
-        case 'agent':
-          return await DashboardController.agentDashboard(req, res);
-        case 'customer':
-          return await DashboardController.customerDashboard(req, res);
-        default:
-          req.flash('error', 'Invalid user role');
-          return res.redirect('/auth/login');
-      }
-
-    } catch (error) {
-      console.error('Dashboard error:', error);
-      req.flash('error', 'Error loading dashboard');
-      res.redirect('/');
+    if (user.role === 'admin') {
+      return exports.adminDashboard(req, res, next);
+    } else if (user.role === 'agent') {
+      return exports.agentDashboard(req, res, next);
+    } else {
+      return exports.customerDashboard(req, res, next);
     }
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Admin Dashboard
-   * Shows comprehensive system statistics and analytics
-   */
-  static async adminDashboard(req, res) {
-    try {
-      // Get overall ticket statistics
-      const ticketStats = await Ticket.getStatistics();
-      
-      // Get user statistics
-      const userStats = await User.getStatistics();
-      
-      // Get department statistics
-      const departments = await Department.findAll(true);
-      
-      // Get recent activity
-      const recentActivity = await Audit.getRecentActivity(15);
-      
-      // Get tickets by status for chart
-      const { tickets: recentTickets } = await Ticket.findAll({}, 10, 0);
+// Admin dashboard
+exports.adminDashboard = async (req, res, next) => {
+  try {
+    // Get overall ticket stats
+    const ticketStats = await Ticket.getStats();
 
-      // Calculate response time metrics
-      // TODO: Implement SLA tracking and breach calculations
+    // Get department stats
+    const departmentStats = await Department.getStats();
 
-      res.render('dashboard/admin', {
-        title: 'Admin Dashboard',
-        ticketStats,
-        userStats,
-        departments,
-        recentActivity,
-        recentTickets,
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
+    // Get recent activity
+    const recentActivity = await Audit.getRecentActivity(10);
 
-    } catch (error) {
-      console.error('Admin dashboard error:', error);
-      req.flash('error', 'Error loading dashboard');
-      res.redirect('/');
-    }
-  }
+    // Get ticket trend data (last 30 days)
+    const [ticketTrend] = await db.query(`
+      SELECT
+        DATE(created_at) as date,
+        COUNT(*) as count
+      FROM tickets
+      WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
 
-  /**
-   * Agent Dashboard
-   * Shows agent's assigned tickets and performance metrics
-   */
-  static async agentDashboard(req, res) {
-    try {
-      const agentId = req.session.userId;
+    // Get agent performance with email
+    const [agentPerformance] = await db.query(`
+      SELECT
+        u.id,
+        u.name,
+        u.email,
+        COUNT(t.id) as assigned,
+        SUM(CASE WHEN t.status = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+        SUM(CASE WHEN t.status = 'Closed' THEN 1 ELSE 0 END) as closed,
+        1 as is_active
+      FROM users u
+      LEFT JOIN tickets t ON u.id = t.agent_id
+      WHERE u.role = 'agent'
+      GROUP BY u.id, u.name, u.email
+      ORDER BY assigned DESC
+      LIMIT 10
+    `);
 
-      // Get agent's ticket statistics
-      const myTicketStats = await Ticket.getStatistics({ assigned_agent_id: agentId });
-      
-      // Get agent's assigned tickets
-      const { tickets: myTickets } = await Ticket.findAll(
-        { assigned_agent_id: agentId, status: ['open', 'in_progress', 'waiting'] },
-        15,
-        0
-      );
+    // Get recent tickets
+    const [recentTickets] = await db.query(`
+      SELECT
+        t.id,
+        t.title as subject,
+        t.status,
+        t.priority,
+        t.created_at,
+        c.name as customer_name
+      FROM tickets t
+      LEFT JOIN users c ON t.customer_id = c.id
+      ORDER BY t.created_at DESC
+      LIMIT 5
+    `);
 
-      // Get unassigned tickets in agent's department
-      const agent = await User.findById(agentId);
-      let unassignedTickets = [];
-      if (agent.department_id) {
-        const result = await Ticket.findAll(
-          { 
-            department_id: agent.department_id, 
-            assigned_agent_id: null,
-            status: 'open'
-          },
-          10,
-          0
-        );
-        unassignedTickets = result.tickets;
-      }
+    // Get tickets needing escalation
+    const needsEscalation = await Ticket.getTicketsNeedingEscalation();
 
-      // Get recent activity on agent's tickets
-      const recentActivity = await Audit.getByUser(agentId, 10);
+    // Get resolved tickets today
+    const [resolvedToday] = await db.query(`
+      SELECT COUNT(*) as count
+      FROM tickets
+      WHERE status = 'Resolved' AND DATE(updated_at) = CURDATE()
+    `);
 
-      res.render('dashboard/agent', {
-        title: 'Agent Dashboard',
-        myTicketStats,
-        myTickets,
-        unassignedTickets,
-        recentActivity,
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Agent dashboard error:', error);
-      req.flash('error', 'Error loading dashboard');
-      res.redirect('/');
-    }
-  }
-
-  /**
-   * Customer Dashboard
-   * Shows customer's tickets and support information
-   */
-  static async customerDashboard(req, res) {
-    try {
-      const customerId = req.session.userId;
-
-      // Get customer's ticket statistics
-      const myTicketStats = await Ticket.getStatistics({ customer_id: customerId });
-
-      // Get customer's tickets
-      const { tickets: myTickets, total } = await Ticket.findAll(
-        { customer_id: customerId },
-        10,
-        0
-      );
-
-      // Get departments for creating new tickets
-      const departments = await Department.findAll(true);
-
-      res.render('dashboard/customer', {
-        title: 'My Dashboard',
-        myTicketStats,
-        myTickets,
-        totalTickets: total,
-        departments,
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Customer dashboard error:', error);
-      req.flash('error', 'Error loading dashboard');
-      res.redirect('/');
-    }
-  }
-
-  /**
-   * Get analytics data (API endpoint for charts)
-   * GET /dashboard/analytics
-   * @query {string} type - Analytics type (tickets_by_day, tickets_by_status, etc.)
-   * @query {string} date_from - Start date
-   * @query {string} date_to - End date
-   */
-  static async getAnalytics(req, res) {
-    try {
-      const { type, date_from, date_to } = req.query;
-
-      let data = {};
-
-      switch (type) {
-        case 'tickets_by_day':
-          // TODO: Implement tickets by day query
-          data = await DashboardController.getTicketsByDay(date_from, date_to);
-          break;
-        
-        case 'tickets_by_status':
-          // TODO: Implement tickets by status query
-          data = await DashboardController.getTicketsByStatus();
-          break;
-        
-        case 'tickets_by_priority':
-          // TODO: Implement tickets by priority query
-          data = await DashboardController.getTicketsByPriority();
-          break;
-        
-        case 'agent_performance':
-          // TODO: Implement agent performance query
-          data = await DashboardController.getAgentPerformance();
-          break;
-        
-        default:
-          return res.status(400).json({ error: 'Invalid analytics type' });
-      }
-
-      res.json(data);
-
-    } catch (error) {
-      console.error('Analytics error:', error);
-      res.status(500).json({ error: 'Error fetching analytics data' });
-    }
-  }
-
-  /**
-   * Helper: Get tickets by day for chart
-   */
-  static async getTicketsByDay(dateFrom, dateTo) {
-    // TODO: Implement with SQL query
-    return {
-      labels: [],
-      datasets: []
+    // Prepare stats for view
+    const stats = {
+      totalTickets: ticketStats.total || 0,
+      openTickets: ticketStats.open || 0,
+      inProgressTickets: ticketStats.in_progress || 0,
+      resolvedTickets: ticketStats.resolved || 0,
+      closedTickets: ticketStats.closed || 0,
+      resolvedToday: resolvedToday[0].count || 0,
+      lowPriority: ticketStats.low || 0,
+      mediumPriority: ticketStats.medium || 0,
+      highPriority: ticketStats.high || 0,
+      urgentPriority: ticketStats.critical || 0
     };
-  }
 
-  /**
-   * Helper: Get tickets by status for chart
-   */
-  static async getTicketsByStatus() {
-    const stats = await Ticket.getStatistics();
-    return {
-      labels: ['Open', 'In Progress', 'Waiting', 'Escalated', 'Resolved', 'Closed'],
-      data: [
-        stats.open_tickets,
-        stats.in_progress_tickets,
-        stats.waiting_tickets,
-        stats.escalated_tickets,
-        stats.resolved_tickets,
-        stats.closed_tickets
-      ]
+    // Prepare chart data
+    const chartData = {
+      dates: ticketTrend.map(t => t.date),
+      created: ticketTrend.map(t => t.count)
     };
-  }
 
-  /**
-   * Helper: Get tickets by priority for chart
-   */
-  static async getTicketsByPriority() {
-    const stats = await Ticket.getStatistics();
-    return {
-      labels: ['Critical', 'High', 'Medium', 'Low'],
-      data: [
-        stats.critical_tickets,
-        stats.high_tickets,
-        stats.medium_tickets,
-        stats.low_tickets
-      ]
+    // Prepare department chart data
+    const departmentChartData = {
+      labels: departmentStats.map(d => d.name),
+      data: departmentStats.map(d => d.total_tickets)
     };
-  }
 
-  /**
-   * Helper: Get agent performance data
-   */
-  static async getAgentPerformance() {
-    // TODO: Implement with v_agent_performance view
-    return {
-      agents: [],
-      metrics: []
-    };
+    res.render('dashboard/admin', {
+      title: 'Admin Dashboard',
+      stats,
+      chartData,
+      departmentChartData,
+      agentStats: agentPerformance,
+      recentTickets,
+      needsEscalation,
+      departmentStats
+    });
+  } catch (error) {
+    next(error);
   }
-}
+};
 
-module.exports = DashboardController;
+// Agent dashboard
+exports.agentDashboard = async (req, res, next) => {
+  try {
+    const agentId = res.locals.currentUser.id;
+
+    // Get my tickets
+    const myTickets = await Ticket.getAll({
+      agent_id: agentId,
+      limit: 10
+    });
+
+    // Get my ticket stats
+    const [myStatsRows] = await db.query(`
+      SELECT
+        COUNT(*) as myAssigned,
+        SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) as inProgress,
+        SUM(CASE WHEN status = 'Resolved' AND DATE(updated_at) = CURDATE() THEN 1 ELSE 0 END) as resolvedToday,
+        SUM(CASE WHEN status = 'Escalated' THEN 1 ELSE 0 END) as escalations
+      FROM tickets
+      WHERE agent_id = ?
+    `, [agentId]);
+
+    // Get pending escalations
+    const [pendingEscalations] = await db.query(`
+      SELECT
+        t.*,
+        c.name as customer_name,
+        d.name as department_name
+      FROM tickets t
+      LEFT JOIN users c ON t.customer_id = c.id
+      LEFT JOIN departments d ON t.department_id = d.id
+      WHERE t.agent_id = ? AND t.status = 'Escalated'
+      ORDER BY t.created_at ASC
+    `, [agentId]);
+
+    const stats = myStatsRows[0] || { myAssigned: 0, inProgress: 0, resolvedToday: 0, escalations: 0 };
+
+    res.render('dashboard/agent', {
+      title: 'Agent Dashboard',
+      myTickets,
+      stats,
+      pendingEscalations
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Customer dashboard
+exports.customerDashboard = async (req, res, next) => {
+  try {
+    const customerId = res.locals.currentUser.id;
+
+    // Get my tickets
+    const myTickets = await Ticket.getAll({
+      customer_id: customerId,
+      limit: 10
+    });
+
+    // Get my ticket stats
+    const [myStats] = await db.query(`
+      SELECT
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'Open' THEN 1 ELSE 0 END) as open,
+        SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) as in_progress,
+        SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+        SUM(CASE WHEN status = 'Closed' THEN 1 ELSE 0 END) as closed
+      FROM tickets
+      WHERE customer_id = ?
+    `, [customerId]);
+
+    res.render('dashboard/customer', {
+      title: 'My Dashboard',
+      myTickets,
+      stats: myStats[0] || { total: 0, open: 0, in_progress: 0, resolved: 0, closed: 0 }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

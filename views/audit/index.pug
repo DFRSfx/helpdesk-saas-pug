@@ -1,0 +1,237 @@
+extends ../layout/layout
+
+block content
+  .max-w-7xl.mx-auto
+    //- Header
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      h2.text-xl.font-bold.text-gray-900 Audit Logs
+      p.text-sm.text-gray-600 Track all system activities and user actions
+
+      //- Filters
+      form.mt-4(method="GET" action="/audit")
+        .grid.grid-cols-1.md_grid-cols-5.gap-4
+          //- Search
+          .md_col-span-2
+            .relative
+              svg.absolute.left-3.top-1_2.transform.-translate-y-1_2.w-5.h-5.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+              input.w-full.pl-10.pr-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                type="text"
+                name="search"
+                placeholder="Search actions, users, entities..."
+                value=search || ""
+              )
+
+          //- Entity type filter
+          select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(name="entity_type")
+            option(value="" selected=!entity_type) All Entities
+            option(value="ticket" selected=entity_type === "ticket") Tickets
+            option(value="user" selected=entity_type === "user") Users
+            option(value="department" selected=entity_type === "department") Departments
+            option(value="message" selected=entity_type === "message") Messages
+            option(value="attachment" selected=entity_type === "attachment") Attachments
+
+          //- User filter
+          select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(name="user_id")
+            option(value="" selected=!user_id) All Users
+            if users && users.length > 0
+              each user in users
+                option(value=user.id selected=user_id == user.id)= user.name
+
+          //- Date range
+          input.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+            type="date"
+            name="date_from"
+            value=date_from || ""
+            placeholder="From date"
+          )
+
+          input.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+            type="date"
+            name="date_to"
+            value=date_to || ""
+            placeholder="To date"
+          )
+
+          button.px-6.py-2.bg-gray-800.text-white.rounded-lg.hover_bg-gray-900.transition-colors.md_col-span-1(type="submit")
+            | Filter
+
+          a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors.text-center(href="/audit")
+            | Clear
+
+    //- Stats
+    .grid.grid-cols-1.md_grid-cols-4.gap-6.mb-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Total Logs
+            p.text-2xl.font-bold.text-gray-900= stats.total || 0
+          .w-10.h-10.bg-gray-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Today
+            p.text-2xl.font-bold.text-blue-600= stats.today || 0
+          .w-10.h-10.bg-blue-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 This Week
+            p.text-2xl.font-bold.text-green-600= stats.thisWeek || 0
+          .w-10.h-10.bg-green-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Active Users
+            p.text-2xl.font-bold.text-purple-600= stats.activeUsers || 0
+          .w-10.h-10.bg-purple-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-purple-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z")
+
+    //- Audit logs table
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.overflow-hidden
+      if logs && logs.length > 0
+        .overflow-x-auto
+          table.min-w-full.divide-y.divide-gray-200
+            thead.bg-gray-50
+              tr
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Timestamp
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider User
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Action
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Entity
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Details
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider IP Address
+
+            tbody.bg-white.divide-y.divide-gray-200
+              each log in logs
+                tr.hover_bg-gray-50.transition-colors
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-900= formatDate(log.created_at)
+                    .text-xs.text-gray-500= timeAgo(log.created_at)
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .flex.items-center
+                      .w-8.h-8.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold.text-sm.mr-2
+                        = log.user_name ? log.user_name.charAt(0).toUpperCase() : '?'
+                      div
+                        .text-sm.font-medium.text-gray-900= log.user_name || 'System'
+                        if log.user_role
+                          .text-xs.text-gray-500= log.user_role
+
+                  td.px-6.py-4.whitespace-nowrap
+                    - const actionColors = { created: 'bg-green-100 text-green-800', updated: 'bg-blue-100 text-blue-800', deleted: 'bg-red-100 text-red-800', login: 'bg-purple-100 text-purple-800', logout: 'bg-gray-100 text-gray-800' }
+                    - const actionType = log.action.toLowerCase().split(' ')[0]
+                    span.px-2.py-1.text-xs.font-semibold.rounded-full(class=actionColors[actionType] || 'bg-gray-100 text-gray-800')
+                      = log.action
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-900
+                      if log.entity_type
+                        = log.entity_type.charAt(0).toUpperCase() + log.entity_type.slice(1)
+                        if log.entity_id
+                          = ' #' + log.entity_id
+                      else
+                        | -
+
+                  td.px-6.py-4
+                    if log.details
+                      .text-sm.text-gray-700.max-w-md.truncate(title=log.details)= log.details
+                    else
+                      .text-sm.text-gray-400.italic No details
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-500= log.ip_address || 'N/A'
+      else
+        .p-8.text-center
+          svg.mx-auto.h-12.w-12.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+          p.mt-2.text-sm.text-gray-500 No audit logs found
+
+    //- Pagination
+    if pagination && pagination.totalPages > 1
+      .mt-6.flex.items-center.justify-between.bg-white.px-6.py-3.rounded-lg.shadow-sm.border.border-gray-200
+        .flex.items-center
+          p.text-sm.text-gray-700
+            | Showing
+            span.font-medium= ' ' + pagination.startItem + ' '
+            | to
+            span.font-medium= ' ' + pagination.endItem + ' '
+            | of
+            span.font-medium= ' ' + pagination.totalItems + ' '
+            | results
+
+        .flex.items-center.space-x-2
+          if pagination.currentPage > 1
+            a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+              href=`?page=${pagination.currentPage - 1}${search ? '&search=' + search : ''}${entity_type ? '&entity_type=' + entity_type : ''}${user_id ? '&user_id=' + user_id : ''}${date_from ? '&date_from=' + date_from : ''}${date_to ? '&date_to=' + date_to : ''}`
+            ) Previous
+          else
+            span.px-3.py-2.text-sm.font-medium.text-gray-400.bg-gray-100.border.border-gray-300.rounded-lg.cursor-not-allowed Previous
+
+          .flex.items-center.space-x-1
+            - let startPage = Math.max(1, pagination.currentPage - 2)
+            - let endPage = Math.min(pagination.totalPages, pagination.currentPage + 2)
+
+            if startPage > 1
+              a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+                href=`?page=1${search ? '&search=' + search : ''}${entity_type ? '&entity_type=' + entity_type : ''}${user_id ? '&user_id=' + user_id : ''}${date_from ? '&date_from=' + date_from : ''}${date_to ? '&date_to=' + date_to : ''}`
+              ) 1
+              if startPage > 2
+                span.px-3.py-2.text-sm.text-gray-700 ...
+
+            - for (let i = startPage; i <= endPage; i++)
+              if i === pagination.currentPage
+                span.px-3.py-2.text-sm.font-medium.text-white.bg-blue-600.border.border-blue-600.rounded-lg= i
+              else
+                a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+                  href=`?page=${i}${search ? '&search=' + search : ''}${entity_type ? '&entity_type=' + entity_type : ''}${user_id ? '&user_id=' + user_id : ''}${date_from ? '&date_from=' + date_from : ''}${date_to ? '&date_to=' + date_to : ''}`
+                )= i
+
+            if endPage < pagination.totalPages
+              if endPage < pagination.totalPages - 1
+                span.px-3.py-2.text-sm.text-gray-700 ...
+              a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+                href=`?page=${pagination.totalPages}${search ? '&search=' + search : ''}${entity_type ? '&entity_type=' + entity_type : ''}${user_id ? '&user_id=' + user_id : ''}${date_from ? '&date_from=' + date_from : ''}${date_to ? '&date_to=' + date_to : ''}`
+              )= pagination.totalPages
+
+          if pagination.currentPage < pagination.totalPages
+            a.px-3.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50(
+              href=`?page=${pagination.currentPage + 1}${search ? '&search=' + search : ''}${entity_type ? '&entity_type=' + entity_type : ''}${user_id ? '&user_id=' + user_id : ''}${date_from ? '&date_from=' + date_from : ''}${date_to ? '&date_to=' + date_to : ''}`
+            ) Next
+          else
+            span.px-3.py-2.text-sm.font-medium.text-gray-400.bg-gray-100.border.border-gray-300.rounded-lg.cursor-not-allowed Next
+
+    //- Export options
+    .mt-6.bg-blue-50.rounded-lg.border.border-blue-200.p-4
+      .flex.items-center.justify-between
+        div
+          h4.text-sm.font-semibold.text-gray-900 Export Audit Logs
+          p.text-xs.text-gray-600 Download audit logs for compliance and reporting
+
+        .flex.items-center.space-x-3
+          button.px-4.py-2.bg-white.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(
+            onclick="exportLogs('csv')"
+          )
+            | Export CSV
+
+          button.px-4.py-2.bg-white.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(
+            onclick="exportLogs('json')"
+          )
+            | Export JSON
+
+block scripts
+  script.
+    function exportLogs(format) {
+      const params = new URLSearchParams(window.location.search);
+      params.set('export', format);
+      window.location.href = `/audit/export?${params.toString()}`;
+    }

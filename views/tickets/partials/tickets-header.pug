@@ -1,0 +1,71 @@
+//- Shared header for tickets views
+.bg-white.border-b.border-gray-200.px-6.py-4
+  .flex.flex-col.md_flex-row.md_items-center.md_justify-between.gap-4
+    .flex.items-center.space-x-4
+      h2.text-2xl.font-bold.text-gray-900 Tickets
+      .flex.items-center.space-x-2.bg-gray-100.rounded-lg.p-1
+        - const viewMode = filters.view || 'board'
+        a.px-3.py-1_5.text-sm.font-medium.rounded-md.transition-all.duration-200(
+          href=`/tickets?view=board${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+          class=viewMode === 'board' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 hover_bg-white'
+        ) Board
+        a.px-3.py-1_5.text-sm.font-medium.rounded-md.transition-all.duration-200(
+          href=`/tickets?view=list${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
+          class=viewMode === 'list' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 hover_bg-white'
+        ) List
+
+    .flex.items-center.space-x-3
+      //- Search
+      .relative.flex.items-center
+        svg.absolute.left-3.w-5.h-5.text-gray-400.pointer-events-none(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
+        input#searchInput.w-64.pl-10.pr-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.transition-all.duration-200(
+          type="text"
+          placeholder="Search tickets..."
+          value=search || ""
+        )
+
+      //- Filters
+      .relative
+        button#filterBtn.flex.items-center.space-x-2.px-4.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95
+          svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z")
+          span Filters
+          if priority || departmentFilter || assignedTo
+            - const filterCount = (priority ? 1 : 0) + (departmentFilter ? 1 : 0) + (assignedTo ? 1 : 0)
+            span.ml-1.px-2.py-0_5.text-xs.font-semibold.text-white.bg-blue-600.rounded-full= filterCount
+
+      a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-lg.active_bg-blue-800.transition-all.duration-200.shadow-sm.transform.hover_scale-105.active_scale-95(href="/tickets/create")
+        svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+        | New Ticket
+
+//- Filter Panel (Hidden by default)
+#filterPanel.hidden.bg-gray-50.border-b.border-gray-200.px-6.py-4.transition-all.duration-300
+  form.grid.grid-cols-1.md_grid-cols-4.gap-4(method="GET" action="/tickets")
+    input(type="hidden" name="view" value=viewMode)
+    select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="priority")
+      option(value="" selected=!priority) All Priority
+      option(value="low" selected=priority === "low") Low
+      option(value="medium" selected=priority === "medium") Medium
+      option(value="high" selected=priority === "high") High
+      option(value="urgent" selected=priority === "urgent") Urgent
+
+    if isAdmin() || isAgent()
+      select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="department")
+        option(value="" selected=!departmentFilter) All Departments
+        if departments
+          each dept in departments
+            option(value=dept.id selected=departmentFilter == dept.id)= dept.name
+
+      select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="assignedTo")
+        option(value="" selected=!assignedTo) All Agents
+        option(value="me" selected=assignedTo === "me") My Tickets
+        option(value="unassigned" selected=assignedTo === "unassigned") Unassigned
+        if agents
+          each agent in agents
+            option(value=agent.id selected=assignedTo == agent.id)= agent.name
+
+    .flex.items-center.space-x-2
+      button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-md.active_bg-blue-800.transition-all.duration-200.transform.hover_scale-105.active_scale-95(type="submit") Apply
+      a.px-6.py-2.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95(href=`/tickets?view=${viewMode}`) Clear

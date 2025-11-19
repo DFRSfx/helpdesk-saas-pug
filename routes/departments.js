@@ -1,32 +1,27 @@
-/**
- * Department Routes
- * Handles department management (admin and agents only)
- */
-
 const express = require('express');
 const router = express.Router();
-const DepartmentController = require('../controllers/departmentController');
-const { isAuthenticated, isAgentOrAdmin, isAdmin } = require('../middlewares/authMiddleware');
-const { departmentValidation, idValidation } = require('../middlewares/validation');
+const departmentController = require('../controllers/departmentController');
+const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
+const { departmentValidation, validate } = require('../middlewares/validation');
 
 // All department routes require authentication
 router.use(isAuthenticated);
 
-// List departments (all authenticated users can view)
-router.get('/', DepartmentController.index);
+// List departments (all users can view)
+router.get('/', departmentController.index);
 
-// Create department (admins only)
-router.get('/create', isAdmin, DepartmentController.showCreate);
-router.post('/create', isAdmin, departmentValidation, DepartmentController.create);
+// Department stats (admin and agents)
+router.get('/stats', hasRole('admin', 'agent'), departmentController.stats);
 
-// View department details
-router.get('/:id', idValidation, DepartmentController.show);
+// Create department (admin only)
+router.get('/create', hasRole('admin'), departmentController.showCreate);
+router.post('/create', hasRole('admin'), departmentValidation.create, validate, departmentController.create);
 
-// Edit department (admins only)
-router.get('/:id/edit', isAdmin, idValidation, DepartmentController.showEdit);
-router.post('/:id/edit', isAdmin, idValidation, DepartmentController.update);
+// Edit department (admin only)
+router.get('/:id/edit', hasRole('admin'), departmentController.showEdit);
+router.post('/:id/edit', hasRole('admin'), departmentValidation.create, validate, departmentController.update);
 
-// Delete department (admins only)
-router.post('/:id/delete', isAdmin, idValidation, DepartmentController.delete);
+// Delete department (admin only)
+router.post('/:id/delete', hasRole('admin'), departmentController.delete);
 
 module.exports = router;

@@ -1,0 +1,284 @@
+extends ../layout/layout
+
+block content
+  .max-w-7xl.mx-auto
+    //- Header
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      .flex.items-center.justify-between
+        div
+          .flex.items-center.space-x-3
+            a.text-gray-600.hover_text-gray-900(href="/departments")
+              svg.w-6.h-6(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
+            h2.text-2xl.font-bold.text-gray-900= department.name + ' Statistics'
+
+          if department.description
+            p.text-sm.text-gray-600.mt-1= department.description
+
+        .flex.items-center.space-x-3
+          if isAdmin()
+            a.px-4.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(href=`/departments/${department.id}/edit`)
+              | Edit Department
+          a.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href=`/tickets?department=${department.id}`)
+            | View Tickets
+
+    //- Stats cards
+    .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-4.gap-6.mb-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Total Tickets
+            p.text-3xl.font-bold.text-gray-900= stats.totalTickets || 0
+          .w-12.h-12.bg-gray-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Open Tickets
+            p.text-3xl.font-bold.text-blue-600= stats.openTickets || 0
+          .w-12.h-12.bg-blue-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 In Progress
+            p.text-3xl.font-bold.text-yellow-600= stats.inProgressTickets || 0
+          .w-12.h-12.bg-yellow-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-yellow-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.text-gray-600 Resolved
+            p.text-3xl.font-bold.text-green-600= stats.resolvedTickets || 0
+            - const resolvedRate = stats.totalTickets > 0 ? ((stats.resolvedTickets / stats.totalTickets) * 100).toFixed(0) : 0
+            p.text-sm.text-gray-500= resolvedRate + '% resolution rate'
+          .w-12.h-12.bg-green-100.rounded-lg.flex.items-center.justify-center
+            svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
+
+    .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
+      //- Tickets by status
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Status
+        canvas#statusChart
+
+      //- Tickets by priority
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Priority
+        canvas#priorityChart
+
+    //- Tickets over time
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets Over Time (Last 30 Days)
+      canvas#ticketsOverTimeChart
+
+    .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
+      //- Agents in department
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        h3.text-lg.font-semibold.text-gray-900.mb-4 Agents
+
+        if agents && agents.length > 0
+          .space-y-3
+            each agent in agents
+              .flex.items-center.justify-between.p-3.border.border-gray-200.rounded-lg
+                .flex.items-center.space-x-3
+                  .w-10.h-10.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold
+                    = agent.name.charAt(0).toUpperCase()
+                  div
+                    .text-sm.font-medium.text-gray-900= agent.name
+                    .text-xs.text-gray-500= agent.email
+
+                .flex.items-center.space-x-4
+                  div.text-right
+                    .text-sm.font-semibold.text-gray-900= agent.assigned_count || 0
+                    .text-xs.text-gray-500 Assigned
+
+                  div.text-right
+                    .text-sm.font-semibold.text-green-600= agent.resolved_count || 0
+                    .text-xs.text-gray-500 Resolved
+        else
+          .text-center.py-8.text-gray-500
+            svg.mx-auto.h-12.w-12.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z")
+            p.mt-2 No agents assigned to this department
+
+      //- Performance metrics
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        h3.text-lg.font-semibold.text-gray-900.mb-4 Performance Metrics
+
+        .space-y-4
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 Average Response Time
+              .text-sm.font-semibold.text-gray-900= stats.avgResponseTime || 'N/A'
+
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 Average Resolution Time
+              .text-sm.font-semibold.text-gray-900= stats.avgResolutionTime || 'N/A'
+
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 Customer Satisfaction
+              .text-sm.font-semibold.text-gray-900= stats.customerSatisfaction ? stats.customerSatisfaction + '/5' : 'N/A'
+
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 Escalation Rate
+              - const escalationRate = stats.totalTickets > 0 ? ((stats.escalations || 0) / stats.totalTickets * 100).toFixed(1) : 0
+              .text-sm.font-semibold.text-gray-900= escalationRate + '%'
+
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 First Response SLA Met
+              .text-sm.font-semibold.text-green-600= stats.slaFirstResponse ? stats.slaFirstResponse + '%' : 'N/A'
+
+          div
+            .flex.items-center.justify-between.mb-2
+              .text-sm.text-gray-600 Resolution SLA Met
+              .text-sm.font-semibold.text-green-600= stats.slaResolution ? stats.slaResolution + '%' : 'N/A'
+
+    //- Recent tickets
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .flex.items-center.justify-between.mb-4
+        h3.text-lg.font-semibold.text-gray-900 Recent Tickets
+
+        a.text-blue-600.hover_text-blue-800.text-sm(href=`/tickets?department=${department.id}`) View All
+
+      if recentTickets && recentTickets.length > 0
+        .space-y-3
+          each ticket in recentTickets
+            .flex.items-center.justify-between.p-3.border.border-gray-200.rounded-lg.hover_bg-gray-50.transition-colors
+              .flex.items-center.space-x-4.flex-1
+                - const statusColors = { open: 'bg-blue-100 text-blue-800', in_progress: 'bg-yellow-100 text-yellow-800', resolved: 'bg-green-100 text-green-800', closed: 'bg-gray-100 text-gray-800' }
+                span.px-2.py-1.text-xs.font-semibold.rounded-full(class=statusColors[ticket.status])
+                  = ticket.status.replace('_', ' ').toUpperCase()
+
+                div.flex-1
+                  .font-medium.text-gray-900= ticket.subject
+                  .text-sm.text-gray-500
+                    = '#' + ticket.id + ' • ' + ticket.customer_name + ' • ' + timeAgo(ticket.created_at)
+
+                - const priorityColors = { low: 'bg-gray-100 text-gray-800', medium: 'bg-blue-100 text-blue-800', high: 'bg-orange-100 text-orange-800', urgent: 'bg-red-100 text-red-800' }
+                span.px-2.py-1.text-xs.font-semibold.rounded-full(class=priorityColors[ticket.priority])
+                  = ticket.priority.toUpperCase()
+
+              a.text-blue-600.hover_text-blue-800(href=`/tickets/${ticket.id}`)
+                svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+      else
+        .text-center.py-8.text-gray-500
+          p No recent tickets
+
+block scripts
+  script.
+    // Tickets by Status Chart
+    const statusCtx = document.getElementById('statusChart');
+    if (statusCtx) {
+      new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Open', 'In Progress', 'Resolved', 'Closed'],
+          datasets: [{
+            data: [
+              #{stats.openTickets || 0},
+              #{stats.inProgressTickets || 0},
+              #{stats.resolvedTickets || 0},
+              #{stats.closedTickets || 0}
+            ],
+            backgroundColor: ['#3B82F6', '#F59E0B', '#10B981', '#6B7280']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }
+      });
+    }
+
+    // Tickets by Priority Chart
+    const priorityCtx = document.getElementById('priorityChart');
+    if (priorityCtx) {
+      new Chart(priorityCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Low', 'Medium', 'High', 'Urgent'],
+          datasets: [{
+            label: 'Tickets',
+            data: [
+              #{stats.lowPriority || 0},
+              #{stats.mediumPriority || 0},
+              #{stats.highPriority || 0},
+              #{stats.urgentPriority || 0}
+            ],
+            backgroundColor: ['#6B7280', '#3B82F6', '#F97316', '#EF4444']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // Tickets Over Time Chart
+    const timeCtx = document.getElementById('ticketsOverTimeChart');
+    if (timeCtx) {
+      new Chart(timeCtx, {
+        type: 'line',
+        data: {
+          labels: !{JSON.stringify(chartData?.dates || [])},
+          datasets: [{
+            label: 'Created',
+            data: !{JSON.stringify(chartData?.created || [])},
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            tension: 0.4
+          }, {
+            label: 'Resolved',
+            data: !{JSON.stringify(chartData?.resolved || [])},
+            borderColor: '#10B981',
+            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'bottom'
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }

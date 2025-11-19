@@ -1,28 +1,19 @@
-/**
- * Authentication Routes
- * Handles user authentication (login, register, logout, password reset)
- */
-
 const express = require('express');
 const router = express.Router();
-const AuthController = require('../controllers/authController');
-const { isNotAuthenticated } = require('../middlewares/authMiddleware');
-const { registerValidation, loginValidation } = require('../middlewares/validation');
+const authController = require('../controllers/authController');
+const { redirectIfAuthenticated } = require('../middlewares/authMiddleware');
+const { userValidation, validate } = require('../middlewares/validation');
 
-// Public routes (not authenticated)
-router.get('/login', isNotAuthenticated, AuthController.showLogin);
-router.post('/login', isNotAuthenticated, loginValidation, AuthController.login);
+// Login routes
+router.get('/login', redirectIfAuthenticated, authController.showLogin);
+router.post('/login', redirectIfAuthenticated, userValidation.login, validate, authController.login);
 
-router.get('/register', isNotAuthenticated, AuthController.showRegister);
-router.post('/register', isNotAuthenticated, registerValidation, AuthController.register);
+// Register routes
+router.get('/register', redirectIfAuthenticated, authController.showRegister);
+router.post('/register', redirectIfAuthenticated, userValidation.register, validate, authController.register);
 
-router.get('/forgot-password', isNotAuthenticated, AuthController.showForgotPassword);
-router.post('/forgot-password', isNotAuthenticated, AuthController.forgotPassword);
-
-router.get('/reset-password/:token', isNotAuthenticated, AuthController.showResetPassword);
-router.post('/reset-password', isNotAuthenticated, AuthController.resetPassword);
-
-// Logout route (authenticated)
-router.get('/logout', AuthController.logout);
+// Logout
+router.get('/logout', authController.logout);
+router.post('/logout', authController.logout);
 
 module.exports = router;

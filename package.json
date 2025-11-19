@@ -1,56 +1,40 @@
 {
-  "name": "supportdesk-pro",
+  "name": "mini-zendesk-support-system",
   "version": "1.0.0",
-  "description": "Enterprise-grade Customer Support Ticketing System built with Node.js, Express, and MySQL",
+  "description": "Enterprise-grade Customer Support Ticketing System",
   "main": "app.js",
+  "type": "commonjs",
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "db:setup": "mysql -u root -p < database/schema.sql",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build:css": "tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "setup:db": "node scripts/setupDatabase.js",
+    "create:admin": "node scripts/createAdmin.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DFRSfx/mini-zendesk-redo.git"
-  },
-  "keywords": [
-    "support",
-    "ticketing",
-    "helpdesk",
-    "customer-service",
-    "zendesk",
-    "nodejs",
-    "express",
-    "mysql"
-  ],
+  "keywords": ["support", "tickets", "helpdesk", "zendesk"],
   "author": "",
   "license": "MIT",
-  "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
-  },
-  "bugs": {
-    "url": "https://github.com/DFRSfx/mini-zendesk-redo/issues"
-  },
-  "homepage": "https://github.com/DFRSfx/mini-zendesk-redo#readme",
   "dependencies": {
-    "bcryptjs": "^3.0.3",
+    "express": "^4.18.2",
+    "pug": "^3.0.2",
+    "mysql2": "^3.6.5",
+    "bcrypt": "^5.1.1",
+    "express-session": "^1.17.3",
     "connect-flash": "^0.1.1",
-    "cookie-parser": "^1.4.7",
-    "csurf": "^1.11.0",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.2.1",
-    "express-session": "^1.18.2",
-    "express-validator": "^7.3.0",
-    "helmet": "^8.1.0",
-    "morgan": "^1.10.1",
-    "multer": "^2.0.2",
-    "mysql2": "^3.15.3",
-    "pug": "^3.0.3",
-    "socket.io": "^4.8.1"
+    "multer": "^1.4.5-lts.1",
+    "express-validator": "^7.0.1",
+    "dotenv": "^16.3.1",
+    "uuid": "^9.0.1",
+    "nodemailer": "^6.9.7",
+    "socket.io": "^4.6.0",
+    "marked": "^11.1.0",
+    "date-fns": "^3.0.6",
+    "chart.js": "^4.4.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.0.2",
+    "tailwindcss": "^3.4.1",
+    "autoprefixer": "^10.4.18",
+    "postcss": "^8.4.35"
   }
 }

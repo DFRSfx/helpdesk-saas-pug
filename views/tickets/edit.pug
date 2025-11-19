@@ -1,0 +1,214 @@
+extends ../layout/layout
+
+block content
+  .max-w-3xl.mx-auto
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .flex.items-center.justify-between.mb-6
+        h2.text-2xl.font-bold.text-gray-900 Edit Ticket ##{ticket.id}
+        a.text-blue-600.hover_text-blue-800(href=`/tickets/${ticket.id}`) View Ticket
+
+      form(action=`/tickets/${ticket.id}` method="POST")
+        input(type="hidden" name="_method" value="PUT")
+
+        .space-y-6
+          //- Subject
+          div
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="subject")
+              | Subject
+              span.text-red-500 *
+            input#subject.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              type="text"
+              name="subject"
+              value=ticket.subject
+              required
+              maxlength="200"
+            )
+
+          //- Description
+          div
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="description")
+              | Description
+              span.text-red-500 *
+            textarea#description.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              name="description"
+              rows="6"
+              required
+            )= ticket.description
+            p.mt-1.text-xs.text-gray-500 Supports Markdown formatting
+
+          .grid.grid-cols-1.md_grid-cols-2.gap-6
+            //- Status
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="status")
+                | Status
+                span.text-red-500 *
+              select#status.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="status"
+                required
+              )
+                option(value="open" selected=ticket.status === "open") Open
+                option(value="in_progress" selected=ticket.status === "in_progress") In Progress
+                option(value="resolved" selected=ticket.status === "resolved") Resolved
+                option(value="closed" selected=ticket.status === "closed") Closed
+
+            //- Priority
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="priority")
+                | Priority
+                span.text-red-500 *
+              select#priority.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="priority"
+                required
+              )
+                option(value="low" selected=ticket.priority === "low") Low
+                option(value="medium" selected=ticket.priority === "medium") Medium
+                option(value="high" selected=ticket.priority === "high") High
+                option(value="urgent" selected=ticket.priority === "urgent") Urgent
+
+            //- Department
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="department_id")
+                | Department
+                span.text-red-500 *
+              select#department_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="department_id"
+                required
+              )
+                if departments && departments.length > 0
+                  each dept in departments
+                    option(value=dept.id selected=ticket.department_id == dept.id)= dept.name
+                else
+                  option(value="" disabled) No departments available
+
+            if isAdmin() || isAgent()
+              //- Assigned Agent
+              div
+                label.block.text-sm.font-medium.text-gray-700.mb-2(for="assigned_agent_id")
+                  | Assign To
+                select#assigned_agent_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                  name="assigned_agent_id"
+                )
+                  option(value="" selected=!ticket.assigned_agent_id) Unassigned
+                  if agents && agents.length > 0
+                    each agent in agents
+                      option(value=agent.id selected=ticket.assigned_agent_id == agent.id)= agent.name
+
+          //- Customer (Admin only - can reassign)
+          if isAdmin()
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="customer_id")
+                | Customer
+                span.text-red-500 *
+              select#customer_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="customer_id"
+                required
+              )
+                if customers && customers.length > 0
+                  each customer in customers
+                    option(value=customer.id selected=ticket.customer_id == customer.id)= customer.name + ' (' + customer.email + ')'
+
+          //- Escalation (Agent/Admin only)
+          if isAdmin() || isAgent()
+            .border-t.border-gray-200.pt-6
+              h3.text-lg.font-semibold.text-gray-900.mb-4 Escalation
+
+              .grid.grid-cols-1.md_grid-cols-2.gap-6
+                div
+                  label.block.text-sm.font-medium.text-gray-700.mb-2(for="escalation_level")
+                    | Escalation Level
+                  select#escalation_level.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                    name="escalation_level"
+                  )
+                    option(value="0" selected=ticket.escalation_level === 0) None
+                    option(value="1" selected=ticket.escalation_level === 1) Level 1
+                    option(value="2" selected=ticket.escalation_level === 2) Level 2
+                    option(value="3" selected=ticket.escalation_level === 3) Level 3
+
+                if ticket.escalation_level > 0
+                  div
+                    label.block.text-sm.font-medium.text-gray-700.mb-2(for="escalated_to_id")
+                      | Escalated To
+                    select#escalated_to_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                      name="escalated_to_id"
+                    )
+                      option(value="") None
+                      if agents && agents.length > 0
+                        each agent in agents
+                          option(value=agent.id selected=ticket.escalated_to_id == agent.id)= agent.name
+
+          //- Internal notes
+          if isAdmin() || isAgent()
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="internal_notes")
+                | Internal Notes
+                span.text-gray-500.text-xs.font-normal (Only visible to agents and admins)
+              textarea#internal_notes.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="internal_notes"
+                rows="4"
+                placeholder="Add internal notes..."
+              )= ticket.internal_notes || ''
+
+          //- Action buttons
+          .flex.items-center.justify-between.pt-6.border-t.border-gray-200
+            div
+              if isAdmin()
+                button.px-4.py-2.bg-red-600.text-white.rounded-lg.hover_bg-red-700.transition-colors(
+                  type="button"
+                  onclick=`if(confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) { deleteTicket(${ticket.id}); }`
+                )
+                  | Delete Ticket
+
+            .flex.items-center.space-x-4
+              a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(href=`/tickets/${ticket.id}`)
+                | Cancel
+              button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+                | Update Ticket
+
+block scripts
+  script.
+    // Auto-resize textareas
+    document.querySelectorAll('textarea').forEach(textarea => {
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+
+      // Initial resize
+      textarea.style.height = 'auto';
+      textarea.style.height = (textarea.scrollHeight) + 'px';
+    });
+
+    // Delete ticket function
+    function deleteTicket(ticketId) {
+      fetch(`/tickets/${ticketId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          window.location.href = '/tickets';
+        } else {
+          alert('Failed to delete ticket');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the ticket');
+      });
+    }
+
+    // Show/hide escalated_to based on escalation_level
+    const escalationLevel = document.getElementById('escalation_level');
+    const escalatedToDiv = document.getElementById('escalated_to_id')?.parentElement;
+
+    if (escalationLevel && escalatedToDiv) {
+      escalationLevel.addEventListener('change', function() {
+        if (this.value > 0) {
+          escalatedToDiv.style.display = 'block';
+        } else {
+          escalatedToDiv.style.display = 'none';
+        }
+      });
+    }

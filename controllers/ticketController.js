@@ -1,456 +1,361 @@
-/**
- * Ticket Controller
- * Handles all ticket-related operations (CRUD, messages, assignments, status updates)
- */
-
 const Ticket = require('../models/Ticket');
 const Department = require('../models/Department');
 const User = require('../models/User');
 const Audit = require('../models/Audit');
-const Notification = require('../models/Notification');
-const { validationResult } = require('express-validator');
 
-class TicketController {
-  /**
-   * Show all tickets list with filters and pagination
-   * GET /tickets
-   * @query {string} status - Filter by status
-   * @query {string} priority - Filter by priority
-   * @query {number} page - Page number for pagination
-   * @query {string} search - Search term
-   */
-  static async index(req, res) {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(process.env.TICKETS_PER_PAGE) || 20;
-      const offset = (page - 1) * limit;
+// List all tickets (with filters and pagination)
+exports.index = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 100; // Increased for Kanban view to show all tickets
+    const offset = (page - 1) * limit;
 
-      // Build filters based on user role
-      const filters = {};
-      
-      if (req.session.userRole === 'customer') {
-        filters.customer_id = req.session.userId;
-      } else if (req.session.userRole === 'agent' && req.query.mine === 'true') {
-        filters.assigned_agent_id = req.session.userId;
+    const filters = {
+      limit,
+      offset,
+      status: req.query.status,
+      priority: req.query.priority,
+      department_id: req.query.department,
+      search: req.query.search
+    };
+
+    // Apply role-based filtering
+    if (res.locals.currentUser.role === 'customer') {
+      filters.customer_id = res.locals.currentUser.id;
+    } else if (res.locals.currentUser.role === 'agent') {
+      if (req.query.assignedTo === 'me') {
+        filters.agent_id = res.locals.currentUser.id;
+      } else if (req.query.assignedTo === 'unassigned') {
+        filters.unassigned = true;
+      } else if (req.query.assignedTo) {
+        filters.agent_id = req.query.assignedTo;
       }
+    }
 
-      // Apply query filters
-      if (req.query.status) filters.status = req.query.status;
-      if (req.query.priority) filters.priority = req.query.priority;
-      if (req.query.department) filters.department_id = req.query.department;
-      if (req.query.search) filters.search = req.query.search;
+    const tickets = await Ticket.getAll(filters);
+    const total = await Ticket.count(filters);
+    const departments = await Department.getAll();
+    
+    // Get agents for filter dropdown
+    let agents = [];
+    if (res.locals.currentUser.role === 'admin' || res.locals.currentUser.role === 'agent') {
+      agents = await User.getAll({ role: 'agent' });
+    }
 
-      const { tickets, total } = await Ticket.findAll(filters, limit, offset);
-      const departments = await Department.findAll(true);
+    const totalPages = Math.ceil(total / limit);
 
-      const totalPages = Math.ceil(total / limit);
+    // Determine view mode
+    const viewMode = req.query.view || 'board';
+    const viewTemplate = viewMode === 'list' ? 'tickets/index-list' : 'tickets/index';
 
-      res.render('tickets/index', {
-        title: 'Support Tickets',
-        tickets,
-        departments,
+    res.render(viewTemplate, {
+      title: 'Tickets',
+      tickets,
+      departments,
+      agents,
+      currentPage: page,
+      totalPages,
+      search: req.query.search,
+      priority: req.query.priority,
+      departmentFilter: req.query.department,
+      assignedTo: req.query.assignedTo,
+      filters: req.query,
+      pagination: {
         currentPage: page,
-        totalPages,
-        total,
-        filters: req.query,
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Error fetching tickets:', error);
-      req.flash('error', 'Error loading tickets');
-      res.redirect('/dashboard');
-    }
+        totalPages: totalPages,
+        totalItems: total,
+        startItem: offset + 1,
+        endItem: Math.min(offset + limit, total)
+      }
+    });
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Show create ticket form
-   * GET /tickets/create
-   */
-  static async showCreate(req, res) {
-    try {
-      const departments = await Department.findAll(true);
+// Show create ticket form
+exports.showCreate = async (req, res, next) => {
+  try {
+    const departments = await Department.getAll();
 
-      res.render('tickets/create', {
-        title: 'Create New Ticket',
-        departments,
-        error: req.flash('error'),
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Error showing create form:', error);
-      req.flash('error', 'Error loading form');
-      res.redirect('/tickets');
-    }
+    res.render('tickets/create', {
+      title: 'Create Ticket',
+      departments
+    });
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Handle ticket creation
-   * POST /tickets/create
-   * @body {string} subject - Ticket subject
-   * @body {string} description - Ticket description
-   * @body {string} priority - Ticket priority (low, medium, high, critical)
-   * @body {number} department_id - Department ID
-   * @body {string} category - Ticket category (optional)
-   */
-  static async create(req, res) {
-    try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        req.flash('error', errors.array()[0].msg);
-        return res.redirect('/tickets/create');
+// Handle create ticket
+exports.create = async (req, res, next) => {
+  try {
+    const { title, description, department_id, priority } = req.body;
+
+    const ticketData = {
+      customer_id: res.locals.currentUser.id,
+      department_id,
+      priority,
+      status: 'Open',
+      title,
+      description
+    };
+
+    // Auto-assign to agent with lowest workload (if admin creates ticket, they can manually assign)
+    if (res.locals.currentUser.role !== 'admin') {
+      const agent = await User.getAgentWithLowestWorkload(department_id);
+      if (agent) {
+        ticketData.agent_id = agent.id;
       }
-
-      const { subject, description, priority, department_id, category } = req.body;
-
-      // Create ticket
-      const ticket = await Ticket.create({
-        subject,
-        description,
-        priority: priority || 'medium',
-        customer_id: req.session.userId,
-        department_id: department_id || null,
-        category: category || null
-      });
-
-      // Log ticket creation
-      await Audit.create({
-        ticket_id: ticket.id,
-        user_id: req.session.userId,
-        action: 'created',
-        entity_type: 'ticket',
-        entity_id: ticket.id,
-        ip_address: req.ip,
-        user_agent: req.get('user-agent'),
-        description: `Ticket created: ${ticket.ticket_number}`
-      });
-
-      // Create notification for assigned agent if auto-assigned
-      if (ticket.assigned_agent_id) {
-        await Notification.create({
-          user_id: ticket.assigned_agent_id,
-          ticket_id: ticket.id,
-          type: 'ticket_assigned',
-          title: 'New Ticket Assigned',
-          message: `Ticket #${ticket.ticket_number} has been assigned to you`,
-          link: `/tickets/${ticket.id}`
-        });
-      }
-
-      req.flash('success', `Ticket #${ticket.ticket_number} created successfully!`);
-      res.redirect(`/tickets/${ticket.id}`);
-
-    } catch (error) {
-      console.error('Error creating ticket:', error);
-      req.flash('error', 'Error creating ticket. Please try again.');
-      res.redirect('/tickets/create');
     }
-  }
 
-  /**
-   * Show single ticket details with messages and attachments
-   * GET /tickets/:id
-   * @param {number} id - Ticket ID
-   */
-  static async show(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const ticket = await Ticket.findById(ticketId);
+    const ticketId = await Ticket.create(ticketData);
 
-      if (!ticket) {
-        req.flash('error', 'Ticket not found');
-        return res.redirect('/tickets');
-      }
+    // Log ticket creation
+    await Audit.log({
+      ticket_id: ticketId,
+      user_id: res.locals.currentUser.id,
+      action: 'Ticket created',
+      new_value: `Status: Open, Priority: ${priority}`
+    });
 
-      // Check permissions
-      if (req.session.userRole === 'customer' && ticket.customer_id !== req.session.userId) {
-        req.flash('error', 'You do not have permission to view this ticket');
-        return res.redirect('/tickets');
-      }
+    // Emit socket event
+    const io = req.app.get('io');
+    io.emit('ticket:created', { id: ticketId, title });
 
-      // Get messages (exclude internal notes for customers)
-      const includeInternal = req.session.userRole !== 'customer';
-      const messages = await Ticket.getMessages(ticketId, includeInternal);
-      const attachments = await Ticket.getAttachments(ticketId);
-      const auditLogs = await Audit.getByTicket(ticketId, 20);
-
-      // Get available agents for assignment (agents/admins only)
-      let agents = [];
-      if (req.session.userRole !== 'customer' && ticket.department_id) {
-        agents = await User.getAgentsByDepartment(ticket.department_id);
-      }
-
-      res.render('tickets/view', {
-        title: `Ticket #${ticket.ticket_number}`,
-        ticket,
-        messages,
-        attachments,
-        auditLogs,
-        agents,
-        error: req.flash('error'),
-        success: req.flash('success'),
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Error fetching ticket:', error);
-      req.flash('error', 'Error loading ticket');
-      res.redirect('/tickets');
-    }
-  }
-
-  /**
-   * Show edit ticket form
-   * GET /tickets/:id/edit
-   * @param {number} id - Ticket ID
-   * Restricted to agents and admins
-   */
-  static async showEdit(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const ticket = await Ticket.findById(ticketId);
-
-      if (!ticket) {
-        req.flash('error', 'Ticket not found');
-        return res.redirect('/tickets');
-      }
-
-      const departments = await Department.findAll(true);
-
-      res.render('tickets/edit', {
-        title: `Edit Ticket #${ticket.ticket_number}`,
-        ticket,
-        departments,
-        error: req.flash('error'),
-        user: {
-          id: req.session.userId,
-          role: req.session.userRole,
-          name: req.session.userName
-        }
-      });
-
-    } catch (error) {
-      console.error('Error showing edit form:', error);
-      req.flash('error', 'Error loading ticket');
-      res.redirect('/tickets');
-    }
-  }
-
-  /**
-   * Handle ticket update
-   * POST /tickets/:id/edit
-   * @param {number} id - Ticket ID
-   * @body {string} subject - Updated subject
-   * @body {string} description - Updated description
-   * @body {string} priority - Updated priority
-   * @body {number} department_id - Updated department
-   * @body {string} category - Updated category
-   */
-  static async update(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const { subject, description, priority, department_id, category } = req.body;
-
-      const ticket = await Ticket.findById(ticketId);
-      if (!ticket) {
-        req.flash('error', 'Ticket not found');
-        return res.redirect('/tickets');
-      }
-
-      // Update ticket
-      const updateData = {
-        subject,
-        description,
-        priority,
-        department_id: department_id || null,
-        category: category || null
-      };
-
-      await Ticket.update(ticketId, updateData, req.session.userId);
-
-      // Log update
-      await Audit.create({
+    // If agent was assigned, notify them
+    if (ticketData.agent_id) {
+      io.emit('ticket:assigned', { id: ticketId, title, agentId: ticketData.agent_id });
+      await Audit.log({
         ticket_id: ticketId,
-        user_id: req.session.userId,
-        action: 'updated',
-        entity_type: 'ticket',
-        entity_id: ticketId,
-        ip_address: req.ip,
-        user_agent: req.get('user-agent'),
-        description: 'Ticket details updated'
+        user_id: res.locals.currentUser.id,
+        action: 'Agent assigned',
+        new_value: `Agent ID: ${ticketData.agent_id}`
       });
-
-      req.flash('success', 'Ticket updated successfully');
-      res.redirect(`/tickets/${ticketId}`);
-
-    } catch (error) {
-      console.error('Error updating ticket:', error);
-      req.flash('error', 'Error updating ticket');
-      res.redirect(`/tickets/${req.params.id}/edit`);
     }
+
+    req.flash('success', 'Ticket created successfully');
+    res.redirect(`/tickets/${ticketId}`);
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Add message/reply to ticket
-   * POST /tickets/:id/reply
-   * @param {number} id - Ticket ID
-   * @body {string} message - Message content
-   * @body {boolean} is_internal - Is internal note (agents only)
-   */
-  static async addMessage(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const { message, is_internal } = req.body;
+// Show single ticket
+exports.show = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    const ticket = await Ticket.findById(ticketId);
 
-      const ticket = await Ticket.findById(ticketId);
-      if (!ticket) {
-        return res.status(404).json({ error: 'Ticket not found' });
-      }
+    if (!ticket) {
+      req.flash('error', 'Ticket not found');
+      return res.redirect('/tickets');
+    }
 
-      // Check permissions
-      if (req.session.userRole === 'customer' && ticket.customer_id !== req.session.userId) {
-        return res.status(403).json({ error: 'Permission denied' });
-      }
+    // Check permissions
+    if (res.locals.currentUser.role === 'customer' && ticket.customer_id !== res.locals.currentUser.id) {
+      req.flash('error', 'You do not have permission to view this ticket');
+      return res.redirect('/tickets');
+    }
 
-      // Only agents/admins can create internal notes
-      const isInternal = (req.session.userRole !== 'customer' && is_internal === 'true');
+    if (res.locals.currentUser.role === 'agent' && ticket.agent_id !== res.locals.currentUser.id) {
+      req.flash('error', 'You do not have permission to view this ticket');
+      return res.redirect('/tickets');
+    }
 
-      await Ticket.addMessage(ticketId, req.session.userId, message, isInternal);
+    const isInternal = res.locals.currentUser.role !== 'customer';
+    const messages = await Ticket.getMessages(ticketId, isInternal);
+    const attachments = await Ticket.getAttachments(ticketId);
+    const auditLogs = await Audit.getByTicket(ticketId);
+    const departments = await Department.getAll();
+    const agents = await User.getAll({ role: 'agent' });
 
-      // Update ticket status if customer replied and ticket was waiting
-      if (req.session.userRole === 'customer' && ticket.status === 'waiting') {
-        await Ticket.updateStatus(ticketId, 'in_progress', req.session.userId);
-      }
+    res.render('tickets/view', {
+      title: `Ticket #${ticket.id}`,
+      ticket,
+      messages,
+      attachments,
+      auditLogs,
+      departments,
+      agents
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
-      // Create notification for customer or agent
-      const notifyUserId = req.session.userRole === 'customer' 
-        ? ticket.assigned_agent_id 
-        : ticket.customer_id;
+// Show edit ticket form
+exports.showEdit = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    const ticket = await Ticket.findById(ticketId);
 
-      if (notifyUserId && !isInternal) {
-        await Notification.create({
-          user_id: notifyUserId,
-          ticket_id: ticketId,
-          type: 'new_message',
-          title: 'New Message on Ticket',
-          message: `New message on ticket #${ticket.ticket_number}`,
-          link: `/tickets/${ticketId}`
-        });
-      }
+    if (!ticket) {
+      req.flash('error', 'Ticket not found');
+      return res.redirect('/tickets');
+    }
 
-      // Log message
-      await Audit.create({
+    const departments = await Department.getAll();
+    const agents = await User.getAll({ role: 'agent' });
+
+    res.render('tickets/edit', {
+      title: 'Edit Ticket',
+      ticket,
+      departments,
+      agents
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Handle update ticket
+exports.update = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    const oldTicket = await Ticket.findById(ticketId);
+
+    if (!oldTicket) {
+      req.flash('error', 'Ticket not found');
+      return res.redirect('/tickets');
+    }
+
+    const { title, description, department_id, priority, status, agent_id } = req.body;
+
+    await Ticket.update(ticketId, {
+      title,
+      description,
+      department_id,
+      priority,
+      status,
+      agent_id: agent_id || null
+    });
+
+    // Log changes
+    if (oldTicket.status !== status) {
+      await Audit.log({
         ticket_id: ticketId,
-        user_id: req.session.userId,
-        action: isInternal ? 'internal_note_added' : 'message_added',
-        entity_type: 'ticket_message',
-        entity_id: ticketId,
-        ip_address: req.ip,
-        user_agent: req.get('user-agent'),
-        description: isInternal ? 'Internal note added' : 'Message added to ticket'
+        user_id: res.locals.currentUser.id,
+        action: 'Status changed',
+        old_value: oldTicket.status,
+        new_value: status
       });
-
-      req.flash('success', 'Reply added successfully');
-      res.redirect(`/tickets/${ticketId}`);
-
-    } catch (error) {
-      console.error('Error adding message:', error);
-      req.flash('error', 'Error adding reply');
-      res.redirect(`/tickets/${req.params.id}`);
     }
-  }
 
-  /**
-   * Assign ticket to agent
-   * POST /tickets/:id/assign
-   * @param {number} id - Ticket ID
-   * @body {number} agent_id - Agent ID to assign
-   * Restricted to agents and admins
-   */
-  static async assign(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const { agent_id } = req.body;
-
-      await Ticket.assign(ticketId, agent_id, req.session.userId);
-
-      // Create notification for assigned agent
-      await Notification.create({
-        user_id: agent_id,
+    if (oldTicket.priority !== priority) {
+      await Audit.log({
         ticket_id: ticketId,
-        type: 'ticket_assigned',
-        title: 'Ticket Assigned to You',
-        message: `A ticket has been assigned to you`,
-        link: `/tickets/${ticketId}`
+        user_id: res.locals.currentUser.id,
+        action: 'Priority changed',
+        old_value: oldTicket.priority,
+        new_value: priority
+      });
+    }
+
+    if (oldTicket.agent_id != agent_id) {
+      await Audit.log({
+        ticket_id: ticketId,
+        user_id: res.locals.currentUser.id,
+        action: 'Agent assigned',
+        old_value: oldTicket.agent_id ? `Agent ID: ${oldTicket.agent_id}` : 'None',
+        new_value: agent_id ? `Agent ID: ${agent_id}` : 'None'
       });
 
-      req.flash('success', 'Ticket assigned successfully');
-      res.redirect(`/tickets/${ticketId}`);
-
-    } catch (error) {
-      console.error('Error assigning ticket:', error);
-      req.flash('error', 'Error assigning ticket');
-      res.redirect(`/tickets/${req.params.id}`);
+      // Emit socket event
+      if (agent_id) {
+        const io = req.app.get('io');
+        io.emit('ticket:assigned', { id: ticketId, title, agentId: agent_id });
+      }
     }
+
+    // Emit update event
+    const io = req.app.get('io');
+    io.emit('ticket:updated', { id: ticketId, title });
+
+    req.flash('success', 'Ticket updated successfully');
+    res.redirect(`/tickets/${ticketId}`);
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Update ticket status
-   * POST /tickets/:id/status
-   * @param {number} id - Ticket ID
-   * @body {string} status - New status
-   */
-  static async updateStatus(req, res) {
-    try {
-      const ticketId = req.params.id;
-      const { status } = req.body;
+// Add message to ticket
+exports.addMessage = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    const { message, is_internal } = req.body;
 
-      await Ticket.updateStatus(ticketId, status, req.session.userId);
+    const ticket = await Ticket.findById(ticketId);
 
-      req.flash('success', `Ticket status updated to ${status}`);
-      res.redirect(`/tickets/${ticketId}`);
-
-    } catch (error) {
-      console.error('Error updating status:', error);
-      req.flash('error', 'Error updating ticket status');
-      res.redirect(`/tickets/${req.params.id}`);
+    if (!ticket) {
+      req.flash('error', 'Ticket not found');
+      return res.redirect('/tickets');
     }
+
+    await Ticket.addMessage({
+      ticket_id: ticketId,
+      user_id: res.locals.currentUser.id,
+      message,
+      is_internal: is_internal === 'true' && res.locals.currentUser.role !== 'customer'
+    });
+
+    await Audit.log({
+      ticket_id: ticketId,
+      user_id: res.locals.currentUser.id,
+      action: 'Message added',
+      new_value: is_internal === 'true' ? 'Internal note' : 'Public message'
+    });
+
+    // Emit socket event
+    const io = req.app.get('io');
+    io.emit('message:new', { ticketId, ticketTitle: ticket.title });
+
+    req.flash('success', 'Message added successfully');
+    res.redirect(`/tickets/${ticketId}`);
+  } catch (error) {
+    next(error);
   }
+};
 
-  /**
-   * Delete ticket
-   * POST /tickets/:id/delete
-   * @param {number} id - Ticket ID
-   * Restricted to admins only
-   */
-  static async delete(req, res) {
-    try {
-      const ticketId = req.params.id;
-      
-      await Ticket.delete(ticketId);
+// Add attachment to ticket
+exports.addAttachment = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
 
-      req.flash('success', 'Ticket deleted successfully');
-      res.redirect('/tickets');
-
-    } catch (error) {
-      console.error('Error deleting ticket:', error);
-      req.flash('error', 'Error deleting ticket');
-      res.redirect(`/tickets/${req.params.id}`);
+    if (!req.file) {
+      req.flash('error', 'No file uploaded');
+      return res.redirect(`/tickets/${ticketId}`);
     }
-  }
-}
 
-module.exports = TicketController;
+    await Ticket.addAttachment({
+      ticket_id: ticketId,
+      file_path: req.file.filename,
+      uploaded_by: res.locals.currentUser.id
+    });
+
+    await Audit.log({
+      ticket_id: ticketId,
+      user_id: res.locals.currentUser.id,
+      action: 'Attachment added',
+      new_value: req.file.originalname
+    });
+
+    req.flash('success', 'File uploaded successfully');
+    res.redirect(`/tickets/${ticketId}`);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Delete ticket (admin only)
+exports.delete = async (req, res, next) => {
+  try {
+    const ticketId = req.params.id;
+    await Ticket.delete(ticketId);
+
+    req.flash('success', 'Ticket deleted successfully');
+    res.redirect('/tickets');
+  } catch (error) {
+    next(error);
+  }
+};

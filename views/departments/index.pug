@@ -1,0 +1,124 @@
+extends ../layout/layout
+
+block content
+  .max-w-7xl.mx-auto
+    //- Header
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      .flex.flex-col.md_flex-row.md_items-center.md_justify-between.gap-4
+        div
+          h2.text-xl.font-bold.text-gray-900 Departments
+          p.text-sm.text-gray-600 Manage support departments and their performance
+
+        if isAdmin()
+          a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href="/departments/create")
+            svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+            | Create Department
+
+    //- Departments grid
+    if departments && departments.length > 0
+      .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-3.gap-6.mb-6
+        each dept in departments
+          .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.hover_shadow-md.transition-shadow
+            .flex.items-start.justify-between.mb-4
+              div.flex-1
+                h3.text-lg.font-semibold.text-gray-900= dept.name
+                if dept.description
+                  p.text-sm.text-gray-600.mt-1= dept.description
+
+              if isAdmin()
+                .flex.items-center.space-x-2
+                  a.text-blue-600.hover_text-blue-900(href=`/departments/${dept.id}/edit` title="Edit")
+                    svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                      path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
+
+            .grid.grid-cols-2.gap-4.mb-4
+              div
+                .text-sm.text-gray-600 Total Tickets
+                .text-2xl.font-bold.text-gray-900= dept.total_tickets || 0
+
+              div
+                .text-sm.text-gray-600 Open Tickets
+                .text-2xl.font-bold.text-blue-600= dept.open_tickets || 0
+
+              div
+                .text-sm.text-gray-600 Agents
+                .text-2xl.font-bold.text-green-600= dept.agent_count || 0
+
+              div
+                .text-sm.text-gray-600 Resolved Rate
+                - const resolvedRate = dept.total_tickets > 0 ? ((dept.resolved_tickets || 0) / dept.total_tickets * 100).toFixed(0) : 0
+                .text-2xl.font-bold.text-green-600= resolvedRate + '%'
+
+            .flex.items-center.justify-between.pt-4.border-t.border-gray-200
+              if dept.is_active
+                span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-green-100.text-green-800 Active
+              else
+                span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-red-100.text-red-800 Inactive
+
+              a.text-blue-600.hover_text-blue-800.text-sm.font-medium(href=`/departments/${dept.id}/stats`)
+                | View Stats
+                svg.w-4.h-4.inline.ml-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+    else
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-8.text-center
+        svg.mx-auto.h-12.w-12.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4")
+        p.mt-2.text-sm.text-gray-500 No departments found
+        if isAdmin()
+          a.mt-4.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href="/departments/create")
+            | Create First Department
+
+    //- Department comparison
+    if departments && departments.length > 0
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        h3.text-lg.font-semibold.text-gray-900.mb-4 Department Performance Comparison
+
+        .overflow-x-auto
+          table.min-w-full.divide-y.divide-gray-200
+            thead.bg-gray-50
+              tr
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Department
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Total
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Open
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider In Progress
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Resolved
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Agents
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Avg. Response
+                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Status
+
+            tbody.bg-white.divide-y.divide-gray-200
+              each dept in departments
+                tr.hover_bg-gray-50
+                  td.px-6.py-4.whitespace-nowrap
+                    .flex.items-center
+                      .w-8.h-8.bg-blue-600.rounded-lg.flex.items-center.justify-center.text-white.font-semibold.mr-3
+                        = dept.name.charAt(0).toUpperCase()
+                      div
+                        .text-sm.font-medium.text-gray-900= dept.name
+                        if dept.description
+                          .text-xs.text-gray-500.truncate.max-w-xs= dept.description
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.font-semibold.text-gray-900= dept.total_tickets || 0
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-blue-600.font-semibold= dept.open_tickets || 0
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-yellow-600.font-semibold= dept.in_progress_tickets || 0
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-green-600.font-semibold= dept.resolved_tickets || 0
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-900= dept.agent_count || 0
+
+                  td.px-6.py-4.whitespace-nowrap
+                    .text-sm.text-gray-900= dept.avg_response_time || 'N/A'
+
+                  td.px-6.py-4.whitespace-nowrap
+                    if dept.is_active
+                      span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-green-100.text-green-800 Active
+                    else
+                      span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-red-100.text-red-800 Inactive

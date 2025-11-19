@@ -1,187 +1,68 @@
-/**
- * Validation Middleware
- * Express-validator rules for form validation
- */
+const { body, validationResult } = require('express-validator');
 
-const { body, param, query } = require('express-validator');
+// Validation middleware
+const validate = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const messages = errors.array().map(err => err.msg);
+    req.flash('error', messages.join(', '));
+    return res.redirect('back');
+  }
+  next();
+};
 
-/**
- * Validation rules for user registration
- */
-const registerValidation = [
-  body('email')
-    .isEmail()
-    .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
-  body('password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
-  body('first_name')
-    .trim()
-    .notEmpty()
-    .withMessage('First name is required')
-    .isLength({ max: 100 })
-    .withMessage('First name must be less than 100 characters'),
-  body('last_name')
-    .trim()
-    .notEmpty()
-    .withMessage('Last name is required')
-    .isLength({ max: 100 })
-    .withMessage('Last name must be less than 100 characters'),
-  body('phone')
-    .optional()
-    .trim()
-    .isLength({ max: 20 })
-    .withMessage('Phone number must be less than 20 characters')
-];
+// User validation rules
+const userValidation = {
+  register: [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('confirmPassword').custom((value, { req }) => {
+      if (value !== req.body.password) {
+        throw new Error('Passwords do not match');
+      }
+      return true;
+    })
+  ],
+  login: [
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('password').notEmpty().withMessage('Password is required')
+  ],
+  create: [
+    body('name').trim().notEmpty().withMessage('Name is required'),
+    body('email').isEmail().withMessage('Valid email is required'),
+    body('role').isIn(['admin', 'agent', 'customer']).withMessage('Invalid role'),
+    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+  ]
+};
 
-/**
- * Validation rules for login
- */
-const loginValidation = [
-  body('email')
-    .isEmail()
-    .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
-  body('password')
-    .notEmpty()
-    .withMessage('Password is required')
-];
+// Ticket validation rules
+const ticketValidation = {
+  create: [
+    body('title').trim().notEmpty().withMessage('Title is required'),
+    body('description').trim().notEmpty().withMessage('Description is required'),
+    body('department_id').isInt().withMessage('Department is required'),
+    body('priority').isIn(['Low', 'Medium', 'High', 'Critical']).withMessage('Invalid priority')
+  ],
+  update: [
+    body('title').trim().notEmpty().withMessage('Title is required'),
+    body('description').trim().notEmpty().withMessage('Description is required'),
+    body('department_id').isInt().withMessage('Department is required'),
+    body('priority').isIn(['Low', 'Medium', 'High', 'Critical']).withMessage('Invalid priority'),
+    body('status').isIn(['Open', 'In Progress', 'Waiting', 'Escalated', 'Resolved', 'Closed']).withMessage('Invalid status')
+  ]
+};
 
-/**
- * Validation rules for ticket creation
- */
-const ticketValidation = [
-  body('subject')
-    .trim()
-    .notEmpty()
-    .withMessage('Subject is required')
-    .isLength({ max: 255 })
-    .withMessage('Subject must be less than 255 characters'),
-  body('description')
-    .trim()
-    .notEmpty()
-    .withMessage('Description is required')
-    .isLength({ min: 10 })
-    .withMessage('Description must be at least 10 characters'),
-  body('priority')
-    .optional()
-    .isIn(['low', 'medium', 'high', 'critical'])
-    .withMessage('Invalid priority value'),
-  body('department_id')
-    .optional()
-    .isInt()
-    .withMessage('Invalid department ID'),
-  body('category')
-    .optional()
-    .trim()
-    .isLength({ max: 100 })
-    .withMessage('Category must be less than 100 characters')
-];
-
-/**
- * Validation rules for ticket message
- */
-const messageValidation = [
-  body('message')
-    .trim()
-    .notEmpty()
-    .withMessage('Message is required')
-    .isLength({ min: 1, max: 10000 })
-    .withMessage('Message must be between 1 and 10000 characters')
-];
-
-/**
- * Validation rules for department creation
- */
-const departmentValidation = [
-  body('name')
-    .trim()
-    .notEmpty()
-    .withMessage('Department name is required')
-    .isLength({ max: 100 })
-    .withMessage('Name must be less than 100 characters'),
-  body('slug')
-    .trim()
-    .notEmpty()
-    .withMessage('Slug is required')
-    .isSlug()
-    .withMessage('Slug must be URL-friendly (lowercase, hyphens allowed)')
-    .isLength({ max: 100 })
-    .withMessage('Slug must be less than 100 characters'),
-  body('email')
-    .optional()
-    .isEmail()
-    .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
-  body('description')
-    .optional()
-    .trim()
-];
-
-/**
- * Validation rules for user creation/update
- */
-const userValidation = [
-  body('email')
-    .isEmail()
-    .withMessage('Please provide a valid email address')
-    .normalizeEmail(),
-  body('first_name')
-    .trim()
-    .notEmpty()
-    .withMessage('First name is required')
-    .isLength({ max: 100 })
-    .withMessage('First name must be less than 100 characters'),
-  body('last_name')
-    .trim()
-    .notEmpty()
-    .withMessage('Last name is required')
-    .isLength({ max: 100 })
-    .withMessage('Last name must be less than 100 characters'),
-  body('role')
-    .optional()
-    .isIn(['admin', 'agent', 'customer'])
-    .withMessage('Invalid role'),
-  body('status')
-    .optional()
-    .isIn(['active', 'inactive', 'suspended'])
-    .withMessage('Invalid status'),
-  body('phone')
-    .optional()
-    .trim()
-    .isLength({ max: 20 })
-    .withMessage('Phone number must be less than 20 characters')
-];
-
-/**
- * Validation rules for password change
- */
-const passwordChangeValidation = [
-  body('new_password')
-    .isLength({ min: 6 })
-    .withMessage('Password must be at least 6 characters long'),
-  body('confirm_password')
-    .custom((value, { req }) => value === req.body.new_password)
-    .withMessage('Passwords do not match')
-];
-
-/**
- * Validation for ID parameters
- */
-const idValidation = [
-  param('id')
-    .isInt({ min: 1 })
-    .withMessage('Invalid ID')
-];
+// Department validation rules
+const departmentValidation = {
+  create: [
+    body('name').trim().notEmpty().withMessage('Department name is required')
+  ]
+};
 
 module.exports = {
-  registerValidation,
-  loginValidation,
-  ticketValidation,
-  messageValidation,
-  departmentValidation,
+  validate,
   userValidation,
-  passwordChangeValidation,
-  idValidation
+  ticketValidation,
+  departmentValidation
 };

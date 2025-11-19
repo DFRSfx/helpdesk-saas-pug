@@ -1,92 +1,160 @@
 extends ../layout/layout
 
 block content
-  //- Header
-  .flex.items-center.justify-between.mb-8
-    div
-      h1.text-3xl.font-bold.text-gray-900 Create New Ticket
-      p.text-gray-600.mt-2 Describe your issue and we'll help you resolve it
-    
-    a.inline-flex.items-center.px-4.py-2.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50.transition-colors(href="/tickets")
-      i.lucide.lucide-arrow-left.mr-2.w-4.h-4(data-lucide="arrow-left")
-      | Back to Tickets
-  
-  //- Form
-  .max-w-4xl
-    .bg-white.rounded-xl.shadow-sm.p-8.border.border-gray-200
-      form(method="POST" action="/tickets/create" enctype="multipart/form-data")
+  .max-w-3xl.mx-auto
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      h2.text-2xl.font-bold.text-gray-900.mb-6 Create New Ticket
+
+      form(action="/tickets" method="POST" enctype="multipart/form-data")
         .space-y-6
           //- Subject
           div
-            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="subject") 
-              | Subject 
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="subject")
+              | Subject
               span.text-red-500 *
-            input#subject.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.transition-all(
+            input#subject.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
               type="text"
               name="subject"
               required
               placeholder="Brief description of your issue"
-              maxlength="255"
+              maxlength="200"
             )
-          
+            p.mt-1.text-xs.text-gray-500 Maximum 200 characters
+
           //- Description
           div
-            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="description") 
-              | Description 
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="description")
+              | Description
               span.text-red-500 *
-            textarea#description.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.transition-all(
+            textarea#description.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
               name="description"
-              rows="8"
+              rows="6"
               required
               placeholder="Provide detailed information about your issue..."
             )
-            p.text-xs.text-gray-500.mt-2 Please provide as much detail as possible to help us resolve your issue quickly.
-          
-          .grid.grid-cols-1.md_grid-cols-3.gap-6
-            //- Priority
-            div
-              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="priority") Priority
-              select#priority.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="priority")
-                option(value="low") Low
-                option(value="medium" selected) Medium
-                option(value="high") High
-                option(value="critical") Critical
-            
+            p.mt-1.text-xs.text-gray-500 Supports Markdown formatting
+
+          .grid.grid-cols-1.md_grid-cols-2.gap-6
             //- Department
             div
-              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="department_id") Department
-              select#department_id.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(name="department_id")
-                option(value="") Select Department
-                each dept in departments
-                  option(value=dept.id)= dept.name
-            
-            //- Category
-            div
-              label.block.text-sm.font-semibold.text-gray-700.mb-2(for="category") Category
-              input#category.w-full.px-4.py-3.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500(
-                type="text"
-                name="category"
-                placeholder="e.g., Bug, Feature Request"
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="department_id")
+                | Department
+                span.text-red-500 *
+              select#department_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="department_id"
+                required
               )
-          
+                option(value="" disabled selected) Select a department
+                if departments && departments.length > 0
+                  each dept in departments
+                    option(value=dept.id)= dept.name
+                else
+                  option(value="" disabled) No departments available
+
+            //- Priority
+            div
+              label.block.text-sm.font-medium.text-gray-700.mb-2(for="priority")
+                | Priority
+                span.text-red-500 *
+              select#priority.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                name="priority"
+                required
+              )
+                option(value="" disabled selected) Select priority
+                option(value="low") Low
+                option(value="medium") Medium
+                option(value="high") High
+                option(value="urgent") Urgent
+
           //- Attachments
           div
-            label.block.text-sm.font-semibold.text-gray-700.mb-2(for="attachments") Attachments
-            .border-2.border-dashed.border-gray-300.rounded-lg.p-6.text-center.hover_border-indigo-400.transition-colors
-              input#attachments.hidden(
-                type="file"
-                name="attachments"
-                multiple
-                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
-              )
-              label.cursor-pointer(for="attachments")
-                i.lucide.lucide-upload.text-gray-400.w-12.h-12.mx-auto.mb-3(data-lucide="upload")
-                p.text-sm.text-gray-600 
-                  span.text-indigo-600.font-semibold Click to upload
-                  |  or drag and drop
-                p.text-xs.text-gray-500.mt-1 PNG, JPG, PDF, DOC up to 10MB (Max 5 files)
-          
-          //- Actions
+            label.block.text-sm.font-medium.text-gray-700.mb-2(for="attachments")
+              | Attachments
+              span.text-gray-500.text-xs.font-normal (Optional)
+            input#attachments.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.file_py-2.file_px-4.file_border-0.file_text-sm.file_font-semibold.file_bg-blue-50.file_text-blue-700.hover_file_bg-blue-100(
+              type="file"
+              name="attachments"
+              multiple
+              accept="image/*,.pdf,.doc,.docx,.txt,.zip"
+            )
+            p.mt-1.text-xs.text-gray-500
+              | Accepted formats: Images, PDF, DOC, DOCX, TXT, ZIP (Max 5MB per file)
+
+          //- Admin/Agent only fields
+          if isAdmin() || isAgent()
+            .border-t.border-gray-200.pt-6
+              h3.text-lg.font-semibold.text-gray-900.mb-4 Agent Options
+
+              .grid.grid-cols-1.md_grid-cols-2.gap-6
+                //- Customer (for creating tickets on behalf of)
+                div
+                  label.block.text-sm.font-medium.text-gray-700.mb-2(for="customer_id")
+                    | Customer
+                    span.text-gray-500.text-xs.font-normal (Optional - leave empty for self)
+                  select#customer_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                    name="customer_id"
+                  )
+                    option(value="") Create for myself
+                    if customers && customers.length > 0
+                      each customer in customers
+                        option(value=customer.id)= customer.name + ' (' + customer.email + ')'
+
+                //- Assign to agent
+                div
+                  label.block.text-sm.font-medium.text-gray-700.mb-2(for="assigned_agent_id")
+                    | Assign To
+                    span.text-gray-500.text-xs.font-normal (Optional)
+                  select#assigned_agent_id.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                    name="assigned_agent_id"
+                  )
+                    option(value="") Unassigned
+                    if agents && agents.length > 0
+                      each agent in agents
+                        option(value=agent.id)= agent.name
+
+                //- Initial status
+                div
+                  label.block.text-sm.font-medium.text-gray-700.mb-2(for="status")
+                    | Status
+                  select#status.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+                    name="status"
+                  )
+                    option(value="open" selected) Open
+                    option(value="in_progress") In Progress
+                    option(value="resolved") Resolved
+                    option(value="closed") Closed
+
+          //- Submit buttons
           .flex.items-center.justify-end.space-x-4.pt-6.border-t.border-gray-200
-            a.px-6.py-3.border.border-gray-300.rounded-lg.text-sm.font-medium.text-gray-700.hover_bg-gray-50.transition-colors(href="/tickets") Cancel
-            button.px-8.py-3.bg-gradient-to-r.from-indigo-600.to-purple-600.text-white.font-semibold.rounded-lg.hover_from-indigo-700.hover_to-purple-700.transition-all.shadow-lg.hover_shadow-xl(type="submit") Create Ticket
+            a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(href="/tickets")
+              | Cancel
+            button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
+              | Create Ticket
+
+block scripts
+  script.
+    // Auto-resize textarea
+    const textarea = document.getElementById('description');
+    if (textarea) {
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+      });
+    }
+
+    // File upload validation
+    const fileInput = document.getElementById('attachments');
+    if (fileInput) {
+      fileInput.addEventListener('change', function() {
+        const files = Array.from(this.files);
+        const maxSize = 5 * 1024 * 1024; // 5MB
+
+        for (let file of files) {
+          if (file.size > maxSize) {
+            alert(`File "${file.name}" exceeds 5MB limit`);
+            this.value = '';
+            return;
+          }
+        }
+      });
+    }

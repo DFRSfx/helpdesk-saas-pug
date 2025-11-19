@@ -1,76 +1,57 @@
 extends ../layout/layout
 
 block content
-  .min-h-screen.flex.items-center.justify-center.bg-gradient-to-br.from-indigo-50.via-purple-50.to-pink-50.py-12.px-4.sm_px-6.lg_px-8
+  .min-h-screen.flex.items-center.justify-center.bg-gray-50.py-12.px-4.sm_px-6.lg_px-8
     .max-w-md.w-full.space-y-8
-      //- Header
-      .text-center
-        .mx-auto.w-16.h-16.bg-gradient-to-br.from-indigo-600.to-purple-600.rounded-2xl.flex.items-center.justify-center.shadow-lg
-          i.lucide.lucide-user-plus.text-white.w-8.h-8(data-lucide="user-plus")
-        h2.mt-6.text-4xl.font-extrabold.text-gray-900 Create Account
-        p.mt-2.text-sm.text-gray-600 Join #{appName} today
-        
-      //- Registration Form
-      .bg-white.rounded-2xl.shadow-xl.p-8
-        form.space-y-6(action="/auth/register" method="POST")
-          .grid.grid-cols-2.gap-4
-            div
-              label.block.text-sm.font-semibold.text-gray-700(for="first_name") First Name
-              input#first_name.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
-                type="text"
-                name="first_name"
-                required
-                placeholder="John"
-              )
-            
-            div
-              label.block.text-sm.font-semibold.text-gray-700(for="last_name") Last Name
-              input#last_name.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
-                type="text"
-                name="last_name"
-                required
-                placeholder="Doe"
-              )
-          
+      div
+        h2.mt-6.text-center.text-3xl.font-extrabold.text-gray-900
+          | Create your account
+        p.mt-2.text-center.text-sm.text-gray-600
+          | Already have an account?
+          |
+          a.font-medium.text-blue-600.hover_text-blue-500(href="/auth/login") Sign in
+
+      form.mt-8.space-y-6(action="/auth/register" method="POST")
+        .space-y-4
           div
-            label.block.text-sm.font-semibold.text-gray-700(for="email") Email Address
-            input#email.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
-              type="email"
+            label.block.text-sm.font-medium.text-gray-700(for="name") Full Name
+            input#name.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+              name="name"
+              type="text"
+              required
+              placeholder="John Doe"
+            )
+
+          div
+            label.block.text-sm.font-medium.text-gray-700(for="email") Email address
+            input#email.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
               name="email"
+              type="email"
+              autocomplete="email"
               required
-              placeholder="john.doe@example.com"
+              placeholder="you@example.com"
             )
-          
+
           div
-            label.block.text-sm.font-semibold.text-gray-700(for="phone") Phone Number (Optional)
-            input#phone.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
-              type="tel"
-              name="phone"
-              placeholder="+1 (555) 123-4567"
-            )
-          
-          div
-            label.block.text-sm.font-semibold.text-gray-700(for="password") Password
-            input#password.mt-1.appearance-none.relative.block.w-full.px-4.py-3.border.border-gray-300.placeholder-gray-500.text-gray-900.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-indigo-500.focus_border-transparent(
-              type="password"
+            label.block.text-sm.font-medium.text-gray-700(for="password") Password
+            input#password.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
               name="password"
+              type="password"
+              autocomplete="new-password"
               required
-              placeholder="Minimum 6 characters"
-              minlength="6"
+              placeholder="••••••••"
             )
-          
-          button.group.relative.w-full.flex.justify-center.py-3.px-4.border.border-transparent.text-sm.font-semibold.rounded-lg.text-white.bg-gradient-to-r.from-indigo-600.to-purple-600.hover_from-indigo-700.hover_to-purple-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-indigo-500.transition-all.shadow-lg.hover_shadow-xl(type="submit")
-            span.flex.items-center
-              | Create Account
-              i.lucide.lucide-arrow-right.ml-2.w-4.h-4.group-hover_translate-x-1.transition-transform(data-lucide="arrow-right")
-        
-        .mt-6
-          .relative
-            .absolute.inset-0.flex.items-center
-              .w-full.border-t.border-gray-300
-            .relative.flex.justify-center.text-sm
-              span.px-2.bg-white.text-gray-500 Already have an account?
-          
-          .mt-6
-            a.w-full.flex.justify-center.py-3.px-4.border-2.border-indigo-600.text-sm.font-semibold.rounded-lg.text-indigo-600.hover_bg-indigo-50.transition-all(href="/auth/login")
-              | Sign in instead
+
+          div
+            label.block.text-sm.font-medium.text-gray-700(for="confirmPassword") Confirm Password
+            input#confirmPassword.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+              name="confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+              placeholder="••••••••"
+            )
+
+        div
+          button.w-full.flex.justify-center.py-2.px-4.border.border-transparent.rounded-md.shadow-sm.text-sm.font-medium.text-white.bg-blue-600.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-blue-500(type="submit")
+            | Sign up

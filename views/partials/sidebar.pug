@@ -1,81 +1,119 @@
-//- Sidebar Navigation
-aside#sidebar.fixed.left-0.top-16.bottom-0.w-64.bg-white.border-r.border-gray-200.overflow-y-auto.transform.-translate-x-full.md_translate-x-0.transition-transform.duration-300.z-40
-  nav.p-4.space-y-1
+aside#sidebar.w-64.bg-gradient-to-b.from-gray-900.to-gray-800.text-white.flex.flex-col.shadow-2xl
+  //- Logo/Brand
+  .px-6.py-6.border-b.border-gray-700
+    .flex.items-center.justify-between
+      div.user-info
+        h1.text-2xl.font-bold.text-white.tracking-tight SupportDesk
+        - var roleText = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) + ' Portal'
+        p.text-xs.text-gray-400.mt-1.uppercase.tracking-wider= roleText
+      button#sidebarToggle.text-gray-400.hover_text-white.transition-colors
+        svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7")
+
+  //- User Profile Card
+  .px-4.py-4.border-b.border-gray-700.user-info.keep-avatar
+    .flex.items-center.justify-center
+      .w-11.h-11.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.text-lg.shadow-lg.icon-only.flex-shrink-0
+        = currentUser.name.charAt(0).toUpperCase()
+      div.flex-1.min-w-0.ml-3.user-info
+        p.text-sm.font-semibold.text-white.truncate.nav-text= currentUser.name
+        p.text-xs.text-gray-400.truncate.nav-text= currentUser.email
+
+  //- Navigation
+  nav.flex-1.px-4.py-6.space-y-1.overflow-y-auto.scrollbar-thin
     //- Dashboard
-    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+    a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-200.group(
       href="/dashboard"
-      class=currentPath === '/dashboard' ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+      class=title.includes('Dashboard') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover_bg-gray-700 hover_text-white'
     )
-      i.lucide.w-5.h-5.mr-3(data-lucide="layout-dashboard")
-      span Dashboard
-    
+      svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6")
+      span.font-medium.nav-text Dashboard
+
     //- Tickets
-    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+    a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-200.group(
       href="/tickets"
-      class=currentPath.startsWith('/tickets') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+      class=title.includes('Ticket') && !title.includes('Create') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover_bg-gray-700 hover_text-white'
     )
-      i.lucide.w-5.h-5.mr-3(data-lucide="ticket")
-      span Tickets
-      span.ml-auto.px-2.py-1.text-xs.font-semibold.text-white.bg-indigo-600.rounded-full 12
-    
-    //- Create Ticket (Customers)
-    if currentUser.role === 'customer'
-      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-green-50.hover_text-green-600.transition-colors(
-        href="/tickets/create"
+      svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+      span.font-medium.nav-text Tickets
+
+    //- Create Ticket - Highlighted
+    a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.bg-gradient-to-r.from-blue-600.to-blue-700.text-white.shadow-lg.hover_from-blue-700.hover_to-blue-800.transition-all.duration-200.group(
+      href="/tickets/create"
+      class=title.includes('Create') ? 'ring-2 ring-blue-400' : ''
+    )
+      svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+      span.font-semibold.nav-text Create Ticket
+
+    if isAdmin() || isAgent()
+      //- Divider
+      .h-px.bg-gray-700.my-4
+
+      //- Departments
+      a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-200.group(
+        href="/departments"
+        class=title.includes('Department') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover_bg-gray-700 hover_text-white'
       )
-        i.lucide.w-5.h-5.mr-3(data-lucide="plus-circle")
-        span New Ticket
-    
-    //- Departments
-    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
-      href="/departments"
-      class=currentPath.startsWith('/departments') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
-    )
-      i.lucide.w-5.h-5.mr-3(data-lucide="building-2")
-      span Departments
-    
-    //- Users (Admin & Agent)
-    if currentUser.role === 'admin' || currentUser.role === 'agent'
-      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+        svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4")
+        span.font-medium.nav-text Departments
+
+    if isAdmin()
+      //- Users
+      a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-200.group(
         href="/users"
-        class=currentPath.startsWith('/users') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+        class=title.includes('User') && !title.includes('Profile') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover_bg-gray-700 hover_text-white'
       )
-        i.lucide.w-5.h-5.mr-3(data-lucide="users")
-        span Users
-    
-    //- Audit Logs (Admin only)
-    if currentUser.role === 'admin'
-      a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
+        svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z")
+        span.font-medium.nav-text Users
+
+      //- Audit Logs
+      a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-200.group(
         href="/audit"
-        class=currentPath.startsWith('/audit') ? 'bg-indigo-50 text-indigo-600 font-semibold' : ''
+        class=title.includes('Audit') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300 hover_bg-gray-700 hover_text-white'
       )
-        i.lucide.w-5.h-5.mr-3(data-lucide="file-text")
-        span Audit Logs
-    
-    .border-t.border-gray-200.my-4
-    
-    //- Settings
-    a.flex.items-center.px-4.py-3.text-gray-700.rounded-lg.hover_bg-indigo-50.hover_text-indigo-600.transition-colors(
-      href="#"
-    )
-      i.lucide.w-5.h-5.mr-3(data-lucide="settings")
-      span Settings
+        svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+        span.font-medium.nav-text Audit Logs
 
-//- Mobile menu overlay
-#mobile-overlay.fixed.inset-0.bg-black.bg-opacity-50.z-30.hidden.md_hidden
+  //- Footer
+  .px-4.py-4.border-t.border-gray-700.bg-gray-900.user-info.footer-info
+    .text-xs.text-gray-500.text-center
+      p.font-semibold.text-gray-400 &copy; 2025 SupportDesk
+      p.mt-1 Enterprise Support System
 
+//- Sidebar Toggle Script
 script.
-  // Mobile menu toggle
-  const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-  const sidebar = document.getElementById('sidebar');
-  const mobileOverlay = document.getElementById('mobile-overlay');
-  
-  mobileMenuToggle?.addEventListener('click', () => {
-    sidebar.classList.toggle('-translate-x-full');
-    mobileOverlay.classList.toggle('hidden');
-  });
-  
-  mobileOverlay?.addEventListener('click', () => {
-    sidebar.classList.add('-translate-x-full');
-    mobileOverlay.classList.add('hidden');
+  document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle');
+
+    // Load saved state
+    const isCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+    if (isCollapsed) {
+      sidebar.classList.add('sidebar-collapsed');
+      updateToggleIcon();
+    }
+
+    function updateToggleIcon() {
+      const icon = toggleBtn.querySelector('svg path');
+      if (sidebar.classList.contains('sidebar-collapsed')) {
+        icon.setAttribute('d', 'M13 5l7 7-7 7M5 5l7 7-7 7');
+      } else {
+        icon.setAttribute('d', 'M11 19l-7-7 7-7m8 14l-7-7 7-7');
+      }
+    }
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        sidebar.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('sidebar-collapsed'));
+        updateToggleIcon();
+      });
+    }
   });
