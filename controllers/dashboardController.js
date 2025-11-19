@@ -33,7 +33,7 @@ exports.adminDashboard = async (req, res, next) => {
     // Get recent activity
     const recentActivity = await Audit.getRecentActivity(10);
 
-    // Get ticket trend data (last 30 days)
+    // Get ticket trend data (last 30 days) - created and resolved
     const [ticketTrend] = await db.query(`
       SELECT
         DATE(created_at) as date,
@@ -41,6 +41,18 @@ exports.adminDashboard = async (req, res, next) => {
       FROM tickets
       WHERE created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
       GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `);
+
+    // Get resolved tickets trend (last 30 days)
+    const [resolvedTrend] = await db.query(`
+      SELECT
+        DATE(updated_at) as date,
+        COUNT(*) as count
+      FROM tickets
+      WHERE status IN ('Resolved', 'Closed')
+        AND updated_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      GROUP BY DATE(updated_at)
       ORDER BY date ASC
     `);
 
@@ -101,16 +113,44 @@ exports.adminDashboard = async (req, res, next) => {
       urgentPriority: ticketStats.critical || 0
     };
 
-    // Prepare chart data
+    // Get department performance with resolved tickets
+    const [departmentPerformance] = await db.query(`
+      SELECT
+        d.id,
+        d.name,
+        COUNT(t.id) as total,
+        SUM(CASE WHEN t.status = 'Open' THEN 1 ELSE 0 END) as open,
+        SUM(CASE WHEN t.status = 'Resolved' OR t.status = 'Closed' THEN 1 ELSE 0 END) as resolved
+      FROM departments d
+      LEFT JOIN tickets t ON d.id = t.department_id
+      GROUP BY d.id, d.name
+      ORDER BY total DESC
+    `);
+
+    // Create a map of all dates in the last 30 days
+    const last30Days = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date();
+      date.setDate(date.getDate() - i);
+      last30Days.push(date.toISOString().split('T')[0]);
+    }
+
+    // Create maps for quick lookup
+    const createdMap = new Map(ticketTrend.map(t => [new Date(t.date).toISOString().split('T')[0], t.count]));
+    const resolvedMap = new Map(resolvedTrend.map(t => [new Date(t.date).toISOString().split('T')[0], t.count]));
+
+    // Prepare chart data with all dates filled in
     const chartData = {
-      dates: ticketTrend.map(t => t.date),
-      created: ticketTrend.map(t => t.count)
+      dates: last30Days,
+      created: last30Days.map(date => createdMap.get(date) || 0),
+      resolved: last30Days.map(date => resolvedMap.get(date) || 0)
     };
 
     // Prepare department chart data
     const departmentChartData = {
-      labels: departmentStats.map(d => d.name),
-      data: departmentStats.map(d => d.total_tickets)
+      labels: departmentPerformance.map(d => d.name),
+      data: departmentPerformance.map(d => d.open),
+      resolved: departmentPerformance.map(d => d.resolved)
     };
 
     res.render('dashboard/admin', {

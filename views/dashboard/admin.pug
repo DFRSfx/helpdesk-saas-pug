@@ -55,7 +55,8 @@ block content
       //- Tickets by Status Chart
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Status
-        canvas#statusChart
+        .w-full.h-64.flex.items-center.justify-center
+          canvas#statusChart
 
       //- Tickets by Priority Chart
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
@@ -179,6 +180,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'bottom'

@@ -115,7 +115,7 @@ exports.create = async (req, res, next) => {
     await Audit.log({
       ticket_id: ticketId,
       user_id: res.locals.currentUser.id,
-      action: 'Ticket created',
+      action: 'ticket_created',
       new_value: `Status: Open, Priority: ${priority}`
     });
 
@@ -129,7 +129,7 @@ exports.create = async (req, res, next) => {
       await Audit.log({
         ticket_id: ticketId,
         user_id: res.locals.currentUser.id,
-        action: 'Agent assigned',
+        action: 'agent_assigned',
         new_value: `Agent ID: ${ticketData.agent_id}`
       });
     }
@@ -222,50 +222,82 @@ exports.update = async (req, res, next) => {
 
     const { title, description, department_id, priority, status, agent_id } = req.body;
 
+    // Normalize values for comparison
+    const normalizedStatus = status?.toLowerCase().trim();
+    const normalizedPriority = priority?.toLowerCase().trim();
+    const normalizedOldStatus = oldTicket.status?.toLowerCase().trim();
+    const normalizedOldPriority = oldTicket.priority?.toLowerCase().trim();
+    const newAgentId = agent_id ? parseInt(agent_id) : null;
+    const oldAgentId = oldTicket.agent_id ? parseInt(oldTicket.agent_id) : null;
+
+    // Check if there are any actual changes
+    const hasChanges =
+      normalizedStatus !== normalizedOldStatus ||
+      normalizedPriority !== normalizedOldPriority ||
+      newAgentId !== oldAgentId ||
+      title?.trim() !== oldTicket.title?.trim() ||
+      description?.trim() !== oldTicket.description?.trim() ||
+      parseInt(department_id) !== parseInt(oldTicket.department_id);
+
+    if (!hasChanges) {
+      req.flash('info', 'No changes were made to the ticket');
+      return res.redirect(`/tickets/${ticketId}`);
+    }
+
     await Ticket.update(ticketId, {
       title,
       description,
       department_id,
       priority,
       status,
-      agent_id: agent_id || null
+      agent_id: newAgentId
     });
 
-    // Log changes
-    if (oldTicket.status !== status) {
+    // Log changes only if values actually changed
+    if (normalizedStatus !== normalizedOldStatus) {
       await Audit.log({
         ticket_id: ticketId,
         user_id: res.locals.currentUser.id,
-        action: 'Status changed',
+        action: 'status_changed',
         old_value: oldTicket.status,
         new_value: status
       });
     }
 
-    if (oldTicket.priority !== priority) {
+    if (normalizedPriority !== normalizedOldPriority) {
       await Audit.log({
         ticket_id: ticketId,
         user_id: res.locals.currentUser.id,
-        action: 'Priority changed',
+        action: 'priority_changed',
         old_value: oldTicket.priority,
         new_value: priority
       });
     }
 
-    if (oldTicket.agent_id != agent_id) {
+    if (newAgentId !== oldAgentId) {
       await Audit.log({
         ticket_id: ticketId,
         user_id: res.locals.currentUser.id,
-        action: 'Agent assigned',
+        action: 'agent_assigned',
         old_value: oldTicket.agent_id ? `Agent ID: ${oldTicket.agent_id}` : 'None',
-        new_value: agent_id ? `Agent ID: ${agent_id}` : 'None'
+        new_value: newAgentId ? `Agent ID: ${newAgentId}` : 'None'
       });
 
       // Emit socket event
-      if (agent_id) {
+      if (newAgentId) {
         const io = req.app.get('io');
-        io.emit('ticket:assigned', { id: ticketId, title, agentId: agent_id });
+        io.emit('ticket:assigned', { id: ticketId, title, agentId: newAgentId });
       }
+    }
+
+    if (parseInt(department_id) !== parseInt(oldTicket.department_id)) {
+      await Audit.log({
+        ticket_id: ticketId,
+        user_id: res.locals.currentUser.id,
+        action: 'department_changed',
+        old_value: oldTicket.department_name || 'None',
+        new_value: department_id
+      });
     }
 
     // Emit update event
@@ -302,7 +334,7 @@ exports.addMessage = async (req, res, next) => {
     await Audit.log({
       ticket_id: ticketId,
       user_id: res.locals.currentUser.id,
-      action: 'Message added',
+      action: 'message_added',
       new_value: is_internal === 'true' ? 'Internal note' : 'Public message'
     });
 
@@ -336,7 +368,7 @@ exports.addAttachment = async (req, res, next) => {
     await Audit.log({
       ticket_id: ticketId,
       user_id: res.locals.currentUser.id,
-      action: 'Attachment added',
+      action: 'attachment_added',
       new_value: req.file.originalname
     });
 
