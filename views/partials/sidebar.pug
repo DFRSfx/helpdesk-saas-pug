@@ -1,20 +1,28 @@
+- const currentYear = new Date().getFullYear();
+
 aside#sidebar.w-64.bg-gradient-to-b.from-gray-900.to-gray-800.text-white.flex.flex-col.shadow-2xl
   //- Logo/Brand
-  .px-6.py-6.border-b.border-gray-700
+  .px-6.py-6.border-b.border-gray-300.bg-white
     .flex.items-center.justify-between
       div.user-info
-        h1.text-2xl.font-bold.text-white.tracking-tight SupportDesk
+        img.h-8.mb-2(src="/img/zolentra_logo-horizontal.png" alt="Zolentra")
         - var roleText = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1) + ' Portal'
-        p.text-xs.text-gray-400.mt-1.uppercase.tracking-wider= roleText
-      button#sidebarToggle.text-gray-400.hover_text-white.transition-colors
+        p.text-xs.text-gray-700.mt-1.uppercase.tracking-wider.font-semibold= roleText
+      button#sidebarToggle.text-gray-600.hover_text-gray-900.transition-colors
         svg.w-5.h-5.icon-only(fill="none" stroke="currentColor" viewBox="0 0 24 24")
           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7")
 
   //- User Profile Card
   .px-4.py-4.border-b.border-gray-700.user-info.keep-avatar
     .flex.items-center.justify-center
-      .w-11.h-11.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.text-lg.shadow-lg.icon-only.flex-shrink-0
-        = currentUser.name.charAt(0).toUpperCase()
+      if currentUser.profile_image
+        img.w-11.h-11.rounded-full.object-cover.shadow-lg.icon-only.flex-shrink-0(
+          src=currentUser.profile_image
+          alt=currentUser.name
+        )
+      else
+        .w-11.h-11.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.text-lg.shadow-lg.icon-only.flex-shrink-0
+          = currentUser.name.charAt(0).toUpperCase()
       div.flex-1.min-w-0.ml-3.user-info
         p.text-sm.font-semibold.text-white.truncate.nav-text= currentUser.name
         p.text-xs.text-gray-400.truncate.nav-text= currentUser.email
@@ -83,8 +91,8 @@ aside#sidebar.w-64.bg-gradient-to-b.from-gray-900.to-gray-800.text-white.flex.fl
   //- Footer
   .px-4.py-4.border-t.border-gray-700.bg-gray-900.user-info.footer-info
     .text-xs.text-gray-500.text-center
-      p.font-semibold.text-gray-400 &copy; 2025 SupportDesk
-      p.mt-1 Enterprise Support System
+      p.font-semibold.text-gray-400 &copy; #{currentYear} Zolentra
+      p.mt-1 Professional Helpdesk Platform
 
 //- Sidebar Toggle Script
 script.

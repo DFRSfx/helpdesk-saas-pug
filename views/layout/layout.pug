@@ -3,11 +3,15 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    title= title || 'Support Desk'
+    meta(name="description" content="Zolentra - Professional SaaS Helpdesk Platform for Modern Customer Support")
+    meta(name="author" content="Zolentra")
+    title= title || 'Zolentra'
+    link(rel="icon" type="image/png" href="/img/zolentra_logo.png")
     link(rel="stylesheet" href="/css/output.css")
     script(src="/socket.io/socket.io.js")
     script(src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js")
     script(src="https://cdn.jsdelivr.net/npm/marked@11.1.0/marked.min.js")
+    script(src="https://cdn.jsdelivr.net/npm/preline/dist/preline.js")
   body.bg-gradient-to-br.from-gray-50.to-gray-100.min-h-screen
     if currentUser
       .flex.h-screen.overflow-hidden
