@@ -67,7 +67,7 @@ block content
                     .text-sm.text-gray-600.dark_text-neutral-400 Open
 
         //- Tab Navigation
-        .px-6.pb-6
+        .px-6.pb-8
             nav.flex.gap-x-2.relative(role="tablist")
               button#tab-profile(
                 class="relative inline-flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-800 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all focus:outline-none dark:text-neutral-200 dark:hover:text-neutral-300 dark:hover:bg-neutral-700 active"
@@ -294,6 +294,20 @@ block content
 
 block scripts
   style.
+    /* Tab alignment fixes */
+    button[role="tab"] {
+      align-items: center;
+    }
+
+    button[role="tab"] span {
+      line-height: 1.25rem;
+      display: inline-block;
+    }
+
+    button[role="tab"] svg {
+      display: block;
+    }
+
     .floating-input::placeholder {
       color: transparent;
     }

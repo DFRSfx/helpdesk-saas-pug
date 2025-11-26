@@ -1,57 +1,131 @@
 extends ../layout/layout
 
 block content
-  .min-h-screen.flex.items-center.justify-center.bg-gray-50.py-12.px-4.sm_px-6.lg_px-8
-    .max-w-md.w-full.space-y-8
-      div
-        h2.mt-6.text-center.text-3xl.font-extrabold.text-gray-900
-          | Create your account
-        p.mt-2.text-center.text-sm.text-gray-600
-          | Already have an account?
-          |
-          a.font-medium.text-blue-600.hover_text-blue-500(href="/auth/login") Sign in
+  .min-h-screen.flex.items-center.justify-center.bg-gradient-to-br.from-slate-50.to-slate-100.py-12.px-4.sm_px-6.lg_px-8
+    .max-w-md.w-full
+      // Logo and Header Section
+      .text-center(style="margin-bottom: 2.5rem;")
+        .inline-flex.items-center.justify-center.mb-4
+          img.h-16(src="/img/zolentra_logo.png" alt="Zolentra Logo")
+        p.text-slate-600.text-sm Professional Helpdesk Platform
 
-      form.mt-8.space-y-6(action="/auth/register" method="POST")
-        .space-y-4
-          div
-            label.block.text-sm.font-medium.text-gray-700(for="name") Full Name
-            input#name.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+      // Card Container
+      .bg-white.rounded-2xl.shadow-xl.p-8.border.border-slate-200
+        div
+          h2.text-2xl.font-bold.text-slate-900.mb-2
+            | Create your account
+          p.text-slate-600.text-sm(style="margin-bottom: 1rem;")
+            | Join Zolentra to access our support platform
+
+        form.space-y-6(action="/auth/register" method="POST")
+          // Full Name Field
+          .relative
+            input#name.floating-input.w-full.px-4.pt-6.pb-2.border-2.border-slate-300.rounded-sm.bg-white.text-gray-900.transition-all.duration-200.outline-none(
+              class="focus:border-blue-600"
               name="name"
               type="text"
               required
-              placeholder="John Doe"
+              placeholder=" "
             )
+            label.floating-label(for="name")
+              | Full Name
 
-          div
-            label.block.text-sm.font-medium.text-gray-700(for="email") Email address
-            input#email.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+          // Email Field
+          .relative
+            input#email.floating-input.w-full.px-4.pt-6.pb-2.border-2.border-slate-300.rounded-sm.bg-white.text-gray-900.transition-all.duration-200.outline-none(
+              class="focus:border-blue-600"
               name="email"
               type="email"
               autocomplete="email"
               required
-              placeholder="you@example.com"
+              placeholder=" "
             )
+            label.floating-label(for="email")
+              | Email Address
 
-          div
-            label.block.text-sm.font-medium.text-gray-700(for="password") Password
-            input#password.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+          // Password Field
+          .relative
+            input#password.floating-input.w-full.px-4.pt-6.pb-2.border-2.border-slate-300.rounded-sm.bg-white.text-gray-900.transition-all.duration-200.outline-none(
+              class="focus:border-blue-600"
               name="password"
               type="password"
               autocomplete="new-password"
               required
-              placeholder="••••••••"
+              minlength="6"
+              placeholder=" "
             )
+            label.floating-label(for="password")
+              | Password
 
-          div
-            label.block.text-sm.font-medium.text-gray-700(for="confirmPassword") Confirm Password
-            input#confirmPassword.mt-1.appearance-none.block.w-full.px-3.py-2.border.border-gray-300.rounded-md.shadow-sm.placeholder-gray-400.focus_outline-none.focus_ring-blue-500.focus_border-blue-500.sm_text-sm(
+          // Confirm Password Field
+          .relative
+            input#confirmPassword.floating-input.w-full.px-4.pt-6.pb-2.border-2.border-slate-300.rounded-sm.bg-white.text-gray-900.transition-all.duration-200.outline-none(
+              class="focus:border-blue-600"
               name="confirmPassword"
               type="password"
               autocomplete="new-password"
               required
-              placeholder="••••••••"
+              minlength="6"
+              placeholder=" "
             )
+            label.floating-label(for="confirmPassword")
+              | Confirm Password
 
-        div
-          button.w-full.flex.justify-center.py-2.px-4.border.border-transparent.rounded-md.shadow-sm.text-sm.font-medium.text-white.bg-blue-600.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-blue-500(type="submit")
-            | Sign up
+          // Submit Button
+          div
+            button.w-full.flex.justify-center.py-3.px-4.border.border-transparent.text-sm.font-semibold.rounded-lg.text-white.bg-blue-600.shadow-sm.transition.duration-150(
+              class="hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              type="submit"
+            )
+              | Sign Up
+
+        // Divider
+        .relative.my-6
+          .absolute.inset-0.flex.items-center
+            .w-full.border-t.border-slate-300
+          .relative.flex.justify-center.text-sm
+            span.px-4.bg-white.text-slate-500 Already have an account?
+
+        // Sign In Link
+        .text-center
+          a.font-medium.text-blue-600.text-sm.transition.duration-150(class="hover:text-blue-500" href="/auth/login")
+            | Sign in instead
+            svg.inline-block.w-4.h-4.ml-1(xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+
+  style.
+    .floating-input::placeholder {
+      color: transparent;
+    }
+
+    /* Default label state - centered in input */
+    .floating-label {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      line-height: 1;
+      color: #737373;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    /* Label moves to top when input is focused or has value */
+    .floating-input:focus ~ .floating-label,
+    .floating-input:not(:placeholder-shown) ~ .floating-label {
+      top: 0.375rem;
+      transform: translateY(0);
+      font-size: 0.75rem;
+    }
+
+    /* Blue color when focused */
+    .floating-input:focus ~ .floating-label {
+      color: #2563eb;
+    }
+
+    /* Gray color when has value but not focused */
+    .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
+      color: #737373;
+    }

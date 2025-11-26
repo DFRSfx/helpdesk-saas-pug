@@ -61,12 +61,16 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/audit', auditRoutes);
 app.use('/api', apiRoutes);
 
-// Root redirect
+// Root - Landing Page
 app.get('/', (req, res) => {
+  // If user is logged in, redirect to dashboard
   if (req.session.userId) {
     res.redirect('/dashboard');
   } else {
-    res.redirect('/auth/login');
+    // Show landing page for public users
+    res.render('landing/index', {
+      title: 'Zolentra - Professional Helpdesk Platform'
+    });
   }
 });
 

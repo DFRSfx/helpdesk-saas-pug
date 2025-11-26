@@ -1,6 +1,6 @@
-DROP DATABASE IF EXISTS supportdesk;
-CREATE DATABASE supportdesk CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE supportdesk;
+DROP DATABASE IF EXISTS zolentra_db;
+CREATE DATABASE zolentra_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE zolentra_db;
 
 -- ==========================
 -- USERS

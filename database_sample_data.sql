@@ -1,6 +1,6 @@
--- Sample data for testing the Support Desk system
+-- Sample data for testing the Zolentra Helpdesk Platform
 -- Run this AFTER running database.sql
-USE supportdesk;
+USE zolentra_db;
 
 -- ==========================
 -- SAMPLE DEPARTMENTS
@@ -20,17 +20,17 @@ INSERT INTO departments (name) VALUES
 
 -- Admin User
 INSERT INTO users (name, email, password_hash, role, department_id) VALUES
-('Admin User', 'admin@supportdesk.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'admin', NULL);
+('Admin User', 'admin@zolentra.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'admin', NULL);
 
 -- Note: Replace the password_hash above with a real bcrypt hash
 -- Generate one at https://bcrypt-generator.com/ using "password123" or your chosen password
 
 -- Agent Users (assigned to departments)
 INSERT INTO users (name, email, password_hash, role, department_id) VALUES
-('John Smith', 'john.agent@supportdesk.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 1),
-('Sarah Johnson', 'sarah.agent@supportdesk.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 1),
-('Mike Davis', 'mike.agent@supportdesk.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 2),
-('Emily Wilson', 'emily.agent@supportdesk.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 3);
+('John Smith', 'john.agent@zolentra.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 1),
+('Sarah Johnson', 'sarah.agent@zolentra.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 1),
+('Mike Davis', 'mike.agent@zolentra.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 2),
+('Emily Wilson', 'emily.agent@zolentra.com', '$2b$10$rQZ8YnV5Z5Z5Z5Z5Z5Z5ZuXKq7hN0h0h0h0h0h0h0h0h0h0h0h0h0', 'agent', 3);
 
 -- Customer Users
 INSERT INTO users (name, email, password_hash, role, department_id) VALUES

@@ -2,85 +2,85 @@ extends ../layout/layout
 
 block content
   .max-w-3xl.mx-auto
-    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-      h2.text-2xl.font-bold.text-gray-900.mb-6 Edit Department
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
+      h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Edit Department
 
       form(action=`/departments/${department.id}` method="POST")
         input(type="hidden" name="_method" value="PUT")
 
         .space-y-6
           //- Name
-          div
-            label.block.text-sm.font-medium.text-gray-700.mb-2(for="name")
-              | Department Name
-              span.text-red-500 *
-            input#name.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+          .relative
+            input#name.floating-input(
+              class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               type="text"
               name="name"
               value=department.name
               required
+              placeholder=" "
             )
+            label.floating-label(for="name") Department Name
 
           //- Description
-          div
-            label.block.text-sm.font-medium.text-gray-700.mb-2(for="description")
-              | Description
-              span.text-gray-500.text-xs.font-normal (Optional)
-            textarea#description.w-full.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+          .relative
+            textarea#description.floating-input(
+              class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               name="description"
               rows="4"
+              placeholder=" "
             )= department.description || ''
+            label.floating-label(for="description") Description (Optional)
 
           //- Status
           div
             label.flex.items-center
               input#is_active.mr-2(type="checkbox" name="is_active" value="true" checked=department.is_active)
-              span.text-sm.text-gray-700 Active (Department can receive tickets)
+              span.text-sm.text-gray-700.dark_text-neutral-300 Active (Department can receive tickets)
 
           //- Assign agents
           div
-            label.block.text-sm.font-medium.text-gray-700.mb-2
+            label.block.text-sm.font-medium.text-gray-700.mb-2.dark_text-neutral-300
               | Assign Agents
               span.text-gray-500.text-xs.font-normal (Optional)
             if agents && agents.length > 0
-              .space-y-2.max-h-60.overflow-y-auto.border.border-gray-300.rounded-lg.p-4
+              .space-y-2.max-h-60.overflow-y-auto.border.border-gray-300.rounded-lg.p-4.dark_border-neutral-600.dark_bg-neutral-900
                 each agent in agents
                   - const isAssigned = assignedAgents && assignedAgents.some(a => a.id === agent.id)
-                  label.flex.items-center.p-2.hover_bg-gray-50.rounded.cursor-pointer
+                  label.flex.items-center.p-2.hover_bg-gray-50.rounded.cursor-pointer.dark_hover_bg-neutral-700
                     input.mr-3(type="checkbox" name="agent_ids[]" value=agent.id checked=isAssigned)
                     .flex.items-center
                       .w-8.h-8.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold.text-sm.mr-3
                         = agent.name.charAt(0).toUpperCase()
                       div
-                        .text-sm.font-medium.text-gray-900= agent.name
-                        .text-xs.text-gray-500= agent.email
+                        .text-sm.font-medium.text-gray-900.dark_text-neutral-200= agent.name
+                        .text-xs.text-gray-500.dark_text-neutral-400= agent.email
             else
-              .text-sm.text-gray-500.italic No agents available
+              .text-sm.text-gray-500.italic.dark_text-neutral-400 No agents available
 
           //- Statistics
           if stats
-            .border-t.border-gray-200.pt-6
-              h3.text-lg.font-semibold.text-gray-900.mb-4 Department Statistics
+            .border-t.border-gray-200.pt-6.dark_border-neutral-700
+              h3.text-lg.font-semibold.text-gray-900.mb-4.dark_text-neutral-200 Department Statistics
 
               .grid.grid-cols-2.md_grid-cols-4.gap-4
-                div.bg-gray-50.rounded-lg.p-4
-                  .text-sm.text-gray-600 Total Tickets
-                  .text-2xl.font-bold.text-gray-900= stats.totalTickets || 0
+                div.bg-gray-50.rounded-lg.p-4.dark_bg-neutral-900
+                  .text-sm.text-gray-600.dark_text-neutral-400 Total Tickets
+                  .text-2xl.font-bold.text-gray-900.dark_text-neutral-200= stats.totalTickets || 0
 
-                div.bg-blue-50.rounded-lg.p-4
-                  .text-sm.text-gray-600 Open Tickets
-                  .text-2xl.font-bold.text-blue-600= stats.openTickets || 0
+                div.bg-blue-50.rounded-lg.p-4.dark_bg-blue-900
+                  .text-sm.text-gray-600.dark_text-blue-300 Open Tickets
+                  .text-2xl.font-bold.text-blue-600.dark_text-blue-400= stats.openTickets || 0
 
-                div.bg-yellow-50.rounded-lg.p-4
-                  .text-sm.text-gray-600 In Progress
-                  .text-2xl.font-bold.text-yellow-600= stats.inProgressTickets || 0
+                div.bg-yellow-50.rounded-lg.p-4.dark_bg-yellow-900
+                  .text-sm.text-gray-600.dark_text-yellow-300 In Progress
+                  .text-2xl.font-bold.text-yellow-600.dark_text-yellow-400= stats.inProgressTickets || 0
 
-                div.bg-green-50.rounded-lg.p-4
-                  .text-sm.text-gray-600 Resolved
-                  .text-2xl.font-bold.text-green-600= stats.resolvedTickets || 0
+                div.bg-green-50.rounded-lg.p-4.dark_bg-green-900
+                  .text-sm.text-gray-600.dark_text-green-300 Resolved
+                  .text-2xl.font-bold.text-green-600.dark_text-green-400= stats.resolvedTickets || 0
 
           //- Submit buttons
-          .flex.items-center.justify-between.pt-6.border-t.border-gray-200
+          .flex.items-center.justify-between.pt-6.border-t.border-gray-200.dark_border-neutral-700
             button.px-4.py-2.bg-red-600.text-white.rounded-lg.hover_bg-red-700.transition-colors(
               type="button"
               onclick=`if(confirm('Are you sure you want to delete this department? This will affect all tickets in this department.')) { deleteDepartment(${department.id}); }`
@@ -88,12 +88,55 @@ block content
               | Delete Department
 
             .flex.items-center.space-x-4
-              a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors(href="/departments")
+              a.px-6.py-2.border.border-gray-300.text-gray-700.rounded-lg.hover_bg-gray-50.transition-colors.dark_border-neutral-600.dark_text-neutral-300.dark_hover_bg-neutral-700(href="/departments")
                 | Cancel
               button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(type="submit")
                 | Update Department
 
 block scripts
+  style.
+    .floating-input::placeholder {
+      color: transparent;
+    }
+
+    /* Default label state - centered in input */
+    .floating-label {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      line-height: 1;
+      color: #737373;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      pointer-events: none;
+    }
+
+    /* Label moves to top when input is focused or has value */
+    .floating-input:focus ~ .floating-label,
+    .floating-input:not(:placeholder-shown) ~ .floating-label,
+    textarea.floating-input:not(:placeholder-shown) ~ .floating-label {
+      top: 0.375rem;
+      transform: translateY(0);
+      font-size: 0.75rem;
+    }
+
+    /* Blue color when focused */
+    .floating-input:focus ~ .floating-label {
+      color: #2563eb;
+    }
+
+    /* Gray color when has value but not focused */
+    .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
+      color: #737373;
+    }
+
+    /* For textareas, adjust label position when it has content */
+    textarea.floating-input {
+      resize: vertical;
+    }
+
   script.
     // Auto-resize textarea
     const textarea = document.getElementById('description');
