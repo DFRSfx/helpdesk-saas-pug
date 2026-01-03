@@ -5,7 +5,7 @@ block content
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Create New Ticket
 
-      form(action="/tickets" method="POST" enctype="multipart/form-data")
+      form#createTicketForm(action="/tickets" method="POST" enctype="multipart/form-data")
         .space-y-6
           //- Subject
           .relative
@@ -13,12 +13,12 @@ block content
               class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               type="text"
               name="subject"
-              required
-              maxlength="200"
+              data-validate="required|minLength:5|maxLength:200"
+              data-label="Subject"
               placeholder=" "
             )
             label.floating-label(for="subject") Subject
-            p.mt-1.text-xs.text-gray-500.dark_text-neutral-400 Maximum 200 characters
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Description
           .relative
@@ -26,11 +26,12 @@ block content
               class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               name="description"
               rows="6"
-              required
+              data-validate="required|minLength:10"
+              data-label="Description"
               placeholder=" "
             )
             label.floating-label(for="description") Description
-            p.mt-1.text-xs.text-gray-500.dark_text-neutral-400 Supports Markdown formatting
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           .grid.grid-cols-1.md_grid-cols-2.gap-6
             //- Department
@@ -38,7 +39,8 @@ block content
               select#department_id.floating-input(
                 class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
                 name="department_id"
-                required
+                data-validate="required"
+                data-label="Department"
               )
                 option(value="" disabled selected)
                 if departments && departments.length > 0
@@ -47,13 +49,15 @@ block content
                 else
                   option(value="" disabled) No departments available
               label.floating-label.select-label(for="department_id") Department
+              p.error-message.hidden.text-xs.text-red-600.mt-1
 
             //- Priority
             .relative
               select#priority.floating-input(
                 class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
                 name="priority"
-                required
+                data-validate="required"
+                data-label="Priority"
               )
                 option(value="" disabled selected)
                 option(value="low") Low
@@ -61,6 +65,7 @@ block content
                 option(value="high") High
                 option(value="urgent") Urgent
               label.floating-label.select-label(for="priority") Priority
+              p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Attachments
           div
@@ -166,12 +171,46 @@ block scripts
       color: #737373;
     }
 
+    /* Error state styling */
+    .floating-input.error {
+      border-color: #dc2626 !important;
+    }
+
+    .floating-input.error:focus {
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .floating-input.error:focus ~ .floating-label {
+      color: #dc2626;
+    }
+
+    /* Valid state styling */
+    .floating-input.valid:not(:focus) {
+      border-color: #16a34a;
+    }
+
+    /* Error message styling */
+    .error-message {
+      color: #dc2626;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .error-message.hidden {
+      display: none;
+    }
+
     /* For textareas, adjust label position when it has content */
     textarea.floating-input {
       resize: vertical;
     }
 
+  script(src="/js/form-validator.js")
   script.
+    // Initialize form validator
+    new FormValidator('#createTicketForm');
+
     // Auto-resize textarea
     const textarea = document.getElementById('description');
     if (textarea) {

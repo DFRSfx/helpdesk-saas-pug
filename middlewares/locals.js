@@ -71,6 +71,26 @@ const setLocals = async (req, res, next) => {
     return 'just now';
   };
 
+  // Filter out meaningless changes (where old → new are the same)
+  res.locals.filterAuditChanges = (newValue) => {
+    if (!newValue) return [];
+
+    return newValue.split(' | ').filter(change => {
+      // If change doesn't have arrow, keep it (like "Password: Changed")
+      if (!change.includes(' → ')) return true;
+
+      // If change has arrow, split by arrow and compare
+      const parts = change.split(' → ');
+      if (parts.length === 2) {
+        const before = parts[0].trim();
+        const after = parts[1].trim();
+        // Only keep if values are different
+        return before !== after;
+      }
+      return true;
+    }).map(c => c.trim());
+  };
+
   // Format audit log action
   res.locals.formatAuditAction = (log) => {
     if (!log) return '';
@@ -83,6 +103,70 @@ const setLocals = async (req, res, next) => {
         .join(' ');
     };
 
+    // Filter out meaningless changes (where old → new are the same)
+    const filterMeaninglessChanges = (newValue) => {
+      if (!newValue) return '';
+
+      const changes = newValue.split(' | ').filter(change => {
+        // If change doesn't have arrow, keep it (like "Password: Changed")
+        if (!change.includes(' → ')) return true;
+
+        // If change has arrow, split by arrow and compare
+        const parts = change.split(' → ');
+        if (parts.length === 2) {
+          const before = parts[0].trim();
+          const after = parts[1].trim();
+          // Only keep if values are different
+          return before !== after;
+        }
+        return true;
+      }).join(' | ');
+
+      return changes;
+    };
+
+    // Handle generic entity-based actions
+    if (log.action.startsWith('User ')) {
+      switch (log.action) {
+        case 'User Created':
+          return 'User created';
+        case 'User Updated':
+          if (log.new_value) {
+            const filteredChanges = filterMeaninglessChanges(log.new_value);
+            if (filteredChanges) {
+              return `User updated: ${filteredChanges}`;
+            }
+            return 'User updated';
+          }
+          return 'User updated';
+        case 'User Deleted':
+          return 'User deleted';
+        default:
+          return log.action;
+      }
+    }
+
+    if (log.action.startsWith('Department ')) {
+      switch (log.action) {
+        case 'Department Created':
+          return 'Department created';
+        case 'Department Updated':
+          if (log.new_value) {
+            const filteredChanges = filterMeaninglessChanges(log.new_value);
+            if (filteredChanges) {
+              return `Department updated: ${filteredChanges}`;
+            }
+            return 'Department updated';
+          }
+          return 'Department updated';
+        case 'Department Deleted':
+          return 'Department deleted';
+        default:
+          return log.action;
+      }
+    }
+
+    // Handle ticket-specific actions
     switch (log.action) {
       case 'ticket_created':
         return 'Ticket created';

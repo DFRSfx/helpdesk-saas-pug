@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../config/database');
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
 const Audit = require('../models/Audit');
+const userController = require('../controllers/userController');
 
 // All API routes require authentication
 router.use(isAuthenticated);
@@ -73,5 +74,8 @@ router.patch('/tickets/:id/status', async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
+
+// Get users with filters (for real-time filtering)
+router.get('/users', hasRole('admin'), userController.api);
 
 module.exports = router;

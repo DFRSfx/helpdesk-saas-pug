@@ -9,14 +9,14 @@ html(lang="en")
     meta(property="og:type" content="website")
     meta(property="og:title" content="Zolentra - Professional Helpdesk Platform")
     meta(property="og:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
-    meta(property="og:image" content="/img/og-image.png")
+    meta(property="og:image" content="/images/og-image.png")
     meta(property="og:url" content="https://zolentra.com")
 
     //- Twitter Card
     meta(name="twitter:card" content="summary_large_image")
     meta(name="twitter:title" content="Zolentra - Professional Helpdesk Platform")
     meta(name="twitter:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
-    meta(name="twitter:image" content="/img/og-image.png")
+    meta(name="twitter:image" content="/images/og-image.png")
 
     title Zolentra - Professional Helpdesk Platform
     //- Favicon support for all browsers
@@ -40,7 +40,7 @@ html(lang="en")
           //- Logo
           div(class="flex items-center")
             a(class="flex items-center gap-2 group" href="/")
-              img(class="h-11 transition-transform group-hover:scale-105" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+              img(class="h-11 transition-transform group-hover:scale-105" src="/images/zolentra_logo.png" alt="Zolentra Logo")
 
           //- Navigation Links
           div(class="hidden md:flex items-center space-x-1")
@@ -51,13 +51,44 @@ html(lang="en")
 
           //- Auth Buttons
           div(class="hidden md:flex items-center gap-4")
-            button(class="px-6 py-2.5 bg-white text-slate-700 font-semibold transition-all duration-300 text-sm rounded-xl border-2 border-slate-200 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 relative overflow-hidden group" onclick="openLoginModal()")
-              div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
-              span(class="relative z-10") Login
-            button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold text-sm shadow-lg flex items-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)';" onclick="openRegisterModal()")
-              span(class="relative z-10") Get Started
-              svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
+            if currentUser
+              //- Logged in user dropdown
+              .relative
+                button#landingUserMenuButton.flex.items-center.space-x-3.px-3.py-2.rounded-lg.hover_bg-gray-100.transition-colors(style="border: 2px solid #e5e7eb;")
+                  .w-9.h-9.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.shadow-md
+                    = currentUser.name.charAt(0).toUpperCase()
+                  .text-left
+                    p.text-sm.font-semibold.text-gray-900= currentUser.name
+                    p.text-xs.text-gray-500= currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+                  svg#landingUserMenuIcon.w-4.h-4.text-gray-500.transition-transform.duration-200(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+
+                //- Dropdown menu
+                #landingUserMenuDropdown.hidden.absolute.right-0.mt-2.w-56.bg-white.rounded-xl.shadow-2xl.border.border-gray-200.z-50.overflow-hidden
+                  .p-4.border-b.border-gray-100.bg-gradient-to-r.from-gray-50.to-white
+                    p.text-sm.font-semibold.text-gray-900= currentUser.name
+                    p.text-xs.text-gray-500= currentUser.email
+                  .py-2
+                    a.flex.items-center.px-4.py-2.text-sm.rounded-lg.relative.overflow-hidden(href="/dashboard" style="background-color: transparent; color: #374151; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#2563eb';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#374151';")
+                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(59,130,246,0), rgba(59,130,246,0.1), rgba(59,130,246,0)); opacity: 0; transition: opacity 300ms;")
+                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0v10")
+                      span.relative(style="z-index: 10;") Admin Panel
+                  .border-t.border-gray-100
+                    a.flex.items-center.px-4.py-3.text-sm.rounded-lg.relative.overflow-hidden(href="/auth/logout" style="background-color: transparent; color: #dc2626; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#991b1b';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#dc2626';")
+                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(220,38,38,0), rgba(220,38,38,0.1), rgba(220,38,38,0)); opacity: 0; transition: opacity 300ms;")
+                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1")
+                      span.relative(style="z-index: 10;") Logout
+            else
+              //- Not logged in buttons
+              button(class="px-6 py-2.5 bg-white text-slate-700 font-semibold transition-all duration-300 text-sm rounded-xl border-2 border-slate-200 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 relative overflow-hidden group" onclick="openLoginModal()")
+                div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
+                span(class="relative z-10") Login
+              button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold text-sm shadow-lg flex items-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)';" onclick="openRegisterModal()")
+                span(class="relative z-10") Get Started
+                svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
 
           //- Mobile menu button
           button#mobile-menu-btn(class="block md:hidden text-slate-700 hover:text-blue-600 hover:bg-slate-50 p-2 rounded-lg transition-all" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu")
@@ -123,7 +154,7 @@ html(lang="en")
                   span Cancel anytime
 
             div(class="relative")
-              img(class="relative rounded-2xl shadow-xl border border-slate-200" src="/img/dashboard-preview.png" alt="Dashboard Preview" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2236%22 fill=%22%239ca3af%22%3EDashboard Preview%3C/text%3E%3C/svg%3E'")
+              img(class="relative rounded-2xl shadow-xl border border-slate-200" src="/images/dashboard-preview.webp" alt="Dashboard Preview" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2236%22 fill=%22%239ca3af%22%3EDashboard Preview%3C/text%3E%3C/svg%3E'")
 
       //- Trust Indicators
       section(class="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200")
@@ -446,7 +477,7 @@ html(lang="en")
       div(class="max-w-7xl mx-auto")
         div(class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8")
           div(class="col-span-1 md:col-span-2")
-            img(class="h-10 mb-4" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+            img(class="h-10 mb-4" src="/images/zolentra_logo.png" alt="Zolentra Logo")
             p(class="text-slate-400 max-w-md") Cut response time by 60%. Modern helpdesk built for teams that care about customer experience.
 
           div
@@ -513,7 +544,7 @@ html(lang="en")
         //- Header
         div(class="text-center mb-6")
           div(class="inline-flex items-center justify-center mb-4")
-            img(class="h-12" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+            img(class="h-12" src="/images/zolentra_logo.png" alt="Zolentra Logo")
           h2(class="text-2xl font-bold text-slate-900 mb-2") Welcome Back
           p(class="text-slate-600 text-sm") Sign in to access your support dashboard
 
@@ -528,13 +559,15 @@ html(lang="en")
         form#loginForm(class="space-y-5")
           //- Email Field
           div(class="relative")
-            input#login-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="email" autocomplete="email" required placeholder=" ")
+            input#login-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="text" autocomplete="email" data-validate="required|email" data-label="Email" placeholder=" ")
             label(class="floating-label" for="login-email") Email Address
+            p.error-message-login.hidden.text-xs.text-red-600.mt-1
 
           //- Password Field
           div(class="relative")
-            input#login-password(class="floating-input w-full px-4 pt-6 pb-2 pr-12 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="current-password" required placeholder=" ")
+            input#login-password(class="floating-input w-full px-4 pt-6 pb-2 pr-12 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="current-password" data-validate="required|minLength:6" data-label="password" placeholder=" ")
             label(class="floating-label" for="login-password") Password
+            p.error-message-login.hidden.text-xs.text-red-600.mt-1
             button#login-toggle-password(class="absolute flex items-center z-20 px-3 cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" type="button" style="right: 0; top: 50%; transform: translateY(-50%);")
               svg(class="eye-slash w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
                 path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21")
@@ -582,7 +615,7 @@ html(lang="en")
         //- Header
         div(class="text-center mb-6")
           div(class="inline-flex items-center justify-center mb-4")
-            img(class="h-12" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+            img(class="h-12" src="/images/zolentra_logo.png" alt="Zolentra Logo")
           h2(class="text-2xl font-bold text-slate-900 mb-2") Create your account
           p(class="text-slate-600 text-sm") Join Zolentra to access our support platform
 
@@ -597,23 +630,27 @@ html(lang="en")
         form#registerForm(class="space-y-5")
           //- Full Name Field
           div(class="relative")
-            input#register-name(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="name" type="text" required placeholder=" ")
+            input#register-name(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="name" type="text" data-validate="required|minLength:2|maxLength:150" data-label="Full Name" placeholder=" ")
             label(class="floating-label" for="register-name") Full Name
+            p.error-message-register.hidden.text-xs.text-red-600.mt-1
 
           //- Email Field
           div(class="relative")
-            input#register-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="email" autocomplete="email" required placeholder=" ")
+            input#register-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="text" autocomplete="email" data-validate="required|email" data-label="Email" placeholder=" ")
             label(class="floating-label" for="register-email") Email Address
+            p.error-message-register.hidden.text-xs.text-red-600.mt-1
 
           //- Password Field
           div(class="relative")
-            input#register-password(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder=" ")
+            input#register-password(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="new-password" data-validate="required|minLength:6" data-label="password" placeholder=" ")
             label(class="floating-label" for="register-password") Password
+            p.error-message-register.hidden.text-xs.text-red-600.mt-1
 
           //- Confirm Password Field
           div(class="relative")
-            input#register-confirmPassword(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="confirmPassword" type="password" autocomplete="new-password" required minlength="6" placeholder=" ")
+            input#register-confirmPassword(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="confirmPassword" type="password" autocomplete="new-password" data-validate="required|match:register-password" data-label="password" placeholder=" ")
             label(class="floating-label" for="register-confirmPassword") Confirm Password
+            p.error-message-register.hidden.text-xs.text-red-600.mt-1
 
           //- Submit Button
           button#register-submit(class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit")
@@ -670,6 +707,39 @@ html(lang="en")
         color: #737373;
       }
 
+      /* Error state styling */
+      .floating-input.error {
+        border-color: #dc2626 !important;
+      }
+
+      .floating-input.error:focus {
+        border-color: #dc2626 !important;
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+      }
+
+      .floating-input.error:focus ~ .floating-label {
+        color: #dc2626;
+      }
+
+      /* Valid state styling */
+      .floating-input.valid:not(:focus) {
+        border-color: #16a34a;
+      }
+
+      /* Error message styling */
+      .error-message-login,
+      .error-message-register {
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+      }
+
+      .error-message-login.hidden,
+      .error-message-register.hidden {
+        display: none;
+      }
+
+    script(src="/js/form-validator.js")
     script.
       // Modal functions
       function openLoginModal() {
@@ -740,11 +810,113 @@ html(lang="en")
         });
       }
 
+      // Create a custom FormValidator for auth forms
+      class AuthFormValidator {
+        constructor(formSelector, errorContainerSelector) {
+          this.form = document.querySelector(formSelector);
+          this.errorContainers = document.querySelectorAll(errorContainerSelector);
+          if (this.form) {
+            this.findFields();
+          }
+        }
+
+        findFields() {
+          this.fields = {};
+          const inputs = this.form.querySelectorAll('[data-validate]');
+          inputs.forEach(field => {
+            const rules = field.getAttribute('data-validate');
+            this.fields[field.id] = {
+              element: field,
+              rules: this.parseRules(rules)
+            };
+          });
+        }
+
+        parseRules(rulesString) {
+          return rulesString.split('|').map(rule => {
+            const [ruleName, param] = rule.split(':');
+            return { rule: ruleName.trim(), param: param?.trim() };
+          });
+        }
+
+        validateField(fieldId) {
+          const field = this.fields[fieldId];
+          if (!field) return true;
+
+          const element = field.element;
+          const value = element.value;
+          const rules = field.rules;
+
+          for (const { rule, param } of rules) {
+            const ruleConfig = FormValidator.rules[rule];
+            if (!ruleConfig) continue;
+
+            const isValid = ruleConfig.validate(value, param);
+            if (!isValid) {
+              this.showError(fieldId, typeof ruleConfig.message === 'function' ? ruleConfig.message(param) : ruleConfig.message);
+              return false;
+            }
+          }
+
+          this.clearError(fieldId);
+          return true;
+        }
+
+        validateForm() {
+          let isValid = true;
+          Object.keys(this.fields).forEach(fieldId => {
+            if (!this.validateField(fieldId)) {
+              isValid = false;
+            }
+          });
+          return isValid;
+        }
+
+        showError(fieldId, message) {
+          const field = this.fields[fieldId];
+          if (!field) return;
+
+          const element = field.element;
+          element.classList.add('error');
+          element.classList.remove('valid');
+
+          const errorContainer = element.parentElement.querySelector('.error-message-login, .error-message-register');
+          if (errorContainer) {
+            errorContainer.textContent = message;
+            errorContainer.classList.remove('hidden');
+          }
+        }
+
+        clearError(fieldId) {
+          const field = this.fields[fieldId];
+          if (!field) return;
+
+          const element = field.element;
+          element.classList.remove('error');
+          element.classList.add('valid');
+
+          const errorContainer = element.parentElement.querySelector('.error-message-login, .error-message-register');
+          if (errorContainer) {
+            errorContainer.textContent = '';
+            errorContainer.classList.add('hidden');
+          }
+        }
+      }
+
+      // Initialize auth form validators
+      const loginValidator = new AuthFormValidator('#loginForm', '.error-message-login');
+      const registerValidator = new AuthFormValidator('#registerForm', '.error-message-register');
+
       // Login form AJAX submission
       const loginForm = document.getElementById('loginForm');
       if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
           e.preventDefault();
+
+          // Validate first
+          if (!loginValidator.validateForm()) {
+            return;
+          }
 
           // Hide previous errors
           const errorDiv = document.getElementById('login-error');
@@ -809,6 +981,11 @@ html(lang="en")
       if (registerForm) {
         registerForm.addEventListener('submit', async function(e) {
           e.preventDefault();
+
+          // Validate first
+          if (!registerValidator.validateForm()) {
+            return;
+          }
 
           // Hide previous errors
           const errorDiv = document.getElementById('register-error');
@@ -963,5 +1140,36 @@ html(lang="en")
 
           monthlyPrices.forEach(el => el.classList.toggle('hidden'));
           annualPrices.forEach(el => el.classList.toggle('hidden'));
+        });
+      }
+
+      // User menu dropdown toggle for landing page
+      const landingMenuButton = document.getElementById('landingUserMenuButton');
+      const landingMenuDropdown = document.getElementById('landingUserMenuDropdown');
+      const landingMenuIcon = document.getElementById('landingUserMenuIcon');
+      
+      if (landingMenuButton && landingMenuDropdown) {
+        landingMenuButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const isOpen = !landingMenuDropdown.classList.contains('hidden');
+          
+          if (isOpen) {
+            landingMenuDropdown.classList.add('hidden');
+            landingMenuIcon.style.transform = 'rotate(0deg)';
+            landingMenuIcon.querySelector('path').setAttribute('d', 'M19 9l-7 7-7-7');
+          } else {
+            landingMenuDropdown.classList.remove('hidden');
+            landingMenuIcon.style.transform = 'rotate(180deg)';
+            landingMenuIcon.querySelector('path').setAttribute('d', 'M6 18L18 6M6 6l12 12');
+          }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!landingMenuButton.contains(e.target) && !landingMenuDropdown.contains(e.target)) {
+            landingMenuDropdown.classList.add('hidden');
+            landingMenuIcon.style.transform = 'rotate(0deg)';
+            landingMenuIcon.querySelector('path').setAttribute('d', 'M19 9l-7 7-7-7');
+          }
         });
       }

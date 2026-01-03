@@ -73,6 +73,11 @@ class User {
       params.push(`%${filters.search}%`, `%${filters.search}%`);
     }
 
+    if (filters.is_active !== null && filters.is_active !== undefined) {
+      query += ' AND is_active = ?';
+      params.push(filters.is_active ? 1 : 0);
+    }
+
     query += ' ORDER BY created_at DESC';
 
     if (filters.limit) {
@@ -96,6 +101,11 @@ class User {
     if (filters.search) {
       query += ' AND (name LIKE ? OR email LIKE ?)';
       params.push(`%${filters.search}%`, `%${filters.search}%`);
+    }
+
+    if (filters.is_active !== null && filters.is_active !== undefined) {
+      query += ' AND is_active = ?';
+      params.push(filters.is_active ? 1 : 0);
     }
 
     const [rows] = await db.query(query, params);

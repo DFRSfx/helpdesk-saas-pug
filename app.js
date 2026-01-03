@@ -71,15 +71,10 @@ app.use('/api', apiRoutes);
 
 // Root - Landing Page
 app.get('/', (req, res) => {
-  // If user is logged in, redirect to dashboard
-  if (req.session.userId) {
-    res.redirect('/dashboard');
-  } else {
-    // Show landing page for public users
-    res.render('landing/index', {
-      title: 'Zolentra - Professional Helpdesk Platform'
-    });
-  }
+  // Show landing page for all users
+  res.render('landing/index', {
+    title: 'Zolentra - Professional Helpdesk Platform'
+  });
 });
 
 // Socket.io connection handling

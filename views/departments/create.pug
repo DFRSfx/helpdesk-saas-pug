@@ -5,7 +5,7 @@ block content
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Create New Department
 
-      form(action="/departments" method="POST")
+      form#createDepartmentForm(action="/departments" method="POST")
         .space-y-6
           //- Name
           .relative
@@ -13,10 +13,12 @@ block content
               class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               type="text"
               name="name"
-              required
+              data-validate="required|minLength:2|maxLength:150"
+              data-label="Department Name"
               placeholder=" "
             )
             label.floating-label(for="name") Department Name
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Description
           .relative
@@ -24,9 +26,12 @@ block content
               class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
               name="description"
               rows="4"
+              data-validate="minLength:5"
+              data-label="Description"
               placeholder=" "
             )
             label.floating-label(for="description") Description (Optional)
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Status
           div
@@ -99,12 +104,46 @@ block scripts
       color: #737373;
     }
 
+    /* Error state styling */
+    .floating-input.error {
+      border-color: #dc2626 !important;
+    }
+
+    .floating-input.error:focus {
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .floating-input.error:focus ~ .floating-label {
+      color: #dc2626;
+    }
+
+    /* Valid state styling */
+    .floating-input.valid:not(:focus) {
+      border-color: #16a34a;
+    }
+
+    /* Error message styling */
+    .error-message {
+      color: #dc2626;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .error-message.hidden {
+      display: none;
+    }
+
     /* For textareas, adjust label position when it has content */
     textarea.floating-input {
       resize: vertical;
     }
 
+  script(src="/js/form-validator.js")
   script.
+    // Initialize form validator
+    new FormValidator('#createDepartmentForm');
+
     // Auto-resize textarea
     const textarea = document.getElementById('description');
     if (textarea) {

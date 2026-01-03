@@ -8,7 +8,7 @@ block content
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Edit User
 
-      form(action=`/users/${user.id}/edit` method="POST")
+      form#editUserForm(action=`/users/${user.id}/edit` method="POST")
 
         .space-y-6
           //- Name
@@ -18,22 +18,26 @@ block content
               type="text"
               name="name"
               value=user.name
-              required
+              data-validate="required|minLength:2|maxLength:150"
+              data-label="Full Name"
               placeholder=" "
             )
             label.floating-label(for="name") Full Name
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Email
           .relative
             input#email.floating-input(
               class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
-              type="email"
+              type="text"
               name="email"
               value=user.email
-              required
+              data-validate="required|email"
+              data-label="Email"
               placeholder=" "
             )
             label.floating-label(for="email") Email Address
+            p.error-message.hidden.text-xs.text-red-600.mt-1
 
           .grid.grid-cols-1.md_grid-cols-2.gap-6
             //- Role
@@ -41,29 +45,34 @@ block content
               select#role.floating-input(
                 class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
                 name="role"
-                required
+                data-validate="required"
+                data-label="Role"
               )
                 option(value="customer" selected=user.role === "customer") Customer
                 option(value="agent" selected=user.role === "agent") Agent
                 option(value="admin" selected=user.role === "admin") Administrator
               label.floating-label.select-label(for="role") Role
+              p.error-message.hidden.text-xs.text-red-600.mt-1
 
             //- Department
-            .relative
-              select#department_id.floating-input(
-                class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
-                name="department_id"
-              )
-                option(value="" selected=!user.department_id) None
-                if departments && departments.length > 0
-                  each dept in departments
-                    option(value=dept.id selected=user.department_id == dept.id)= dept.name
-              label.floating-label.select-label(for="department_id") Department (Optional)
+            #department_wrapper.hidden.transition-all.duration-300
+              .relative
+                select#department_id.floating-input(
+                  class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
+                  name="department_id"
+                  data-label="Department"
+                )
+                  option(value="" selected=!user.department_id) None
+                  if departments && departments.length > 0
+                    each dept in departments
+                      option(value=dept.id selected=user.department_id == dept.id)= dept.name
+                label.floating-label.select-label(for="department_id") Department (Optional)
+                p.error-message.hidden.text-xs.text-red-600.mt-1
 
           //- Status
           div
             label.flex.items-center
-              input#is_active.mr-2(type="checkbox" name="is_active" value="true" checked=user.is_active)
+              input#is_active.mr-2(type="checkbox" name="is_active" value="true" checked=Boolean(user.is_active))
               span.text-sm.text-gray-700.dark_text-neutral-300 Active (User can login)
 
           //- Password change section
@@ -77,20 +86,26 @@ block content
                   class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
                   type="password"
                   name="new_password"
-                  minlength="6"
+                  data-validate="conditionalMinLength:6:confirm_new_password"
+                  data-label="password"
                   placeholder=" "
                 )
                 label.floating-label(for="new_password") New Password
+                p.error-message.hidden.text-xs.text-red-600.mt-1
+                p.text-xs.text-gray-500.mt-1 Only required if you enter a confirm password
 
               .relative
                 input#confirm_new_password.floating-input(
                   class="w-full px-4 pt-6 pb-2 border-2 border-gray-300 rounded-sm bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600 dark:bg-neutral-900 dark:border-neutral-700 dark:text-neutral-200 dark:focus:border-blue-500"
                   type="password"
                   name="confirm_new_password"
-                  minlength="6"
+                  data-validate="conditionalMatch:new_password"
+                  data-label="password"
                   placeholder=" "
                 )
                 label.floating-label(for="confirm_new_password") Confirm New Password
+                p.error-message.hidden.text-xs.text-red-600.mt-1
+                p.text-xs.text-gray-500.mt-1 Only required if you enter a new password
 
           //- Submit buttons
           .flex.items-center.justify-between.pt-6.border-t.border-gray-200.dark_border-neutral-700
@@ -146,37 +161,58 @@ block scripts
       color: #737373;
     }
 
-  script.
-    // Password validation
-    const form = document.querySelector('form');
-    const newPassword = document.getElementById('new_password');
-    const confirmNewPassword = document.getElementById('confirm_new_password');
-
-    form.addEventListener('submit', function(e) {
-      if (newPassword.value || confirmNewPassword.value) {
-        if (newPassword.value !== confirmNewPassword.value) {
-          e.preventDefault();
-          alert('Passwords do not match!');
-          confirmNewPassword.focus();
-          return false;
-        }
-      }
-    });
-
-    // Real-time password match indicator
-    if (confirmNewPassword) {
-      confirmNewPassword.addEventListener('input', function() {
-        if (this.value === newPassword.value && this.value.length > 0) {
-          this.classList.remove('border-red-300');
-          this.classList.add('border-green-300');
-        } else if (this.value.length > 0) {
-          this.classList.remove('border-green-300');
-          this.classList.add('border-red-300');
-        } else {
-          this.classList.remove('border-green-300', 'border-red-300');
-        }
-      });
+    /* Error state styling */
+    .floating-input.error {
+      border-color: #dc2626 !important;
     }
+
+    .floating-input.error:focus {
+      border-color: #dc2626 !important;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+    }
+
+    .floating-input.error:focus ~ .floating-label {
+      color: #dc2626;
+    }
+
+    /* Valid state styling (green border for successful validation) */
+    .floating-input.valid:not(:focus) {
+      border-color: #16a34a;
+    }
+
+    /* Error message styling */
+    .error-message {
+      color: #dc2626;
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+    }
+
+    .error-message.hidden {
+      display: none;
+    }
+
+  script(src="/js/form-validator.js")
+  script.
+    // Initialize form validator
+    new FormValidator('#editUserForm');
+
+    // Show/hide department based on role
+    const roleSelect = document.getElementById('role');
+    const deptWrapper = document.getElementById('department_wrapper');
+
+    // Initialize on page load
+    function updateDepartmentVisibility() {
+      if (roleSelect.value === 'agent' || roleSelect.value === 'admin') {
+        deptWrapper.classList.remove('hidden');
+      } else {
+        deptWrapper.classList.add('hidden');
+        document.getElementById('department_id').value = '';
+      }
+    }
+
+    roleSelect.addEventListener('change', updateDepartmentVisibility);
+    // Initialize on page load
+    updateDepartmentVisibility();
 
     // Delete user function
     function deleteUser(userId) {

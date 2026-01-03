@@ -2,11 +2,11 @@ const db = require('../config/database');
 
 class Audit {
   static async log(auditData) {
-    const { ticket_id, user_id, action, old_value, new_value } = auditData;
+    const { ticket_id, user_id, action, old_value, new_value, entity_type, entity_id } = auditData;
 
     const [result] = await db.query(
-      'INSERT INTO audit_log (ticket_id, user_id, action, old_value, new_value) VALUES (?, ?, ?, ?, ?)',
-      [ticket_id, user_id || null, action, old_value || null, new_value || null]
+      'INSERT INTO audit_log (ticket_id, user_id, action, old_value, new_value, entity_type, entity_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [ticket_id || null, user_id || null, action, old_value || null, new_value || null, entity_type || null, entity_id || null]
     );
 
     return result.insertId;
@@ -33,10 +33,18 @@ class Audit {
         al.*,
         u.name as user_name,
         u.role as user_role,
-        t.title as ticket_title
+        t.title as ticket_title,
+        CASE
+          WHEN al.entity_type = 'user' THEN eu.name
+          WHEN al.entity_type = 'department' THEN ed.name
+          WHEN al.entity_type = 'ticket' THEN t.title
+          ELSE NULL
+        END as entity_name
       FROM audit_log al
       LEFT JOIN users u ON al.user_id = u.id
       LEFT JOIN tickets t ON al.ticket_id = t.id
+      LEFT JOIN users eu ON al.entity_type = 'user' AND al.entity_id = eu.id
+      LEFT JOIN departments ed ON al.entity_type = 'department' AND al.entity_id = ed.id
       WHERE 1=1
     `;
     const params = [];
@@ -115,10 +123,18 @@ class Audit {
       SELECT
         al.*,
         u.name as user_name,
-        t.title as ticket_title
+        t.title as ticket_title,
+        CASE
+          WHEN al.entity_type = 'user' THEN eu.name
+          WHEN al.entity_type = 'department' THEN ed.name
+          WHEN al.entity_type = 'ticket' THEN t.title
+          ELSE NULL
+        END as entity_name
       FROM audit_log al
       LEFT JOIN users u ON al.user_id = u.id
       LEFT JOIN tickets t ON al.ticket_id = t.id
+      LEFT JOIN users eu ON al.entity_type = 'user' AND al.entity_id = eu.id
+      LEFT JOIN departments ed ON al.entity_type = 'department' AND al.entity_id = ed.id
       ORDER BY al.created_at DESC
       LIMIT ?
     `, [limit]);

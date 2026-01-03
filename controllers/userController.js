@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Audit = require('../models/Audit');
 
 // List all users (admin only)
 exports.index = async (req, res, next) => {
@@ -11,7 +12,8 @@ exports.index = async (req, res, next) => {
       limit,
       offset,
       role: req.query.role,
-      search: req.query.search
+      search: req.query.search,
+      is_active: req.query.status === 'active' ? true : req.query.status === 'inactive' ? false : null
     };
 
     const users = await User.getAll(filters);
@@ -30,13 +32,23 @@ exports.index = async (req, res, next) => {
       admins: totalAdmins
     };
 
+    // Calculate pagination info
+    const pagination = {
+      currentPage: page,
+      totalPages: totalPages,
+      startItem: offset + 1,
+      endItem: Math.min(offset + limit, total),
+      totalItems: total
+    };
+
     res.render('users/index', {
       title: 'Users',
       users,
       stats,
-      currentPage: page,
-      totalPages,
-      filters: req.query
+      pagination,
+      search: req.query.search || '',
+      role: req.query.role || '',
+      status: req.query.status || ''
     });
   } catch (error) {
     next(error);
@@ -44,16 +56,24 @@ exports.index = async (req, res, next) => {
 };
 
 // Show create user form (admin only)
-exports.showCreate = (req, res) => {
-  res.render('users/create', {
-    title: 'Create User'
-  });
+exports.showCreate = async (req, res, next) => {
+  try {
+    const Department = require('../models/Department');
+    const departments = await Department.getAll();
+
+    res.render('users/create', {
+      title: 'Create User',
+      departments
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // Handle create user (admin only)
 exports.create = async (req, res, next) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, department_id, is_active } = req.body;
 
     // Check if email already exists
     const existingUser = await User.findByEmail(email);
@@ -62,7 +82,20 @@ exports.create = async (req, res, next) => {
       return res.redirect('/users/create');
     }
 
-    await User.create({ name, email, password, role });
+    await User.create({ name, email, password, role, department_id, is_active: is_active ? true : false });
+
+    // Get the created user's ID from database
+    const newUser = await User.findByEmail(email);
+
+    // Log audit trail
+    await Audit.log({
+      user_id: req.session.userId,
+      entity_type: 'user',
+      entity_id: newUser.id,
+      action: `User Created`,
+      old_value: null,
+      new_value: `Name: ${name}, Email: ${email}, Role: ${role}, Active: ${is_active ? 'Yes' : 'No'}`
+    });
 
     req.flash('success', 'User created successfully');
     res.redirect('/users');
@@ -99,6 +132,9 @@ exports.update = async (req, res, next) => {
   try {
     const { name, email, role, is_active, department_id, new_password, confirm_new_password } = req.body;
 
+    // Get user before updating to track changes
+    const oldUser = await User.findById(req.params.id);
+
     // Validate passwords match if provided
     if (new_password || confirm_new_password) {
       if (new_password !== confirm_new_password) {
@@ -120,6 +156,30 @@ exports.update = async (req, res, next) => {
       new_password: new_password || null
     });
 
+    // Track changes for audit log
+    const changes = [];
+    const newIsActive = is_active ? true : false;
+    const oldIsActive = Boolean(oldUser.is_active);
+
+    if (oldUser.name !== name) changes.push(`Name: ${oldUser.name} → ${name}`);
+    if (oldUser.email !== email) changes.push(`Email: ${oldUser.email} → ${email}`);
+    if (oldUser.role !== role) changes.push(`Role: ${oldUser.role} → ${role}`);
+    if (oldIsActive !== newIsActive) changes.push(`Status: ${oldIsActive ? 'Active' : 'Inactive'} → ${newIsActive ? 'Active' : 'Inactive'}`);
+    if (oldUser.department_id !== (department_id || null)) changes.push(`Department Changed`);
+    if (new_password) changes.push(`Password: Changed`);
+
+    // Log audit trail if there were changes
+    if (changes.length > 0) {
+      await Audit.log({
+        user_id: req.session.userId,
+        entity_type: 'user',
+        entity_id: req.params.id,
+        action: `User Updated`,
+        old_value: `Role: ${oldUser.role}, Active: ${oldUser.is_active ? 'Yes' : 'No'}`,
+        new_value: changes.join(' | ')
+      });
+    }
+
     req.flash('success', 'User updated successfully');
     res.redirect('/users');
   } catch (error) {
@@ -138,7 +198,20 @@ exports.delete = async (req, res, next) => {
       return res.redirect('/users');
     }
 
+    // Get user before deleting to log details
+    const user = await User.findById(userId);
+
     await User.delete(userId);
+
+    // Log audit trail
+    await Audit.log({
+      user_id: req.session.userId,
+      entity_type: 'user',
+      entity_id: userId,
+      action: `User Deleted`,
+      old_value: `Role: ${user.role}, Email: ${user.email}`,
+      new_value: 'User Account Permanently Deleted'
+    });
 
     req.flash('success', 'User deleted successfully');
     res.redirect('/users');
@@ -198,5 +271,57 @@ exports.changePassword = async (req, res, next) => {
     res.redirect('/users/profile');
   } catch (error) {
     next(error);
+  }
+};
+
+// API endpoint for real-time user filtering (JSON response)
+exports.api = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const offset = (page - 1) * limit;
+
+    const filters = {
+      limit,
+      offset,
+      role: req.query.role,
+      search: req.query.search,
+      is_active: req.query.status === 'active' ? true : req.query.status === 'inactive' ? false : null
+    };
+
+    const users = await User.getAll(filters);
+    const total = await User.count(filters);
+    const totalPages = Math.ceil(total / limit);
+
+    // Get user statistics
+    const totalCustomers = await User.count({ role: 'customer' });
+    const totalAgents = await User.count({ role: 'agent' });
+    const totalAdmins = await User.count({ role: 'admin' });
+
+    const stats = {
+      total: total,
+      customers: totalCustomers,
+      agents: totalAgents,
+      admins: totalAdmins
+    };
+
+    res.json({
+      success: true,
+      data: {
+        users,
+        stats,
+        pagination: {
+          currentPage: page,
+          totalPages: totalPages,
+          total: total,
+          limit: limit
+        }
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
   }
 };

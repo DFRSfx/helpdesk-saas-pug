@@ -81,15 +81,18 @@ CREATE TABLE ticket_attachments (
 -- ==========================
 CREATE TABLE audit_log (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    ticket_id INT UNSIGNED NOT NULL,
-    user_id INT UNSIGNED NULL,
+    ticket_id INT UNSIGNED NULL COMMENT 'Legacy: ticket ID if ticket-related',
+    user_id INT UNSIGNED NULL COMMENT 'User who performed the action',
+    entity_type VARCHAR(50) NULL COMMENT 'Type of entity (ticket, user, department, etc)',
+    entity_id INT UNSIGNED NULL COMMENT 'ID of the entity being modified',
     action VARCHAR(255) NOT NULL,
     old_value TEXT,
     new_value TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_audit_entity (entity_type, entity_id)
 ) ENGINE=InnoDB;
 
 
