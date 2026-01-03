@@ -2,8 +2,8 @@ extends ../layout/layout
 
 block content
   .max-w-7xl.mx-auto
-    //- Stats cards
-    .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-4.gap-6.mb-6
+    //- Stats cards (responsive grid)
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;")
       //- Total Tickets
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         .flex.items-center.justify-between
@@ -51,28 +51,31 @@ block content
             svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
 
-    .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
+    //- Charts row 1 (Status, Priority, Department)
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;")
       //- Tickets by Status Chart
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Status
-        .w-full.h-64.flex.items-center.justify-center
+        h3.text-sm.font-semibold.text-gray-900.mb-3 Tickets by Status
+        div(style="height: 250px;")
           canvas#statusChart
 
       //- Tickets by Priority Chart
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Priority
-        canvas#priorityChart
-
-    .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
-      //- Tickets Over Time
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets Over Time (Last 30 Days)
-        canvas#ticketsOverTimeChart
+        h3.text-sm.font-semibold.text-gray-900.mb-3 Tickets by Priority
+        div(style="height: 250px; display: flex; align-items: center; justify-content: center;")
+          canvas#priorityChart(style="height: 320px; width: 100%;")
 
       //- Department Performance
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 Department Performance
-        canvas#departmentChart
+        h3.text-sm.font-semibold.text-gray-900.mb-3 Department Performance
+        div(style="height: 250px; display: flex; align-items: center; justify-content: center;")
+          canvas#departmentChart(style="height: 350px; width: 100%;")
+
+    //- Tickets Over Time (full width)
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
+      h3.text-sm.font-semibold.text-gray-900.mb-3 Tickets Over Time (Last 30 Days)
+      div(style="height: 350px;")
+        canvas#ticketsOverTimeChart
 
     //- Agent Performance
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
@@ -250,6 +253,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'bottom'

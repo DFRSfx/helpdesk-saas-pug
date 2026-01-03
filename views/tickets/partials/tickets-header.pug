@@ -42,30 +42,50 @@
 
 //- Filter Panel (Hidden by default)
 #filterPanel.hidden.bg-gray-50.border-b.border-gray-200.px-6.py-4.transition-all.duration-300
-  form.grid.grid-cols-1.md_grid-cols-4.gap-4(method="GET" action="/tickets")
+  form.flex.flex-col.gap-3(method="GET" action="/tickets")
     input(type="hidden" name="view" value=viewMode)
-    select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="priority")
-      option(value="" selected=!priority) All Priority
-      option(value="low" selected=priority === "low") Low
-      option(value="medium" selected=priority === "medium") Medium
-      option(value="high" selected=priority === "high") High
-      option(value="urgent" selected=priority === "urgent") Urgent
 
-    if isAdmin() || isAgent()
-      select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="department")
-        option(value="" selected=!departmentFilter) All Departments
-        if departments
-          each dept in departments
-            option(value=dept.id selected=departmentFilter == dept.id)= dept.name
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
+      div
+        label.block.text-xs.font-semibold.text-gray-600.mb-1 Priority
+        select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="priority")
+          option(value="" selected=!priority) All Priority
+          option(value="low" selected=priority === "low") Low
+          option(value="medium" selected=priority === "medium") Medium
+          option(value="high" selected=priority === "high") High
+          option(value="urgent" selected=priority === "urgent") Urgent
 
-      select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="assignedTo")
-        option(value="" selected=!assignedTo) All Agents
-        option(value="me" selected=assignedTo === "me") My Tickets
-        option(value="unassigned" selected=assignedTo === "unassigned") Unassigned
-        if agents
-          each agent in agents
-            option(value=agent.id selected=assignedTo == agent.id)= agent.name
+      if isAdmin() || isAgent()
+        div
+          label.block.text-xs.font-semibold.text-gray-600.mb-1 Department
+          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="department")
+            option(value="" selected=!departmentFilter) All Departments
+            if departments
+              each dept in departments
+                option(value=dept.id selected=departmentFilter == dept.id)= dept.name
 
-    .flex.items-center.space-x-2
-      button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-md.active_bg-blue-800.transition-all.duration-200.transform.hover_scale-105.active_scale-95(type="submit") Apply
-      a.px-6.py-2.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95(href=`/tickets?view=${viewMode}`) Clear
+        div
+          label.block.text-xs.font-semibold.text-gray-600.mb-1 Agent
+          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="assignedTo")
+            option(value="" selected=!assignedTo) All Agents
+            option(value="me" selected=assignedTo === "me") My Tickets
+            option(value="unassigned" selected=assignedTo === "unassigned") Unassigned
+            if agents
+              each agent in agents
+                option(value=agent.id selected=assignedTo == agent.id)= agent.name
+
+    .flex.items-center.gap-2
+      button.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-md.active_bg-blue-800.transition-all.duration-200.transform.hover_scale-105.active_scale-95(type="submit") Apply
+      a.px-4.py-2.text-sm.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95(href=`/tickets?view=${viewMode}`) Clear
+
+script.
+  document.addEventListener('DOMContentLoaded', function() {
+    const filterBtn = document.getElementById('filterBtn');
+    const filterPanel = document.getElementById('filterPanel');
+
+    if (filterBtn && filterPanel) {
+      filterBtn.addEventListener('click', function() {
+        filterPanel.classList.toggle('hidden');
+      });
+    }
+  });

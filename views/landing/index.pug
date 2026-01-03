@@ -1,299 +1,898 @@
 doctype html
-html(lang="pt")
+html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(name="description" content="Zolentra - Professional Helpdesk Platform for Modern Teams")
-    title Zolentra - Professional Helpdesk Platform
-    link(rel="stylesheet" href="/css/tailwind.css")
-    link(rel="stylesheet" href="/css/style.css")
-    script(src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4")
+    meta(name="description" content="Zolentra - Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience. Start your 14-day free trial, no credit card required.")
 
-  body.bg-gradient-to-br.from-slate-50.to-slate-100.antialiased
+    //- Open Graph
+    meta(property="og:type" content="website")
+    meta(property="og:title" content="Zolentra - Professional Helpdesk Platform")
+    meta(property="og:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
+    meta(property="og:image" content="/img/og-image.png")
+    meta(property="og:url" content="https://zolentra.com")
+
+    //- Twitter Card
+    meta(name="twitter:card" content="summary_large_image")
+    meta(name="twitter:title" content="Zolentra - Professional Helpdesk Platform")
+    meta(name="twitter:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
+    meta(name="twitter:image" content="/img/og-image.png")
+
+    title Zolentra - Professional Helpdesk Platform
+    //- Favicon support for all browsers
+    link(rel="icon" type="image/x-icon" href="/favicon.ico")
+    link(rel="icon" type="image/png" sizes="32x32" href="/favicon.ico")
+    link(rel="icon" type="image/png" sizes="16x16" href="/favicon.ico")
+    link(rel="apple-touch-icon" href="/favicon.ico")
+    meta(name="theme-color" content="#2563eb")
+    link(rel="preconnect" href="https://fonts.googleapis.com")
+    link(rel="stylesheet" href="/css/output.css")
+    link(rel="stylesheet" href="/css/style.css")
+
+  body(class="bg-gradient-to-br from-slate-50 to-slate-100 antialiased")
+    //- Skip to content
+    a(class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded" href="#main-content") Skip to content
+
     //- Navigation
-    header.fixed.w-full.bg-white.border-b.border-slate-200.z-50.shadow-sm
-      nav.max-w-7xl.mx-auto.px-4.sm_px-6.lg_px-8
-        .flex.justify-between.items-center.h-16
+    header(class="fixed w-full bg-white border-b border-slate-200 z-50 shadow-sm" style="height: 70px;")
+      nav(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="height: 100%;" aria-label="Main navigation")
+        div(class="flex justify-between items-center h-full")
           //- Logo
-          .flex.items-center
-            a(href="/")
-              img.h-10(src="/img/zolentra_logo.png" alt="Zolentra Logo")
+          div(class="flex items-center")
+            a(class="flex items-center gap-2 group" href="/")
+              img(class="h-11 transition-transform group-hover:scale-105" src="/img/zolentra_logo.png" alt="Zolentra Logo")
 
           //- Navigation Links
-          .hidden.md_flex.items-center.space-x-8
-            a.text-slate-700.hover_text-blue-600.transition.text-sm.font-medium(href="#features") Features
-            a.text-slate-700.hover_text-blue-600.transition.text-sm.font-medium(href="#pricing") Pricing
-            a.text-slate-700.hover_text-blue-600.transition.text-sm.font-medium(href="#about") About
+          div(class="hidden md:flex items-center space-x-1")
+            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#features") Features
+            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#pricing") Pricing
+            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#testimonials") Testimonials
+            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#faq") FAQ
 
-          //- Login Button
-          .hidden.md_flex.items-center.space-x-4
-            a.text-slate-700.hover_text-blue-600.font-medium.transition.text-sm(href="/auth/login") Login
-            a.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition.font-semibold.text-sm.shadow-sm(href="/auth/register") Get Started
+          //- Auth Buttons
+          div(class="hidden md:flex items-center gap-4")
+            button(class="px-6 py-2.5 bg-white text-slate-700 font-semibold transition-all duration-300 text-sm rounded-xl border-2 border-slate-200 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 relative overflow-hidden group" onclick="openLoginModal()")
+              div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
+              span(class="relative z-10") Login
+            button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold text-sm shadow-lg flex items-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)';" onclick="openRegisterModal()")
+              span(class="relative z-10") Get Started
+              svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
 
           //- Mobile menu button
-          button#mobile-menu-btn.block.md_hidden.text-slate-700(type="button")
-            svg.w-6.h-6(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          button#mobile-menu-btn(class="block md:hidden text-slate-700 hover:text-blue-600 hover:bg-slate-50 p-2 rounded-lg transition-all" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu")
+            svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
 
     //- Mobile Menu
-    #mobile-menu.hidden.fixed.inset-0.bg-white.z-40.pt-16
-      .flex.flex-col.items-center.space-y-6.p-8
-        a.text-xl.text-slate-700.hover_text-blue-600(href="#features") Features
-        a.text-xl.text-slate-700.hover_text-blue-600(href="#pricing") Pricing
-        a.text-xl.text-slate-700.hover_text-blue-600(href="#about") About
-        a.text-xl.text-slate-700.hover_text-blue-600(href="/auth/login") Login
-        a.px-8.py-3.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.text-xl.shadow-sm.font-semibold(href="/auth/register") Get Started
+    div#mobile-menu(class="hidden fixed inset-0 bg-white z-40 pt-20")
+      div(class="flex flex-col items-stretch space-y-2 p-6 max-w-sm mx-auto")
+        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#features") Features
+        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#pricing") Pricing
+        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#testimonials") Testimonials
+        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#faq") FAQ
+        div(class="border-t border-slate-200 my-4")
+        button(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition-all font-semibold" onclick="openLoginModal()") Login
+        button(class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all text-lg shadow-md font-semibold" onclick="openRegisterModal()")
+          span Get Started
+          svg(class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
 
-    //- Hero Section
-    section.pt-32.pb-20.px-4.sm_px-6.lg_px-8
-      .max-w-7xl.mx-auto
-        .grid.grid-cols-1.lg_grid-cols-2.gap-12.items-center
-          .space-y-8
-            h1.text-5xl.lg_text-6xl.font-bold.text-slate-900.leading-tight
-              | Transform Your
-              br
-              | Customer Support
-            p.text-xl.text-slate-600
-              | Zolentra is a professional helpdesk platform designed for modern teams. Streamline your support operations and delight your customers.
-            .flex.flex-col.sm_flex-row.gap-4
-              a.px-8.py-3.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition.font-semibold.text-center.shadow-sm(href="/auth/register")
+    main#main-content(class="mt-[70px]")
+      //- Hero Section
+      section(class="pt-32 pb-20 px-4 sm:px-6 lg:px-8")
+        div(class="max-w-7xl mx-auto")
+          div(class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center")
+            div(class="space-y-8")
+              //- Social Proof Badge
+              div(class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium")
+                svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
+                  path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
+                span Trusted by 2,000+ support teams
+
+              h1(class="text-5xl lg:text-6xl font-bold text-slate-900 leading-tight")
+                | Cut Response Time by
+                span(class="text-blue-600")  60%
+                br
+                | With Intelligent Support
+
+              p(class="text-xl text-slate-600")
+                | Stop drowning in tickets. Zolentra's smart routing and automation help teams resolve issues 2x faster while keeping customers happy.
+
+              div(class="flex flex-col sm:flex-row gap-4")
+                button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg flex items-center justify-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)'; this.style.boxShadow='0 25px 50px -12px rgba(37, 99, 235, 0.3)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)';" onclick="openRegisterModal()")
+                  span(class="relative z-10") Start Free Trial
+                  svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300" style="transform: translateX(0);" onmouseover="this.style.transform='translateX(4px)';" onmouseout="this.style.transform='translateX(0)';" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
+                a(class="px-8 py-3 border-2 border-slate-300 text-slate-700 rounded-xl hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-semibold text-center relative overflow-hidden group" href="#pricing")
+                  div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
+                  span(class="relative z-10") View Pricing
+
+              div(class="flex items-center gap-6 text-sm text-slate-600")
+                div(class="flex items-center gap-2")
+                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span No credit card required
+                div(class="flex items-center gap-2")
+                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span 14-day free trial
+                div(class="flex items-center gap-2")
+                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span Cancel anytime
+
+            div(class="relative")
+              img(class="relative rounded-2xl shadow-xl border border-slate-200" src="/img/dashboard-preview.png" alt="Dashboard Preview" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2236%22 fill=%22%239ca3af%22%3EDashboard Preview%3C/text%3E%3C/svg%3E'")
+
+      //- Trust Indicators
+      section(class="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200")
+        div(class="max-w-7xl mx-auto")
+          div(class="text-center mb-8")
+            p(class="text-sm text-slate-500 uppercase tracking-wide font-semibold") Trusted by support teams at
+          div(class="flex flex-wrap justify-center items-center gap-8 opacity-50")
+            div(class="text-2xl font-bold text-slate-400") TechCorp
+            div(class="text-2xl font-bold text-slate-400") StartupXYZ
+            div(class="text-2xl font-bold text-slate-400") CloudSolutions
+            div(class="text-2xl font-bold text-slate-400") DataFlow
+
+      //- Features Section
+      section#features(class="py-20 px-4 sm:px-6 lg:px-8")
+        div(class="max-w-7xl mx-auto")
+          div(class="text-center mb-16")
+            h2(class="text-4xl font-bold text-slate-900 mb-4") Everything your support team needs
+            p(class="text-xl text-slate-600 max-w-3xl mx-auto")
+              | Stop juggling multiple tools. Get everything in one powerful platform.
+
+          div(class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
+            //- Feature 1
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Smart Ticket Management
+              p(class="text-slate-600") AI-powered routing sends tickets to the right agent automatically. No manual sorting, no bottlenecks.
+
+            //- Feature 2
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Real-Time Collaboration
+              p(class="text-slate-600") Internal notes, @mentions, and collision detection. Your team stays in sync without stepping on toes.
+
+            //- Feature 3
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Analytics That Matter
+              p(class="text-slate-600") Track CSAT, first response time, and resolution rates. See what's working and what needs fixing.
+
+            //- Feature 4
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Automation Engine
+              p(class="text-slate-600") Set triggers for common scenarios. Auto-assign, auto-tag, auto-respond. Your team focuses on complex issues.
+
+            //- Feature 5
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Bank-Grade Security
+              p(class="text-slate-600") SOC 2 Type II certified. Role-based access, 2FA, and end-to-end encryption. Your data stays safe.
+
+            //- Feature 6
+            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
+              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
+                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4")
+              h3(class="text-xl font-semibold text-slate-900 mb-3") Custom Workflows
+              p(class="text-slate-600") Build workflows that match how your team actually works. No forcing square pegs into round holes.
+
+      //- Testimonials Section
+      section#testimonials(class="py-20 px-4 sm:px-6 lg:px-8 bg-white")
+        div(class="max-w-7xl mx-auto")
+          div(class="text-center mb-16")
+            h2(class="text-4xl font-bold text-slate-900 mb-4") Loved by support teams worldwide
+            p(class="text-xl text-slate-600 max-w-3xl mx-auto")
+              | Don't just take our word for it. Here's what real teams are saying.
+
+          div(class="grid grid-cols-1 md:grid-cols-3 gap-8")
+            //- Testimonial 1
+            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
+              div(class="flex items-center gap-1 mb-4")
+                each star in [1,2,3,4,5]
+                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
+                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
+              p(class="text-slate-700 mb-6 leading-relaxed") "We cut our average response time from 4 hours to 45 minutes. Our CSAT score jumped 32% in the first month."
+              div(class="flex items-center gap-3")
+                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") SM
+                div
+                  div(class="font-semibold text-slate-900") Sarah Mitchell
+                  div(class="text-sm text-slate-600") Head of Support, TechFlow
+
+            //- Testimonial 2
+            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
+              div(class="flex items-center gap-1 mb-4")
+                each star in [1,2,3,4,5]
+                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
+                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
+              p(class="text-slate-700 mb-6 leading-relaxed") "The automation features are a game changer. We handle 3x the ticket volume with the same team size."
+              div(class="flex items-center gap-3")
+                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") JK
+                div
+                  div(class="font-semibold text-slate-900") James Kim
+                  div(class="text-sm text-slate-600") Customer Success Lead, DataSync
+
+            //- Testimonial 3
+            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
+              div(class="flex items-center gap-1 mb-4")
+                each star in [1,2,3,4,5]
+                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
+                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
+              p(class="text-slate-700 mb-6 leading-relaxed") "Best investment we made this year. Setup took 20 minutes and we were onboarding the team the same day."
+              div(class="flex items-center gap-3")
+                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") ER
+                div
+                  div(class="font-semibold text-slate-900") Emily Rodriguez
+                  div(class="text-sm text-slate-600") Operations Manager, CloudBase
+
+      //- Pricing Section
+      section#pricing(class="py-20 px-4 sm:px-6 lg:px-8")
+        div(class="max-w-7xl mx-auto")
+          div(class="text-center mb-12")
+            h2(class="text-4xl font-bold text-slate-900 mb-4") Simple, transparent pricing
+            p(class="text-xl text-slate-600 max-w-3xl mx-auto mb-8")
+              | Choose the perfect plan for your team. All plans include 14-day free trial.
+
+            //- Billing Toggle
+            div(class="flex items-center justify-center gap-3 mb-4")
+              span(class="text-slate-700 font-medium") Monthly
+              button#billing-toggle(class="relative w-14 h-7 bg-slate-200 rounded-full transition-colors duration-200" style="background-color: #e2e8f0;" aria-label="Toggle billing period")
+                div(class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200")
+              span(class="text-slate-700 font-medium")
+                | Annual
+                span(class="text-green-600 text-sm")  (Save 20%)
+
+          div(class="grid grid-cols-1 md:grid-cols-3 gap-8")
+            //- Starter Plan
+            div(class="bg-white rounded-2xl border-2 border-slate-200 p-8 hover:shadow-xl transition flex flex-col")
+              div(class="text-center mb-8")
+                h3(class="text-2xl font-bold text-slate-900 mb-2") Starter
+                div(class="text-4xl font-bold text-slate-900 mb-1")
+                  span(class="monthly-price") $29
+                  span(class="annual-price hidden") $23
+                  span(class="text-lg text-slate-600 font-normal") /month
+                p(class="text-slate-600") Perfect for small teams
+
+              ul(class="space-y-4 mb-10 flex-grow")
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") Up to 3 agents
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") 500 tickets/month
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") Email support
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") Basic analytics
+
+              button(class="block w-full py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-semibold text-center" onclick="openRegisterModal()")
                 | Start Free Trial
-              a.px-8.py-3.border-2.border-slate-300.text-slate-700.rounded-lg.transition.font-semibold.text-center.hover-border-blue.hover-text-blue(href="#pricing")
-                | View Pricing
-            .flex.items-center.gap-6.text-sm.text-slate-600
-              .flex.items-center.gap-2
-                svg.w-5.h-5.text-green-600(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span No credit card required
-              .flex.items-center.gap-2
-                svg.w-5.h-5.text-green-600(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span 14-day free trial
 
-          .relative
-            img.relative.rounded-2xl.shadow-xl.border.border-slate-200(src="/img/dashboard-preview.png" alt="Dashboard Preview" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2236%22 fill=%22%239ca3af%22%3EDashboard Preview%3C/text%3E%3C/svg%3E'")
+            //- Professional Plan (Featured)
+            div(class="bg-blue-600 rounded-2xl border-2 border-blue-600 p-8 shadow-xl transform scale-105 relative flex flex-col")
+              div(class="absolute -top-4 left-1/2 transform -translate-x-1/2")
+                span(class="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold") Most Popular
 
-    //- Features Section
-    section#features.py-20.px-4.sm_px-6.lg_px-8.bg-white
-      .max-w-7xl.mx-auto
-        .text-center.mb-16
-          h2.text-4xl.font-bold.text-slate-900.mb-4 Features that empower your team
-          p.text-xl.text-slate-600.max-w-3xl.mx-auto
-            | Everything you need to deliver exceptional customer support
+              div(class="text-center mb-8")
+                h3(class="text-2xl font-bold text-white mb-2") Professional
+                div(class="text-4xl font-bold text-white mb-1")
+                  span(class="monthly-price") $79
+                  span(class="annual-price hidden") $63
+                  span(class="text-lg text-blue-100 font-normal") /month
+                p(class="text-blue-100") For growing teams
 
-        .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-3.gap-8
-          //- Feature 1
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Ticket Management
-            p.text-slate-600 Organize, prioritize, and track all customer requests in one centralized platform.
+              ul(class="space-y-4 mb-10 flex-grow")
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-white") Up to 10 agents
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-white") Unlimited tickets
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-white") Priority support
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-white") Advanced analytics
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-white") Custom workflows
 
-          //- Feature 2
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Team Collaboration
-            p.text-slate-600 Work together seamlessly with internal notes, assignments, and real-time updates.
+              button(class="block w-full py-3 px-6 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-200 font-semibold text-center shadow-sm" onclick="openRegisterModal()")
+                | Start Free Trial
 
-          //- Feature 3
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Analytics & Insights
-            p.text-slate-600 Make data-driven decisions with comprehensive reporting and performance metrics.
+            //- Enterprise Plan
+            div(class="bg-white rounded-2xl border-2 border-slate-200 p-8 hover:shadow-xl transition flex flex-col")
+              div(class="text-center mb-8")
+                h3(class="text-2xl font-bold text-slate-900 mb-2") Enterprise
+                div(class="text-4xl font-bold text-slate-900 mb-1") Custom
+                p(class="text-slate-600") For large organizations
 
-          //- Feature 4
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Fast Response Times
-            p.text-slate-600 Automated workflows and smart routing ensure quick response to customer inquiries.
+              ul(class="space-y-4 mb-10 flex-grow")
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") Unlimited agents
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") Unlimited tickets
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") 24/7 dedicated support
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") White-label options
+                li(class="flex items-start")
+                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+                  span(class="text-slate-700") 99.9% SLA guarantee
 
-          //- Feature 5
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Enterprise Security
-            p.text-slate-600 Bank-level security with role-based access control and data encryption.
+              a(class="block w-full py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-semibold text-center" href="mailto:sales@zolentra.com")
+                | Contact Sales
 
-          //- Feature 6
-          .p-8.bg-white.rounded-2xl.border.border-slate-200.hover_shadow-xl.transition
-            .w-14.h-14.bg-blue-600.rounded-xl.flex.items-center.justify-center.mb-6
-              svg.w-8.h-8.text-white(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4")
-            h3.text-xl.font-semibold.text-slate-900.mb-3 Customizable Workflows
-            p.text-slate-600 Tailor the platform to match your unique business processes and requirements.
+          div(class="text-center mt-8")
+            div(class="inline-flex items-center gap-2 text-green-600 font-medium")
+              svg(class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20")
+                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+              span 30-day money-back guarantee on all plans
 
-    //- Pricing Section
-    section#pricing.py-20.px-4.sm_px-6.lg_px-8
-      .max-w-7xl.mx-auto
-        .text-center.mb-16
-          h2.text-4xl.font-bold.text-slate-900.mb-4 Simple, transparent pricing
-          p.text-xl.text-slate-600.max-w-3xl.mx-auto
-            | Choose the perfect plan for your team size and needs
+      //- FAQ Section
+      section#faq(class="py-20 px-4 sm:px-6 lg:px-8 bg-white")
+        div(class="max-w-4xl mx-auto")
+          div(class="text-center mb-16")
+            h2(class="text-4xl font-bold text-slate-900 mb-4") Frequently Asked Questions
+            p(class="text-xl text-slate-600")
+              | Everything you need to know about Zolentra
 
-        .grid.grid-cols-1.md_grid-cols-3.gap-8
-          //- Starter Plan
-          .bg-white.rounded-2xl.border-2.border-slate-200.p-8.hover_shadow-xl.transition
-            .text-center.mb-8
-              h3.text-2xl.font-bold.text-slate-900.mb-2 Starter
-              .text-4xl.font-bold.text-slate-900.mb-1
-                | $29
-                span.text-lg.text-slate-600.font-normal /month
-              p.text-slate-600 Perfect for small teams
+          div(class="space-y-6")
+            //- FAQ 1
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") How long does setup take?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Most teams are up and running in under 30 minutes. Our onboarding wizard walks you through connecting your email, importing existing tickets (optional), and inviting your team. No technical expertise required.
 
-            ul.space-y-4(style="margin-bottom: 2.5rem;")
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 Up to 3 agents
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 500 tickets/month
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 Email support
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 Basic analytics
+            //- FAQ 2
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") Can I migrate from my current helpdesk?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Yes. We support migrations from Zendesk, Freshdesk, Intercom, and most major platforms. Our migration tool preserves your ticket history, customer data, and agent assignments. Professional+ plans include white-glove migration assistance.
 
-            a.block.w-full.py-3.px-6.border-2.border-blue-600.text-blue-600.rounded-lg.transition-all.duration-200.font-semibold.text-center.pricing-btn-outline(href="/auth/register")
-              | Start Free Trial
+            //- FAQ 3
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") What happens after the 14-day trial?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Your trial ends after 14 days. If you don't upgrade, your account becomes read-only - you can view existing tickets but can't respond or create new ones. Your data is preserved for 60 days in case you decide to return. No auto-charges, ever.
 
-          //- Professional Plan (Featured)
-          .bg-blue-600.rounded-2xl.border-2.border-blue-600.p-8.shadow-xl.transform.scale-105.relative
-            .absolute.-top-4.left-1_2.transform.-translate-x-1_2
-              span.bg-orange-500.text-white.px-4.py-1.rounded-full.text-sm.font-semibold Most Popular
+            //- FAQ 4
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") Is my data secure?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Absolutely. We're SOC 2 Type II certified and GDPR compliant. All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We perform regular security audits and penetration testing. Your data is backed up every 6 hours to multiple geographic regions.
 
-            .text-center.mb-8
-              h3.text-2xl.font-bold.text-white.mb-2 Professional
-              .text-4xl.font-bold.text-white.mb-1
-                | $79
-                span.text-lg.text-blue-100.font-normal /month
-              p.text-blue-100 For growing teams
+            //- FAQ 5
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") Can I cancel anytime?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Yes. No contracts, no cancellation fees. Cancel from your account settings with one click. If you're on a monthly plan, you won't be charged again. Annual plans receive a prorated refund for unused months within the first 30 days.
 
-            ul.space-y-4(style="margin-bottom: 2.5rem;")
-              li.flex.items-start
-                svg.w-6.h-6.text-white.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-white Up to 10 agents
-              li.flex.items-start
-                svg.w-6.h-6.text-white.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-white Unlimited tickets
-              li.flex.items-start
-                svg.w-6.h-6.text-white.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-white Priority support
-              li.flex.items-start
-                svg.w-6.h-6.text-white.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-white Advanced analytics
-              li.flex.items-start
-                svg.w-6.h-6.text-white.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-white Custom workflows
+            //- FAQ 6
+            div(class="border border-slate-200 rounded-xl overflow-hidden")
+              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
+                h3(class="text-lg font-semibold text-slate-900") Do you offer discounts for nonprofits?
+                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
+              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
+                p(class="text-slate-600 py-6") Yes! Registered nonprofits and educational institutions receive 30% off all plans. Contact our sales team with your organization details to verify eligibility and get your discount code.
 
-            a.block.w-full.py-3.px-6.bg-white.text-blue-600.rounded-lg.transition-all.duration-200.font-semibold.text-center.shadow-sm.hover-blue-bg(href="/auth/register" style="box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);")
-              | Start Free Trial
-
-          //- Enterprise Plan
-          .bg-white.rounded-2xl.border-2.border-slate-200.p-8.hover_shadow-xl.transition
-            .text-center.mb-8
-              h3.text-2xl.font-bold.text-slate-900.mb-2 Enterprise
-              .text-4xl.font-bold.text-slate-900.mb-1
-                | Custom
-              p.text-slate-600 For large organizations
-
-            ul.space-y-4(style="margin-bottom: 2.5rem;")
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 Unlimited agents
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 Unlimited tickets
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 24/7 dedicated support
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 White-label options
-              li.flex.items-start
-                svg.w-6.h-6.text-green-600.mr-3.flex-shrink-0(fill="currentColor" viewBox="0 0 20 20")
-                  path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                span.text-slate-700 SLA guarantees
-
-            a.block.w-full.py-3.px-6.border-2.border-blue-600.text-blue-600.rounded-lg.transition-all.duration-200.font-semibold.text-center.pricing-btn-outline(href="mailto:sales@zolentra.com")
-              | Contact Sales
+      //- CTA Section
+      section(class="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600")
+        div(class="max-w-4xl mx-auto text-center")
+          h2(class="text-4xl font-bold text-white mb-4") Ready to transform your support?
+          p(class="text-xl text-blue-100 mb-8")
+            | Join 2,000+ teams delivering exceptional customer experiences with Zolentra
+          div(class="flex flex-col sm:flex-row gap-4 justify-center")
+            button(class="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold text-center shadow-sm" onclick="openRegisterModal()")
+              | Start Free Trial →
+            a(class="px-8 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition font-semibold text-center" href="mailto:sales@zolentra.com")
+              | Talk to Sales
 
     //- Footer
-    footer.bg-slate-900.text-slate-300.py-12.px-4.sm_px-6.lg_px-8
-      .max-w-7xl.mx-auto
-        .grid.grid-cols-1.md_grid-cols-4.gap-8.mb-8
-          .col-span-1.md_col-span-2
-            img.h-10.mb-4(src="/img/zolentra_logo.png" alt="Zolentra Logo")
-            p.text-slate-400.max-w-md Professional helpdesk platform for modern teams. Streamline your support operations and delight your customers.
+    footer(class="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8")
+      div(class="max-w-7xl mx-auto")
+        div(class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8")
+          div(class="col-span-1 md:col-span-2")
+            img(class="h-10 mb-4" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+            p(class="text-slate-400 max-w-md") Cut response time by 60%. Modern helpdesk built for teams that care about customer experience.
 
           div
-            h4.font-semibold.text-white.mb-4 Product
-            ul.space-y-2
-              li: a.hover_text-white.transition(href="#features") Features
-              li: a.hover_text-white.transition(href="#pricing") Pricing
-              li: a.hover_text-white.transition(href="/auth/register") Get Started
+            h4(class="font-semibold text-white mb-4") Product
+            ul(class="space-y-2")
+              li: a(class="hover:text-white transition" href="#features") Features
+              li: a(class="hover:text-white transition" href="#pricing") Pricing
+              li: button(class="hover:text-white transition text-left" onclick="openRegisterModal()") Get Started
 
           div
-            h4.font-semibold.text-white.mb-4 Support
-            ul.space-y-2
-              li: a.hover_text-white.transition(href="mailto:support@zolentra.com") Contact
-              li: a.hover_text-white.transition(href="#") Documentation
-              li: a.hover_text-white.transition(href="#") Status
+            h4(class="font-semibold text-white mb-4") Support
+            ul(class="space-y-2")
+              li: a(class="hover:text-white transition" href="mailto:support@zolentra.com") Contact
+              li: a(class="hover:text-white transition" href="#faq") FAQ
+              li: a(class="hover:text-white transition" href="#") Status
 
-        .border-t.border-slate-800.pt-8.text-center.text-slate-400
-          p &copy; #{new Date().getFullYear()} Zolentra. All rights reserved.
+        div(class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4")
+          p(class="text-slate-400 text-center md:text-left") &copy; #{new Date().getFullYear()} Zolentra. All rights reserved.
+          div(class="flex items-center gap-4")
+            a(class="text-slate-400 hover:text-white transition" href="#") Privacy Policy
+            a(class="text-slate-400 hover:text-white transition" href="#") Terms of Service
+            div(class="flex items-center gap-2 text-slate-400")
+              svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
+                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
+              span SOC 2 Certified
 
+    //- JSON-LD Schema for SEO
+    script(type="application/ld+json").
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Zolentra",
+        "description": "Professional helpdesk platform for modern teams",
+        "applicationCategory": "BusinessApplication",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Starter",
+            "price": "29",
+            "priceCurrency": "USD"
+          },
+          {
+            "@type": "Offer",
+            "name": "Professional",
+            "price": "79",
+            "priceCurrency": "USD"
+          }
+        ],
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.9",
+          "reviewCount": "247"
+        }
+      }
+
+    //- Login Modal
+    div#loginModal(class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4")
+      div(class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative" onclick="event.stopPropagation()")
+        //- Close Button
+        button(class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition" onclick="closeModal('loginModal')" type="button")
+          svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+
+        //- Header
+        div(class="text-center mb-6")
+          div(class="inline-flex items-center justify-center mb-4")
+            img(class="h-12" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+          h2(class="text-2xl font-bold text-slate-900 mb-2") Welcome Back
+          p(class="text-slate-600 text-sm") Sign in to access your support dashboard
+
+        //- Error Alert
+        div#login-error(class="hidden p-4 bg-red-50 border border-red-200 rounded-lg")
+          div(class="flex items-start")
+            svg(class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z")
+            p#login-error-message(class="text-sm text-red-800")
+
+        //- Login Form
+        form#loginForm(class="space-y-5")
+          //- Email Field
+          div(class="relative")
+            input#login-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="email" autocomplete="email" required placeholder=" ")
+            label(class="floating-label" for="login-email") Email Address
+
+          //- Password Field
+          div(class="relative")
+            input#login-password(class="floating-input w-full px-4 pt-6 pb-2 pr-12 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="current-password" required placeholder=" ")
+            label(class="floating-label" for="login-password") Password
+            button#login-toggle-password(class="absolute flex items-center z-20 px-3 cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" type="button" style="right: 0; top: 50%; transform: translateY(-50%);")
+              svg(class="eye-slash w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21")
+              svg(class="eye-open w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z")
+                circle(cx="12" cy="12" r="3")
+
+          //- Remember Me
+          div(class="flex items-center justify-between")
+            div(class="flex items-center")
+              input#login-remember(class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" name="remember" type="checkbox")
+              label(class="ml-2 block text-sm text-slate-700" for="login-remember") Remember me
+            div(class="text-sm")
+              a(class="font-medium text-blue-600 hover:text-blue-500" href="#") Forgot password?
+
+          //- Submit Button
+          button#login-submit(class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit")
+            span#login-submit-text Sign In
+            svg#login-submit-spinner(class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24")
+              circle(class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4")
+              path(class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
+
+        //- Divider
+        div(class="relative my-6")
+          div(class="absolute inset-0 flex items-center")
+            div(class="w-full border-t border-slate-300")
+          div(class="relative flex justify-center text-sm")
+            span(class="px-4 bg-white text-slate-500") New to Zolentra?
+
+        //- Register Link
+        div(class="text-center")
+          button(class="font-medium text-blue-600 text-sm transition duration-150 hover:text-blue-500" type="button" onclick="switchModal('loginModal', 'registerModal')")
+            | Create an account
+            svg(class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+
+    //- Register Modal
+    div#registerModal(class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4")
+      div(class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative" onclick="event.stopPropagation()")
+        //- Close Button
+        button(class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition" onclick="closeModal('registerModal')" type="button")
+          svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+
+        //- Header
+        div(class="text-center mb-6")
+          div(class="inline-flex items-center justify-center mb-4")
+            img(class="h-12" src="/img/zolentra_logo.png" alt="Zolentra Logo")
+          h2(class="text-2xl font-bold text-slate-900 mb-2") Create your account
+          p(class="text-slate-600 text-sm") Join Zolentra to access our support platform
+
+        //- Error Alert
+        div#register-error(class="hidden p-4 bg-red-50 border border-red-200 rounded-lg")
+          div(class="flex items-start")
+            svg(class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
+              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z")
+            div#register-error-messages(class="text-sm text-red-800")
+
+        //- Register Form
+        form#registerForm(class="space-y-5")
+          //- Full Name Field
+          div(class="relative")
+            input#register-name(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="name" type="text" required placeholder=" ")
+            label(class="floating-label" for="register-name") Full Name
+
+          //- Email Field
+          div(class="relative")
+            input#register-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="email" autocomplete="email" required placeholder=" ")
+            label(class="floating-label" for="register-email") Email Address
+
+          //- Password Field
+          div(class="relative")
+            input#register-password(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="new-password" required minlength="6" placeholder=" ")
+            label(class="floating-label" for="register-password") Password
+
+          //- Confirm Password Field
+          div(class="relative")
+            input#register-confirmPassword(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="confirmPassword" type="password" autocomplete="new-password" required minlength="6" placeholder=" ")
+            label(class="floating-label" for="register-confirmPassword") Confirm Password
+
+          //- Submit Button
+          button#register-submit(class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit")
+            span#register-submit-text Sign Up
+            svg#register-submit-spinner(class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24")
+              circle(class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4")
+              path(class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
+
+        //- Divider
+        div(class="relative my-6")
+          div(class="absolute inset-0 flex items-center")
+            div(class="w-full border-t border-slate-300")
+          div(class="relative flex justify-center text-sm")
+            span(class="px-4 bg-white text-slate-500") Already have an account?
+
+        //- Login Link
+        div(class="text-center")
+          button(class="font-medium text-blue-600 text-sm transition duration-150 hover:text-blue-500" type="button" onclick="switchModal('registerModal', 'loginModal')")
+            | Sign in instead
+            svg(class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+
+    //- Floating Label Styles
     style.
-      .pricing-btn-outline:hover {
-        background-color: #2563eb !important;
-        color: white !important;
-        border-color: #2563eb !important;
+      .floating-input::placeholder {
+        color: transparent;
       }
-      .hover-blue-bg:hover {
-        background-color: #eff6ff !important;
+
+      .floating-label {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1rem;
+        line-height: 1;
+        color: #737373;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        pointer-events: none;
       }
-      .hover-border-blue:hover {
-        border-color: #2563eb !important;
+
+      .floating-input:focus ~ .floating-label,
+      .floating-input:not(:placeholder-shown) ~ .floating-label {
+        top: 0.75rem;
+        transform: translateY(0);
+        font-size: 0.75rem;
       }
-      .hover-text-blue:hover {
-        color: #2563eb !important;
+
+      .floating-input:focus ~ .floating-label {
+        color: #2563eb;
+      }
+
+      .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
+        color: #737373;
       }
 
     script.
+      // Modal functions
+      function openLoginModal() {
+        document.getElementById('loginModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function openRegisterModal() {
+        document.getElementById('registerModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(modalId) {
+        document.getElementById(modalId).classList.add('hidden');
+        document.body.style.overflow = 'auto';
+      }
+
+      function switchModal(fromModalId, toModalId) {
+        closeModal(fromModalId);
+        setTimeout(() => {
+          if (toModalId === 'loginModal') {
+            openLoginModal();
+          } else {
+            openRegisterModal();
+          }
+        }, 150);
+      }
+
+      // Close modal on outside click
+      document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeModal('loginModal');
+        }
+      });
+
+      document.getElementById('registerModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeModal('registerModal');
+        }
+      });
+
+      // Close modal on ESC key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          closeModal('loginModal');
+          closeModal('registerModal');
+        }
+      });
+
+      // Password toggle for login modal
+      const loginToggleBtn = document.getElementById('login-toggle-password');
+      const loginPasswordInput = document.getElementById('login-password');
+
+      if (loginToggleBtn && loginPasswordInput) {
+        loginToggleBtn.addEventListener('click', function() {
+          const eyeSlash = loginToggleBtn.querySelector('.eye-slash');
+          const eyeOpen = loginToggleBtn.querySelector('.eye-open');
+
+          if (loginPasswordInput.type === 'password') {
+            loginPasswordInput.type = 'text';
+            eyeSlash.classList.add('hidden');
+            eyeOpen.classList.remove('hidden');
+          } else {
+            loginPasswordInput.type = 'password';
+            eyeSlash.classList.remove('hidden');
+            eyeOpen.classList.add('hidden');
+          }
+        });
+      }
+
+      // Login form AJAX submission
+      const loginForm = document.getElementById('loginForm');
+      if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          // Hide previous errors
+          const errorDiv = document.getElementById('login-error');
+          errorDiv.classList.add('hidden');
+
+          // Get form data
+          const formData = {
+            email: document.getElementById('login-email').value,
+            password: document.getElementById('login-password').value,
+            remember: document.getElementById('login-remember').checked
+          };
+
+          // Show loading state
+          const submitBtn = document.getElementById('login-submit');
+          const submitText = document.getElementById('login-submit-text');
+          const submitSpinner = document.getElementById('login-submit-spinner');
+          submitBtn.disabled = true;
+          submitText.classList.add('hidden');
+          submitSpinner.classList.remove('hidden');
+
+          try {
+            const response = await fetch('/auth/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Success - redirect to dashboard
+              window.location.href = data.redirect || '/dashboard';
+            } else {
+              // Show error
+              const errorMessage = document.getElementById('login-error-message');
+              errorMessage.textContent = data.error || 'Invalid email or password';
+              errorDiv.classList.remove('hidden');
+
+              // Reset loading state
+              submitBtn.disabled = false;
+              submitText.classList.remove('hidden');
+              submitSpinner.classList.add('hidden');
+            }
+          } catch (error) {
+            // Network error
+            const errorMessage = document.getElementById('login-error-message');
+            errorMessage.textContent = 'Network error. Please try again.';
+            errorDiv.classList.remove('hidden');
+
+            // Reset loading state
+            submitBtn.disabled = false;
+            submitText.classList.remove('hidden');
+            submitSpinner.classList.add('hidden');
+          }
+        });
+      }
+
+      // Register form AJAX submission
+      const registerForm = document.getElementById('registerForm');
+      if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          // Hide previous errors
+          const errorDiv = document.getElementById('register-error');
+          errorDiv.classList.add('hidden');
+
+          // Get form data
+          const formData = {
+            name: document.getElementById('register-name').value,
+            email: document.getElementById('register-email').value,
+            password: document.getElementById('register-password').value,
+            confirmPassword: document.getElementById('register-confirmPassword').value
+          };
+
+          // Show loading state
+          const submitBtn = document.getElementById('register-submit');
+          const submitText = document.getElementById('register-submit-text');
+          const submitSpinner = document.getElementById('register-submit-spinner');
+          submitBtn.disabled = true;
+          submitText.classList.add('hidden');
+          submitSpinner.classList.remove('hidden');
+
+          try {
+            const response = await fetch('/auth/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+              // Success - redirect to dashboard
+              window.location.href = data.redirect || '/dashboard';
+            } else {
+              // Show errors
+              const errorMessages = document.getElementById('register-error-messages');
+
+              if (data.errors && Array.isArray(data.errors)) {
+                // Multiple validation errors
+                errorMessages.innerHTML = '<ul class="list-disc ml-4">' +
+                  data.errors.map(err => `<li>${err.msg}</li>`).join('') +
+                  '</ul>';
+              } else {
+                // Single error message
+                errorMessages.textContent = data.error || 'Registration failed. Please check your input.';
+              }
+
+              errorDiv.classList.remove('hidden');
+
+              // Reset loading state
+              submitBtn.disabled = false;
+              submitText.classList.remove('hidden');
+              submitSpinner.classList.add('hidden');
+            }
+          } catch (error) {
+            // Network error
+            const errorMessages = document.getElementById('register-error-messages');
+            errorMessages.textContent = 'Network error. Please try again.';
+            errorDiv.classList.remove('hidden');
+
+            // Reset loading state
+            submitBtn.disabled = false;
+            submitText.classList.remove('hidden');
+            submitSpinner.classList.add('hidden');
+          }
+        });
+      }
+
       // Mobile menu toggle
       const mobileMenuBtn = document.getElementById('mobile-menu-btn');
       const mobileMenu = document.getElementById('mobile-menu');
 
       if (mobileMenuBtn && mobileMenu) {
         mobileMenuBtn.addEventListener('click', () => {
-          mobileMenu.classList.toggle('hidden');
+          const isExpanded = mobileMenu.classList.toggle('hidden');
+          mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
         });
 
-        // Close mobile menu when clicking links
-        mobileMenu.querySelectorAll('a').forEach(link => {
+        mobileMenu.querySelectorAll('a, button').forEach(link => {
           link.addEventListener('click', () => {
             mobileMenu.classList.add('hidden');
+            mobileMenuBtn.setAttribute('aria-expanded', 'false');
           });
         });
       }
@@ -301,8 +900,11 @@ html(lang="pt")
       // Smooth scroll for anchor links
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
+          const href = this.getAttribute('href');
+          if (href === '#') return;
+
           e.preventDefault();
-          const target = document.querySelector(this.getAttribute('href'));
+          const target = document.querySelector(href);
           if (target) {
             target.scrollIntoView({
               behavior: 'smooth',
@@ -311,3 +913,55 @@ html(lang="pt")
           }
         });
       });
+
+      // FAQ Accordion
+      document.querySelectorAll('.faq-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+          const content = button.nextElementSibling;
+          const icon = button.querySelector('svg');
+
+          const isOpen = !content.classList.contains('hidden');
+
+          if (isOpen) {
+            content.style.maxHeight = '0';
+            content.style.opacity = '0';
+            icon.style.transform = 'rotate(0deg)';
+            button.style.backgroundColor = '#ffffff';
+            button.querySelector('h3').style.color = '#111827';
+            icon.style.color = '#9ca3af';
+            setTimeout(() => {
+              content.classList.add('hidden');
+            }, 300);
+          } else {
+            content.classList.remove('hidden');
+            const scrollHeight = content.scrollHeight;
+            content.style.maxHeight = '0';
+            content.style.opacity = '0';
+            button.style.backgroundColor = '#1d4ed8';
+            button.querySelector('h3').style.color = '#ffffff';
+            icon.style.color = '#ffffff';
+
+            requestAnimationFrame(() => {
+              content.style.maxHeight = scrollHeight + 'px';
+              content.style.opacity = '1';
+              icon.style.transform = 'rotate(180deg)';
+            });
+          }
+        });
+      });
+
+      // Billing toggle
+      const billingToggle = document.getElementById('billing-toggle');
+      const monthlyPrices = document.querySelectorAll('.monthly-price');
+      const annualPrices = document.querySelectorAll('.annual-price');
+
+      if (billingToggle) {
+        billingToggle.addEventListener('click', () => {
+          const isActive = billingToggle.style.backgroundColor === 'rgb(37, 99, 235)';
+          billingToggle.style.backgroundColor = isActive ? '#e2e8f0' : '#2563eb';
+          billingToggle.querySelector('div').style.transform = isActive ? 'translateX(0)' : 'translateX(28px)';
+
+          monthlyPrices.forEach(el => el.classList.toggle('hidden'));
+          annualPrices.forEach(el => el.classList.toggle('hidden'));
+        });
+      }

@@ -79,28 +79,8 @@ block content
                 path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
               | Create Your First Ticket
 
-  //- Scripts
+  //- Scripts (Filter toggle is handled in tickets-header.pug)
   script.
-    document.getElementById('filterBtn').addEventListener('click', function() {
-      const panel = document.getElementById('filterPanel');
-      panel.classList.toggle('hidden');
-    });
-
-    // Real-time search
-    let searchTimeout;
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        const url = new URL(window.location.href);
-        if (e.target.value) {
-          url.searchParams.set('search', e.target.value);
-        } else {
-          url.searchParams.delete('search');
-        }
-        window.location.href = url.toString();
-      }, 500);
-    });
-
     // Drag and Drop functionality
     let draggedElement = null;
     let draggedTicketId = null;
@@ -198,8 +178,11 @@ block content
         .then(response => response.json())
         .then(data => {
           if (data.success) {
-            // Show quick success notification
-            showNotification(`Ticket #${draggedTicketId} moved to ${newStatus}`, 'success');
+            // Show success notification only if status actually changed
+            if (!data.skipped) {
+              showNotification(`Ticket #${draggedTicketId} moved to ${newStatus}`, 'success');
+            }
+            // If skipped (already in that status), do nothing silently
           } else {
             showNotification('Error: ' + (data.message || 'Failed to update'), 'error');
             // Reload on error to restore correct state

@@ -37,6 +37,15 @@ router.patch('/tickets/:id/status', async (req, res) => {
     // Get old status for audit log
     const oldStatus = ticket.status;
 
+    // Check if status is actually changing
+    if (oldStatus === status) {
+      return res.status(200).json({
+        success: true,
+        message: 'Ticket is already in this status',
+        skipped: true
+      });
+    }
+
     // Update ticket status
     await db.query(
       'UPDATE tickets SET status = ?, updated_at = NOW() WHERE id = ?',

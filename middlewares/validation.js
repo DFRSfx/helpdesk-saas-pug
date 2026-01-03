@@ -4,6 +4,16 @@ const { body, validationResult } = require('express-validator');
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    const isJsonRequest = req.headers['content-type'] === 'application/json';
+
+    if (isJsonRequest) {
+      // Return JSON for AJAX requests
+      return res.status(400).json({
+        errors: errors.array()
+      });
+    }
+
+    // Traditional form submission - flash and redirect
     const messages = errors.array().map(err => err.msg);
     req.flash('error', messages.join(', '));
     return res.redirect('back');

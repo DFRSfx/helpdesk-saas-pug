@@ -4,78 +4,104 @@ block content
   .max-w-7xl.mx-auto
     //- Header
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
-      .flex.flex-col.md_flex-row.md_items-center.md_justify-between.gap-4
-        h2.text-xl.font-bold.text-gray-900 User Management
-
-        a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors(href="/users/create")
-          svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
-          | Create User
+      h2.text-xl.font-bold.text-gray-900 User Management
 
       //- Search and filters
       form.mt-4(method="GET" action="/users")
-        .grid.grid-cols-1.md_grid-cols-4.gap-4
+        //- Search + Filters row (responsive grid)
+        div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;")
           //- Search
-          .md_col-span-2
+          div
+            label.block.text-xs.font-semibold.text-gray-600.mb-1 Search
             .relative
-              svg.absolute.left-3.top-1_2.transform.-translate-y-1_2.w-5.h-5.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              svg.w-5.h-5.text-gray-400.pointer-events-none(
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%);"
+              )
                 path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
-              input.w-full.pl-10.pr-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              input.w-full.pl-10.pr-4.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.transition-all.duration-200(
                 type="text"
                 name="search"
                 placeholder="Search by name or email..."
                 value=search || ""
+                onchange="this.form.submit()"
               )
 
           //- Role filter
-          select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(name="role")
-            option(value="" selected=!role) All Roles
-            option(value="customer" selected=role === "customer") Customer
-            option(value="agent" selected=role === "agent") Agent
-            option(value="admin" selected=role === "admin") Admin
+          div
+            label.block.text-xs.font-semibold.text-gray-600.mb-1 Role
+            select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.transition-all.duration-200.bg-white(
+              name="role"
+              onchange="this.form.submit()"
+            )
+              option(value="" selected=!role) All Roles
+              option(value="customer" selected=role === "customer") Customer
+              option(value="agent" selected=role === "agent") Agent
+              option(value="admin" selected=role === "admin") Admin
 
           //- Status filter
-          select.px-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(name="status")
-            option(value="" selected=!status) All Status
-            option(value="active" selected=status === "active") Active
-            option(value="inactive" selected=status === "inactive") Inactive
+          div
+            label.block.text-xs.font-semibold.text-gray-600.mb-1 Status
+            select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.transition-all.duration-200.bg-white(
+              name="status"
+              onchange="this.form.submit()"
+            )
+              option(value="" selected=!status) All Status
+              option(value="active" selected=status === "active") Active
+              option(value="inactive" selected=status === "inactive") Inactive
 
-    //- Stats
-    .grid.grid-cols-1.md_grid-cols-4.gap-6.mb-6
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+        //- Actions row (Reset + Create)
+        .flex.items-center.justify-between
+          //- Reset link
+          if search || role || status
+            a.px-2.py-1.text-xs.text-blue-600.hover_text-blue-900.font-medium.transition-colors(href="/users" title="Reset filters") ✕ Reset
+          else
+            div
+
+          //- Create User button (right-aligned)
+          a.inline-flex.items-center.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors.whitespace-nowrap(href="/users/create")
+            svg.w-4.h-4.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+            | Create User
+
+    //- Stats (informational cards)
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;" class="mb-6")
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-4
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Total Users
+            p.text-xs.text-gray-600.font-medium Total Users
             p.text-2xl.font-bold.text-gray-900= stats.total || 0
-          .w-10.h-10.bg-blue-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          .w-9.h-9.bg-blue-100.rounded-lg.flex.items-center.justify-center
+            svg.w-5.h-5.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-4
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Customers
+            p.text-xs.text-gray-600.font-medium Customers
             p.text-2xl.font-bold.text-blue-600= stats.customers || 0
-          .w-10.h-10.bg-blue-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          .w-9.h-9.bg-blue-100.rounded-lg.flex.items-center.justify-center
+            svg.w-5.h-5.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-4
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Agents
+            p.text-xs.text-gray-600.font-medium Agents
             p.text-2xl.font-bold.text-green-600= stats.agents || 0
-          .w-10.h-10.bg-green-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          .w-9.h-9.bg-green-100.rounded-lg.flex.items-center.justify-center
+            svg.w-5.h-5.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-4
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Admins
+            p.text-xs.text-gray-600.font-medium Admins
             p.text-2xl.font-bold.text-purple-600= stats.admins || 0
-          .w-10.h-10.bg-purple-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-purple-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          .w-9.h-9.bg-purple-100.rounded-lg.flex.items-center.justify-center
+            svg.w-5.h-5.text-purple-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z")
 
     //- Users table
@@ -83,80 +109,79 @@ block content
       if users && users.length > 0
         .overflow-x-auto
           table.min-w-full.divide-y.divide-gray-200
-            thead.bg-gray-50
+            thead.bg-gray-100.border-b.border-gray-300
               tr
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider ID
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider User
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Role
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Status
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Department
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Tickets
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Joined
-                th.px-6.py-3.text-left.text-xs.font-medium.text-gray-500.uppercase.tracking-wider Actions
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 User
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 Role
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 Status
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 Tickets
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 Joined
+                th.px-6.py-2.text-left.text-xs.font-semibold.text-gray-700 Actions
 
-            tbody.bg-white.divide-y.divide-gray-200
+            tbody.divide-y.divide-gray-200
               each user in users
                 tr.hover_bg-gray-50.transition-colors
-                  td.px-6.py-4.whitespace-nowrap
-                    .text-sm.font-medium.text-gray-900= user.id
-
-                  td.px-6.py-4.whitespace-nowrap
-                    .flex.items-center
-                      .w-10.h-10.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-semibold.mr-3
+                  //- User (Name + Email)
+                  td.px-6.py-3.whitespace-nowrap
+                    .flex.items-center.gap-2
+                      .w-8.h-8.rounded-full.bg-blue-600.text-white.flex.items-center.justify-center.font-medium.text-xs
                         = user.name.charAt(0).toUpperCase()
-                      div
+                      div.min-w-0
                         .text-sm.font-medium.text-gray-900= user.name
-                        .text-sm.text-gray-500= user.email
+                        .text-xs.text-gray-500.truncate= user.email
 
-                  td.px-6.py-4.whitespace-nowrap
-                    - const roleColors = { customer: 'bg-blue-100 text-blue-800', agent: 'bg-green-100 text-green-800', admin: 'bg-purple-100 text-purple-800' }
-                    span.px-2.py-1.text-xs.font-semibold.rounded-full(class=roleColors[user.role])
-                      = user.role.toUpperCase()
+                  //- Role
+                  td.px-6.py-3.whitespace-nowrap
+                    - const roleColors = { customer: 'bg-blue-100 text-blue-700', agent: 'bg-green-100 text-green-700', admin: 'bg-purple-100 text-purple-700' }
+                    span.px-2.py-0_5.text-xs.font-medium.rounded(class=roleColors[user.role])
+                      = user.role.charAt(0).toUpperCase() + user.role.slice(1)
 
-                  td.px-6.py-4.whitespace-nowrap
-                    if user.is_active
-                      span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-green-100.text-green-800 Active
-                    else
-                      span.px-2.py-1.text-xs.font-semibold.rounded-full.bg-red-100.text-red-800 Inactive
+                  //- Status (dot + text)
+                  td.px-6.py-3.whitespace-nowrap
+                    .flex.items-center.gap-2
+                      span(class=user.is_active ? 'w-2 h-2 bg-green-500 rounded-full' : 'w-2 h-2 bg-red-500 rounded-full')
+                      span.text-sm(class=user.is_active ? 'text-gray-900 font-medium' : 'text-gray-500')
+                        = user.is_active ? 'Active' : 'Inactive'
 
-                  td.px-6.py-4.whitespace-nowrap
-                    .text-sm.text-gray-900= user.department_name || 'N/A'
-
-                  td.px-6.py-4.whitespace-nowrap
+                  //- Tickets/Activity
+                  td.px-6.py-3.whitespace-nowrap.text-sm
                     if user.role === 'customer'
-                      .text-sm.text-gray-900= user.ticket_count || 0
+                      .text-gray-900.font-medium= user.ticket_count || 0
                     else if user.role === 'agent'
-                      .text-sm.text-gray-900
-                        = (user.assigned_count || 0) + ' assigned'
+                      .text-gray-900
+                        .font-medium= (user.assigned_count || 0) + ' assigned'
                         if user.resolved_count
-                          br
                           .text-xs.text-green-600= user.resolved_count + ' resolved'
                     else
-                      .text-sm.text-gray-500 -
+                      .text-gray-400 -
 
-                  td.px-6.py-4.whitespace-nowrap
-                    .text-sm.text-gray-500= formatDate(user.created_at)
+                  //- Joined
+                  td.px-6.py-3.whitespace-nowrap
+                    .text-sm.text-gray-600= formatDate(user.created_at)
 
-                  td.px-6.py-4.whitespace-nowrap.text-sm.font-medium
-                    .flex.items-center.space-x-2
-                      a.text-blue-600.hover_text-blue-900(href=`/users/${user.id}/edit` title="Edit")
-                        svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  //- Actions
+                  td.px-6.py-3.whitespace-nowrap.text-right
+                    .flex.items-center.justify-end.gap-3
+                      a.text-blue-600.hover_text-blue-900.transition-colors(href=`/users/${user.id}/edit` title="Edit user")
+                        svg.w-4.h-4(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
 
                       if user.is_active
-                        button.text-red-600.hover_text-red-900(
+                        button.text-red-500.hover_text-red-700.transition-colors(
                           onclick=`toggleUserStatus(${user.id}, false)`
-                          title="Deactivate"
+                          title="Deactivate user"
+                          type="button"
                         )
-                          svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636")
+                          svg.w-4.h-4(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.172l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z")
                       else
-                        button.text-green-600.hover_text-green-900(
+                        button.text-green-600.hover_text-green-700.transition-colors(
                           onclick=`toggleUserStatus(${user.id}, true)`
-                          title="Activate"
+                          title="Activate user"
+                          type="button"
                         )
-                          svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
+                          svg.w-4.h-4(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m7 0a9 9 0 11-18 0 9 9 0 0118 0z")
       else
         .p-8.text-center
           svg.mx-auto.h-12.w-12.text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")

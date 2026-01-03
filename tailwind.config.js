@@ -5,7 +5,7 @@ module.exports = {
     './public/**/*.js'
   ],
   darkMode: 'class',
-  separator: '_',
+  separator: ':',
   theme: {
     extend: {
       // Enterprise Color System
