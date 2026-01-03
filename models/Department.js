@@ -10,9 +10,27 @@ class Department {
   }
 
   static async getAll() {
-    const [rows] = await db.query(
-      'SELECT * FROM departments ORDER BY name ASC'
-    );
+    const [rows] = await db.query(`
+      SELECT
+        d.id,
+        d.name,
+        d.description,
+        d.is_active,
+        d.created_at,
+        d.updated_at,
+        COUNT(DISTINCT u.id) as agent_count,
+        COUNT(DISTINCT t.id) as total_tickets,
+        SUM(CASE WHEN t.status = 'Open' THEN 1 ELSE 0 END) as open_tickets,
+        SUM(CASE WHEN t.status = 'In Progress' THEN 1 ELSE 0 END) as in_progress_tickets,
+        SUM(CASE WHEN t.status = 'Resolved' THEN 1 ELSE 0 END) as resolved_tickets,
+        SUM(CASE WHEN t.status = 'Closed' THEN 1 ELSE 0 END) as closed_tickets,
+        SUM(CASE WHEN t.priority = 'Critical' THEN 1 ELSE 0 END) as critical_tickets
+      FROM departments d
+      LEFT JOIN users u ON d.id = u.department_id AND u.role = 'agent'
+      LEFT JOIN tickets t ON d.id = t.department_id
+      GROUP BY d.id, d.name, d.description, d.is_active, d.created_at, d.updated_at
+      ORDER BY d.name ASC
+    `);
     return rows;
   }
 
@@ -24,10 +42,11 @@ class Department {
     return result.insertId;
   }
 
-  static async update(id, name) {
+  static async update(id, data) {
+    const { name, description, is_active } = data;
     await db.query(
-      'UPDATE departments SET name = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [name, id]
+      'UPDATE departments SET name = ?, description = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [name, description || null, is_active ? 1 : 0, id]
     );
   }
 
