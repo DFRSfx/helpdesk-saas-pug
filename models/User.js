@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 class User {
   static async findById(id) {
     const [rows] = await db.query(
-      'SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = ?',
+      'SELECT id, name, email, role, is_active, department_id, created_at, updated_at FROM users WHERE id = ?',
       [id]
     );
     return rows[0];
@@ -31,11 +31,20 @@ class User {
   }
 
   static async update(id, userData) {
-    const { name, email, role } = userData;
-    await db.query(
-      'UPDATE users SET name = ?, email = ?, role = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [name, email, role, id]
-    );
+    const { name, email, role, is_active, new_password, department_id } = userData;
+    let query = 'UPDATE users SET name = ?, email = ?, role = ?, is_active = ?, department_id = ?, updated_at = CURRENT_TIMESTAMP';
+    const params = [name, email, role, is_active ? 1 : 0, department_id || null];
+
+    if (new_password) {
+      const hashedPassword = await bcrypt.hash(new_password, 10);
+      query += ', password_hash = ?';
+      params.push(hashedPassword);
+    }
+
+    query += ' WHERE id = ?';
+    params.push(id);
+
+    await db.query(query, params);
   }
 
   static async updatePassword(id, newPassword) {
@@ -51,7 +60,7 @@ class User {
   }
 
   static async getAll(filters = {}) {
-    let query = 'SELECT id, name, email, role, created_at, updated_at FROM users WHERE 1=1';
+    let query = 'SELECT id, name, email, role, is_active, created_at, updated_at FROM users WHERE 1=1';
     const params = [];
 
     if (filters.role) {

@@ -61,7 +61,12 @@ block content
             div
 
           //- Create User button (right-aligned)
-          a.inline-flex.items-center.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.transition-colors.whitespace-nowrap(href="/users/create")
+          a.inline-flex.items-center.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.whitespace-nowrap(
+            href="/users/create"
+            style="transition: all 0.3s ease-in-out; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);"
+            onmouseover="this.style.boxShadow='0 10px 15px rgba(0, 0, 0, 0.2)'; this.style.transform='translateY(-2px)'; this.style.backgroundColor='#1e40af';"
+            onmouseout="this.style.boxShadow='0 1px 3px rgba(0, 0, 0, 0.12)'; this.style.transform='translateY(0)'; this.style.backgroundColor='#2563eb';"
+          )
             svg.w-4.h-4.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
             | Create User

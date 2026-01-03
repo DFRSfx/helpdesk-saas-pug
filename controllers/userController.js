@@ -81,9 +81,13 @@ exports.showEdit = async (req, res, next) => {
       return res.redirect('/users');
     }
 
+    const Department = require('../models/Department');
+    const departments = await Department.getAll();
+
     res.render('users/edit', {
       title: 'Edit User',
-      user
+      user,
+      departments
     });
   } catch (error) {
     next(error);
@@ -93,8 +97,28 @@ exports.showEdit = async (req, res, next) => {
 // Handle update user (admin only)
 exports.update = async (req, res, next) => {
   try {
-    const { name, email, role } = req.body;
-    await User.update(req.params.id, { name, email, role });
+    const { name, email, role, is_active, department_id, new_password, confirm_new_password } = req.body;
+
+    // Validate passwords match if provided
+    if (new_password || confirm_new_password) {
+      if (new_password !== confirm_new_password) {
+        req.flash('error', 'Passwords do not match');
+        return res.redirect(`/users/${req.params.id}/edit`);
+      }
+      if (new_password && new_password.length < 6) {
+        req.flash('error', 'Password must be at least 6 characters');
+        return res.redirect(`/users/${req.params.id}/edit`);
+      }
+    }
+
+    await User.update(req.params.id, {
+      name,
+      email,
+      role,
+      is_active: is_active ? true : false,
+      department_id: department_id || null,
+      new_password: new_password || null
+    });
 
     req.flash('success', 'User updated successfully');
     res.redirect('/users');

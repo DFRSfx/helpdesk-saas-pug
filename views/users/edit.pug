@@ -5,8 +5,7 @@ block content
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Edit User
 
-      form(action=`/users/${user.id}` method="POST")
-        input(type="hidden" name="_method" value="PUT")
+      form(action=`/users/${user.id}/edit` method="POST")
 
         .space-y-6
           //- Name
