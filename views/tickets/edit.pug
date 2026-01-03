@@ -1,9 +1,6 @@
 extends ../layout/layout
 
 block content
-  //- Include reusable confirmation modal
-  include ../partials/modal
-
   .max-w-3xl.mx-auto
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       .flex.items-center.justify-between.mb-6
@@ -152,7 +149,7 @@ block content
               if isAdmin()
                 button.px-4.py-2.bg-red-600.text-white.rounded-lg.hover_bg-red-700.transition-colors(
                   type="button"
-                  onclick=`openModal('Delete Ticket', 'This ticket will be permanently deleted. This action cannot be undone.', 'Delete', () => deleteTicket(${ticket.id}))`
+                  onclick=`if(confirm('Are you sure you want to delete this ticket? This action cannot be undone.')) { deleteTicket(${ticket.id}); }`
                 )
                   | Delete Ticket
 

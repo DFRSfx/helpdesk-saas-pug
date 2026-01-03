@@ -11,7 +11,6 @@ CREATE TABLE users (
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     role ENUM('admin','agent','customer') NOT NULL DEFAULT 'customer',
-    is_active BOOLEAN NOT NULL DEFAULT 1,
     department_id INT UNSIGNED NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -97,7 +96,6 @@ CREATE TABLE audit_log (
 -- USERS INDEXES AND FOREIGN KEYS
 -- ==========================
 CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_users_active ON users(is_active);
 CREATE INDEX idx_users_created_at ON users(created_at);
 CREATE INDEX idx_users_department ON users(department_id);
 

@@ -1,9 +1,6 @@
 extends ../layout/layout
 
 block content
-  //- Include reusable confirmation modal
-  include ../partials/modal
-
   .max-w-3xl.mx-auto
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
       h2.text-2xl.font-bold.text-gray-900.mb-6.dark_text-neutral-200 Edit User
@@ -96,7 +93,7 @@ block content
           .flex.items-center.justify-between.pt-6.border-t.border-gray-200.dark_border-neutral-700
             button.px-4.py-2.bg-red-600.text-white.rounded-lg.hover_bg-red-700.transition-colors(
               type="button"
-              onclick=`openModal('Delete User', 'This user will be permanently deleted. This action cannot be undone.', 'Delete', () => deleteUser(${user.id}))`
+              onclick=`if(confirm('Are you sure you want to delete this user? This action cannot be undone.')) { deleteUser(${user.id}); }`
             )
               | Delete User
 
