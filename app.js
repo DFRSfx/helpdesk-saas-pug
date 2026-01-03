@@ -52,6 +52,14 @@ app.use(flash());
 // Set local variables for views
 app.use(setLocals);
 
+// Prevent caching of dynamic content and redirects
+app.use((req, res, next) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
+  next();
+});
+
 // Routes
 app.use('/auth', authRoutes);
 app.use('/tickets', ticketRoutes);
