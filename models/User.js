@@ -4,10 +4,25 @@ const bcrypt = require('bcrypt');
 class User {
   static async findById(id) {
     const [rows] = await db.query(
-      'SELECT id, name, email, role, is_active, department_id, created_at, updated_at FROM users WHERE id = ?',
+      `SELECT u.id, u.name, u.email, u.role, u.is_active, u.department_id, u.created_at, u.updated_at,
+              d.id as department_id_obj, d.name as department_name
+       FROM users u
+       LEFT JOIN departments d ON u.department_id = d.id
+       WHERE u.id = ?`,
       [id]
     );
-    return rows[0];
+    
+    if (!rows[0]) return null;
+    
+    const user = rows[0];
+    // Add departments array for agents
+    if (user.role === 'agent' && user.department_name) {
+      user.departments = [{ id: user.department_id_obj, name: user.department_name }];
+    } else {
+      user.departments = [];
+    }
+    
+    return user;
   }
 
   static async findByEmail(email) {

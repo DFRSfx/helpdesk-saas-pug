@@ -50,14 +50,6 @@
             - const filterCount = (priority ? 1 : 0) + (departmentFilter ? 1 : 0) + (assignedTo ? 1 : 0) + (showEscalated ? 1 : 0)
             span.ml-1.px-2.py-0_5.text-xs.font-semibold.text-white.bg-blue-600.rounded-full= filterCount
 
-      a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.transition-all.duration-200.shadow-sm.transform(
-        href="/tickets/create"
-        class="hover:bg-blue-700 hover:shadow-lg active:bg-blue-800 hover:scale-105 active:scale-95"
-      )
-        svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
-        | New Ticket
-
 //- Filter Panel (Hidden by default)
 #filterPanel.hidden.bg-gray-50.border-b.border-gray-200.px-6.py-4.transition-all.duration-300
   form.flex.flex-col.gap-3(method="GET" action="/tickets")

@@ -17,7 +17,6 @@ const dashboardRoutes = require('./routes/dashboard');
 const auditRoutes = require('./routes/audit');
 const apiRoutes = require('./routes/api');
 const notificationRoutes = require('./routes/notifications');
-const chatRoutes = require('./routes/chat');
 const feedbackRoutes = require('./routes/feedback');
 
 // Import middleware
@@ -104,7 +103,6 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/audit', auditRoutes);
 app.use('/api', apiRoutes);
 app.use('/notifications', notificationRoutes);
-app.use('/chat', chatRoutes);
 app.use('/feedback', feedbackRoutes);
 
 // Root - Landing Page

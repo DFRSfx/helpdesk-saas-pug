@@ -94,26 +94,26 @@ exports.index = async (req, res, next) => {
   }
 };
 
-// Customer portal - ticket selection and chat
+// Customer/Agent portal - ticket selection and chat
 exports.portal = async (req, res, next) => {
   try {
-    // Only customers can access this page
-    if (res.locals.currentUser.role !== 'customer') {
-      req.flash('error', 'Customers only');
-      return res.redirect('/tickets');
-    }
-
-    // Get all tickets for this customer
-    const filters = {
-      customer_id: res.locals.currentUser.id,
+    let filters = {
       limit: 100,
       offset: 0
     };
 
+    // Set up filters based on user role
+    if (res.locals.currentUser.role === 'customer') {
+      filters.customer_id = res.locals.currentUser.id;
+    } else if (res.locals.currentUser.role === 'agent') {
+      filters.agent_id = res.locals.currentUser.id;
+    }
+    // Admin sees all tickets (no filter)
+
     const tickets = await Ticket.getAll(filters);
 
     res.render('tickets/portal', {
-      title: 'Your Tickets',
+      title: res.locals.currentUser.role === 'customer' ? 'Your Tickets' : 'Tickets',
       tickets,
       selectedTicketId: req.query.ticketId ? parseInt(req.query.ticketId) : null
     });
@@ -201,7 +201,7 @@ exports.show = async (req, res, next) => {
       return res.redirect('/tickets');
     }
 
-    // Customers use the portal view instead
+    // All users use the portal view for chat
     if (res.locals.currentUser.role === 'customer') {
       if (ticket.customer_id !== res.locals.currentUser.id) {
         req.flash('error', 'You do not have permission to view this ticket');
@@ -210,10 +210,9 @@ exports.show = async (req, res, next) => {
       return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
     }
 
-    // Check permissions for agents
-    if (res.locals.currentUser.role === 'agent' && ticket.agent_id !== res.locals.currentUser.id) {
-      req.flash('error', 'You do not have permission to view this ticket');
-      return res.redirect('/tickets');
+    // Agents and admins also use portal for chat
+    if (res.locals.currentUser.role === 'agent' || res.locals.currentUser.role === 'admin') {
+      return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
     }
 
     const isInternal = res.locals.currentUser.role !== 'customer';

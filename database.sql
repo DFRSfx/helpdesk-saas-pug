@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   KEY `idx_audit_entity` (`entity_type`,`entity_id`),
   CONSTRAINT `audit_log_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE,
   CONSTRAINT `audit_log_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=62 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.audit_log: ~11 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.audit_log: ~16 rows (aproximadamente)
 DELETE FROM `audit_log`;
 INSERT INTO `audit_log` (`id`, `ticket_id`, `user_id`, `action`, `old_value`, `new_value`, `created_at`, `entity_type`, `entity_id`) VALUES
 	(51, NULL, 1, 'login', NULL, 'Logged in from ::1', '2026-01-13 17:20:38', NULL, NULL),
@@ -53,7 +53,18 @@ INSERT INTO `audit_log` (`id`, `ticket_id`, `user_id`, `action`, `old_value`, `n
 	(58, NULL, 1, 'login', NULL, 'Logged in from ::1', '2026-01-13 17:43:03', NULL, NULL),
 	(59, NULL, 1, 'login', NULL, 'Logged in from ::1', '2026-01-13 17:48:47', NULL, NULL),
 	(60, NULL, 1, 'login', NULL, 'Logged in from ::1', '2026-01-13 18:12:42', NULL, NULL),
-	(61, NULL, 1, 'logout', NULL, 'Logged out from ::1', '2026-01-13 18:20:26', NULL, NULL);
+	(61, NULL, 1, 'logout', NULL, 'Logged out from ::1', '2026-01-13 18:20:26', NULL, NULL),
+	(66, 14, NULL, 'ticket_created_public', NULL, 'Created from landing page by dariosoares2005@gmail.com', '2026-01-13 19:07:02', NULL, NULL),
+	(67, NULL, 20, 'login', NULL, 'Logged in from ::1', '2026-01-13 19:07:32', NULL, NULL),
+	(68, NULL, 20, 'login', NULL, 'Logged in from ::1', '2026-01-13 19:47:51', NULL, NULL),
+	(69, 14, 20, 'status_changed', 'Open', 'In Progress', '2026-01-13 19:55:57', NULL, NULL),
+	(70, 14, 20, 'status_changed', 'In Progress', 'Open', '2026-01-13 19:55:58', NULL, NULL),
+	(71, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 21:02:31', NULL, NULL),
+	(72, NULL, 5, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:48:56', NULL, NULL),
+	(73, NULL, 5, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 21:54:37', NULL, NULL),
+	(74, NULL, 1, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:54:47', NULL, NULL),
+	(75, NULL, 1, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 21:55:25', NULL, NULL),
+	(76, NULL, 2, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:55:32', NULL, NULL);
 
 -- A despejar estrutura para tabela zolentra_db.chat_conversations
 CREATE TABLE IF NOT EXISTS `chat_conversations` (
@@ -73,10 +84,12 @@ CREATE TABLE IF NOT EXISTS `chat_conversations` (
   KEY `idx_ticket_id` (`ticket_id`),
   CONSTRAINT `chat_conversations_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_chat_conversations_ticket` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.chat_conversations: ~0 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.chat_conversations: ~1 rows (aproximadamente)
 DELETE FROM `chat_conversations`;
+INSERT INTO `chat_conversations` (`id`, `type`, `ticket_id`, `name`, `created_by`, `created_at`, `updated_at`, `last_message_at`) VALUES
+	(5, '', 14, NULL, 20, '2026-01-13 19:07:02', '2026-01-13 21:02:31', '2026-01-13 21:02:31');
 
 -- A despejar estrutura para tabela zolentra_db.chat_messages
 CREATE TABLE IF NOT EXISTS `chat_messages` (
@@ -94,10 +107,13 @@ CREATE TABLE IF NOT EXISTS `chat_messages` (
   FULLTEXT KEY `idx_message_search` (`message`),
   CONSTRAINT `chat_messages_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `chat_conversations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `chat_messages_ibfk_2` FOREIGN KEY (`sender_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.chat_messages: ~0 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.chat_messages: ~2 rows (aproximadamente)
 DELETE FROM `chat_messages`;
+INSERT INTO `chat_messages` (`id`, `conversation_id`, `sender_id`, `message`, `is_edited`, `edited_at`, `created_at`) VALUES
+	(5, 5, 20, 'teste', 0, NULL, '2026-01-13 19:07:02'),
+	(6, 5, 20, 'teste1', 0, NULL, '2026-01-13 21:02:31');
 
 -- A despejar estrutura para tabela zolentra_db.chat_participants
 CREATE TABLE IF NOT EXISTS `chat_participants` (
@@ -114,11 +130,12 @@ CREATE TABLE IF NOT EXISTS `chat_participants` (
   KEY `idx_conversation` (`conversation_id`),
   CONSTRAINT `chat_participants_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `chat_conversations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `chat_participants_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.chat_participants: ~0 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.chat_participants: ~1 rows (aproximadamente)
 DELETE FROM `chat_participants`;
-
+INSERT INTO `chat_participants` (`id`, `conversation_id`, `user_id`, `joined_at`, `last_read_at`, `is_active`) VALUES
+	(9, 5, 20, '2026-01-13 19:07:02', '2026-01-13 20:10:49', 1);
 
 -- A despejar estrutura para tabela zolentra_db.departments
 CREATE TABLE IF NOT EXISTS `departments` (
@@ -206,34 +223,22 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.sessions: ~1 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.sessions: ~2 rows (aproximadamente)
 DELETE FROM `sessions`;
 INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
-	('VpkzGW9Nm0mdfKvI2FDRDc79R4Yo6I39', 1768414950, '{"cookie":{"originalMaxAge":86400000,"expires":"2026-01-14T18:20:27.094Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}');
-
--- A despejar estrutura para tabela zolentra_db.sla_policies
-CREATE TABLE IF NOT EXISTS `sla_policies` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `priority` enum('Low','Medium','High','Critical') NOT NULL,
-  `response_time_hours` int(11) NOT NULL COMMENT 'Time to first response in hours',
-  `resolution_time_hours` int(11) NOT NULL COMMENT 'Time to resolve in hours',
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `priority` (`priority`),
-  KEY `idx_priority` (`priority`),
-  KEY `idx_is_active` (`is_active`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- A despejar dados para tabela zolentra_db.sla_policies: ~4 rows (aproximadamente)
-DELETE FROM `sla_policies`;
-INSERT INTO `sla_policies` (`id`, `name`, `priority`, `response_time_hours`, `resolution_time_hours`, `is_active`, `created_at`, `updated_at`) VALUES
-	(1, 'Low Priority SLA', 'Low', 24, 120, 1, '2026-01-13 13:56:51', '2026-01-13 13:56:51'),
-	(2, 'Medium Priority SLA', 'Medium', 8, 48, 1, '2026-01-13 13:56:51', '2026-01-13 13:56:51'),
-	(3, 'High Priority SLA', 'High', 2, 24, 1, '2026-01-13 13:56:51', '2026-01-13 13:56:51'),
-	(4, 'Critical Priority SLA', 'Critical', 1, 8, 1, '2026-01-13 13:56:51', '2026-01-13 13:56:51');
+	('6548rrV1D3L2SghDivLtnWcadW3Da4ay', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.582Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('8_4X3o9jWvt61Bv1YqKsV_TkVAZEiG7m', 1768362432, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T03:07:32.535Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":20,"userRole":"customer"}'),
+	('GPpUuFNfrzj-c3YkLxA4pL5duXfgVuxx', 1768370911, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T03:57:28.499Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":20,"userRole":"customer"}'),
+	('GjUEAdh0Uj5b2Qq_IpUWb7oDKWRQ8fWl', 1768370854, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:07:33.941Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('Hh_rnDaaexnU5qAWqNqxVQ8VZCMys_Gf', 1768370217, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.538Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('J9g9os412p6EMXC6dX0IV2PbQoKkb_jY', 1768370967, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:55:32.645Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":2,"userRole":"agent"}'),
+	('JL31ZtuUFtxBFtxKaJtNQVCiqzanCCh2', 1768370216, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.370Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('KHc-T9533oyEjz_w1P6jeI6LPpyKkG7X', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.806Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('YoyWE3syZ6lA0H96CYYWjrhPFDsHMmGJ', 1768370216, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.378Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('b6kIs4uJ_mj8UQO0YOxRB8nx55eQAKOU', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.963Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('d0yLdaImkc-l7Go3EdW2klv0MisATq6E', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.709Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('eJU_G9VWM57MK7JH5Mz29SnPomwDiDds', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.812Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('yHX1WEl5i0z5hscCXetM_qLIFazsbjI6', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.595Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}');
 
 -- A despejar estrutura para tabela zolentra_db.tickets
 CREATE TABLE IF NOT EXISTS `tickets` (
@@ -277,18 +282,20 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   CONSTRAINT `tickets_ibfk_1` FOREIGN KEY (`customer_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tickets_ibfk_2` FOREIGN KEY (`agent_id`) REFERENCES `users` (`id`) ON DELETE SET NULL,
   CONSTRAINT `tickets_ibfk_3` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.tickets: ~0 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.tickets: ~1 rows (aproximadamente)
 DELETE FROM `tickets`;
+INSERT INTO `tickets` (`id`, `customer_id`, `agent_id`, `department_id`, `priority`, `sla_policy_id`, `sla_response_due`, `sla_resolution_due`, `sla_first_response_at`, `sla_response_breached`, `sla_resolution_breached`, `status`, `title`, `description`, `created_at`, `updated_at`, `feedback_requested_at`, `has_feedback`) VALUES
+	(14, 20, 2, 1, 'Medium', NULL, NULL, NULL, NULL, 0, 0, 'Open', 'teste', 'teste', '2026-01-13 19:07:02', '2026-01-13 19:55:58', NULL, 0);
 
 -- A despejar estrutura para tabela zolentra_db.ticket_attachments
 CREATE TABLE IF NOT EXISTS `ticket_attachments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `ticket_id` int(10) unsigned NOT NULL,
   `file_path` varchar(500) NOT NULL,
-  `original_name` varchar(255),
-  `file_size` int(10) unsigned,
+  `original_name` varchar(255) DEFAULT NULL,
+  `file_size` int(10) DEFAULT NULL,
   `uploaded_by` int(10) unsigned NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
@@ -296,10 +303,12 @@ CREATE TABLE IF NOT EXISTS `ticket_attachments` (
   KEY `idx_attachments_uploaded_by` (`uploaded_by`),
   CONSTRAINT `ticket_attachments_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE,
   CONSTRAINT `ticket_attachments_ibfk_2` FOREIGN KEY (`uploaded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.ticket_attachments: ~0 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.ticket_attachments: ~1 rows (aproximadamente)
 DELETE FROM `ticket_attachments`;
+INSERT INTO `ticket_attachments` (`id`, `ticket_id`, `file_path`, `original_name`, `file_size`, `uploaded_by`, `created_at`) VALUES
+	(6, 14, '0fc3f6c3-8aca-4bef-95db-fa93ecf6379f.png', 'teste.png', 33, 20, '2026-01-13 19:07:02');
 
 -- A despejar estrutura para tabela zolentra_db.ticket_feedback
 CREATE TABLE IF NOT EXISTS `ticket_feedback` (
@@ -318,31 +327,6 @@ CREATE TABLE IF NOT EXISTS `ticket_feedback` (
 
 -- A despejar dados para tabela zolentra_db.ticket_feedback: ~0 rows (aproximadamente)
 DELETE FROM `ticket_feedback`;
-
--- A despejar estrutura para tabela zolentra_db.ticket_messages
-CREATE TABLE IF NOT EXISTS `ticket_messages` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `ticket_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
-  `message` text NOT NULL,
-  `is_edited` tinyint(1) NOT NULL DEFAULT 0,
-  `edited_at` timestamp NULL DEFAULT NULL,
-  `is_deleted` tinyint(1) NOT NULL DEFAULT 0,
-  `deleted_at` timestamp NULL DEFAULT NULL,
-  `is_internal` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `idx_messages_ticket` (`ticket_id`),
-  KEY `idx_messages_user` (`user_id`),
-  KEY `idx_messages_created` (`created_at`),
-  KEY `idx_is_edited` (`is_edited`),
-  KEY `idx_is_deleted` (`is_deleted`),
-  CONSTRAINT `ticket_messages_ibfk_1` FOREIGN KEY (`ticket_id`) REFERENCES `tickets` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `ticket_messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- A despejar dados para tabela zolentra_db.ticket_messages: ~0 rows (aproximadamente)
-DELETE FROM `ticket_messages`;
 
 -- A despejar estrutura para tabela zolentra_db.users
 CREATE TABLE IF NOT EXISTS `users` (
@@ -363,9 +347,9 @@ CREATE TABLE IF NOT EXISTS `users` (
   KEY `idx_users_active` (`is_active`),
   KEY `idx_role_department_active` (`role`,`department_id`,`is_active`),
   CONSTRAINT `fk_users_department` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.users: ~7 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.users: ~8 rows (aproximadamente)
 DELETE FROM `users`;
 INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `is_active`, `department_id`, `created_at`, `updated_at`) VALUES
 	(1, 'Admin User', 'admin@zolentra.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'admin', 1, 1, '2025-11-20 00:43:04', '2026-01-03 03:51:29'),
@@ -374,7 +358,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `is_active`
 	(5, 'Agent 3', 'agent3@zolentra.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'agent', 1, 3, '2025-11-20 00:43:04', '2026-01-03 06:22:17'),
 	(6, 'Costumer 1', 'costumer1@gmail.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'customer', 0, NULL, '2025-11-20 00:43:04', '2026-01-03 06:23:51'),
 	(7, 'Costumer 2', 'costumer2@gmail.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'customer', 0, NULL, '2025-11-20 00:43:04', '2026-01-03 06:23:56'),
-	(8, 'Costumer 3', 'costumer3@gmail.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'customer', 1, NULL, '2025-11-20 00:43:04', '2026-01-03 06:24:00');
+	(8, 'Costumer 3', 'costumer3@gmail.com', '$2b$10$BPUdDT8I0v1hNT3TSInE9us1mMoDC.X1TSK11gTCQN3hR7AHDpQL6', 'customer', 1, NULL, '2025-11-20 00:43:04', '2026-01-03 06:24:00'),
+	(20, 'Dário Soares', 'dariosoares2005@gmail.com', '$2b$10$Jm9ORsLMWVBHtsZy.FNzpumgqOT.mdQMBnpO195q.z3ROBgguwOJy', 'customer', 1, NULL, '2026-01-13 19:07:02', '2026-01-13 19:07:02');
 
 -- A despejar estrutura para tabela zolentra_db.user_sessions
 CREATE TABLE IF NOT EXISTS `user_sessions` (
@@ -432,11 +417,7 @@ CREATE TABLE `v_tickets_by_department` (
 
 -- A despejar estrutura para vista zolentra_db.v_ticket_message_activity
 -- A criar tabela temporária para vencer erros de dependências VIEW
-CREATE TABLE `v_ticket_message_activity` (
-	`ticket_id` INT(10) UNSIGNED NOT NULL,
-	`title` VARCHAR(1) NOT NULL COLLATE 'utf8mb4_unicode_ci',
-	`message_count` BIGINT(21) NOT NULL,
-	`last_message_at` TIMESTAMP NULL
+CREATE TABLE `v_ticket_message_activity` 
 ) ENGINE=MyISAM;
 
 -- A despejar estrutura para vista zolentra_db.v_ticket_overview_daily
