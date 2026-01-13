@@ -119,22 +119,6 @@ CREATE TABLE IF NOT EXISTS `chat_participants` (
 -- A despejar dados para tabela zolentra_db.chat_participants: ~0 rows (aproximadamente)
 DELETE FROM `chat_participants`;
 
--- A despejar estrutura para tabela zolentra_db.chat_typing_indicators
-CREATE TABLE IF NOT EXISTS `chat_typing_indicators` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `conversation_id` int(10) unsigned NOT NULL,
-  `user_id` int(10) unsigned NOT NULL,
-  `started_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_typing` (`conversation_id`,`user_id`),
-  KEY `user_id` (`user_id`),
-  KEY `idx_conversation` (`conversation_id`),
-  CONSTRAINT `chat_typing_indicators_ibfk_1` FOREIGN KEY (`conversation_id`) REFERENCES `chat_conversations` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `chat_typing_indicators_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- A despejar dados para tabela zolentra_db.chat_typing_indicators: ~0 rows (aproximadamente)
-DELETE FROM `chat_typing_indicators`;
 
 -- A despejar estrutura para tabela zolentra_db.departments
 CREATE TABLE IF NOT EXISTS `departments` (

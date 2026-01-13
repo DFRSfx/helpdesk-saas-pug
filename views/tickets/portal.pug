@@ -99,7 +99,7 @@ block content
             div#attachmentsSection
 
         //- 4. Chat Area (takes remaining space and scrolls)
-        .flex-1.overflow-y-auto.p-6.bg-white#messagesArea
+        .flex-1.overflow-y-auto.px-2.py-2#messagesArea.chat-area
           //- Loading state
           .flex.justify-center.py-10
             svg.animate-spin.h-6.w-6.text-blue-600(fill="none" viewBox="0 0 24 24")
@@ -107,32 +107,37 @@ block content
               path.opacity-75(fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
 
         //- 5. Input Area (fixed at bottom, does not scroll)
-        .p-4.border-t.border-gray-200.bg-white.flex-shrink-0
+        .px-6.py-4.border-t.border-gray-200.bg-white.flex-shrink-0
           //- Attachment preview area
           #attachmentPreview.mb-3
 
-          .flex.gap-3.items-end.max-w-4xl.mx-auto
+          .flex.gap-2.items-end
             //- File input (hidden)
             input#fileInput(type="file" multiple style="display: none" accept="*/*")
 
-            .relative.flex-1
-              textarea.w-full.px-4.py-3.bg-gray-50.border.border-gray-200.text-gray-900.rounded-xl.focus_bg-white.focus_ring-2.focus_ring-blue-500.focus_border-transparent.resize-none.transition-all(
-                id="messageInput"
-                placeholder="Type your reply here..."
-                rows="1"
-                style="min-height: 48px; max-height: 120px;"
-                oninput="this.style.height = ''; this.style.height = this.scrollHeight + 'px'"
-              )
-
             //- Attachment button
-            button.flex-shrink-0.p-3.text-gray-600.hover_text-gray-800.transition-colors(type="button" onclick="document.getElementById('fileInput').click()" title="Add attachments")
-              svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            button.flex-shrink-0.p-2.text-gray-600.hover_text-blue-600.hover_bg-gray-100.rounded-lg.transition-colors(type="button" onclick="document.getElementById('fileInput').click()" title="Add attachments")
+              svg.w-6.h-6(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                 path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 002.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.414a6 6 0 008.485 8.485l6.414-6.414")
 
+            .relative.flex-1
+              textarea.w-full.px-4.py-3.bg-gray-100.text-gray-900.rounded-2xl.focus_bg-gray-50.focus_outline-none.focus_ring-2.focus_ring-blue-500.resize-none.transition-all.discord-input(
+                id="messageInput"
+                placeholder="Message #general"
+                rows="1"
+                style="min-height: 44px; max-height: 150px;"
+                oninput="this.style.height = '44px'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'"
+              )
+
             //- Send button
-            button.flex-shrink-0.p-3.bg-blue-600.text-white.rounded-xl.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-blue-500.transition-all.shadow-md.hover_shadow-lg(type="button" onclick="sendMessage()")
-              svg.w-5.h-5.transform.rotate-90(fill="currentColor" viewBox="0 0 20 20")
-                path(d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z")
+            button.flex-shrink-0.p-2.text-blue-600.hover_text-white.hover_bg-blue-600.rounded-lg.transition-colors.focus_outline-none(type="button" onclick="sendMessage()" title="Send message")
+              svg.w-6.h-6(fill="currentColor" viewBox="0 0 24 24")
+                path(d="M16.6915026,12.4744748 L3.50612381,13.2599618 C3.19218622,13.2599618 3.03521743,13.4170592 3.03521743,13.5741566 L1.15159189,20.0151496 C0.8376543,20.8006365 0.99,21.89 1.77946707,22.52 C2.41,22.99 3.50612381,23.1 4.13399899,22.9429026 L21.714504,14.0454487 C22.6563168,13.5741566 23.1272231,12.6315722 22.9702544,11.6889879 L4.13399899,1.10059969 C3.34915502,0.9 2.40734225,0.9 1.77946707,1.4429026 C0.994623095,2.10604706 0.837654308,3.0486314 1.15159189,3.99021575 L3.03521743,10.4311088 C3.03521743,10.5882061 3.34915502,10.7453035 3.50612381,10.7453035 L16.6915026,11.5308903 C16.6915026,11.5308903 17.1624089,11.5308903 17.1624089,12.0024328 C17.1624089,12.4744748 16.6915026,12.4744748 16.6915026,12.4744748 Z")
+
+            //- Emoji button (optional, can be styled)
+            button.flex-shrink-0.p-2.text-gray-600.hover_text-blue-600.hover_bg-gray-100.rounded-lg.transition-colors.hidden(type="button" title="Add emoji")
+              svg.w-6.h-6(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")
 
       else
         //- Empty State (No tickets selected/exist)
@@ -145,49 +150,23 @@ block content
 
 block scripts
   style.
-    .edit-tooltip {
-      pointer-events: none;
+    .message-row {
+      transition: background-color 0.15s ease-in-out;
     }
 
-    .edit-btn:hover .edit-tooltip {
-      opacity: 1 !important;
+    /* Discord-style input field */
+    .discord-input {
+      background-color: #f0f2f5;
+      border: none;
+      font-family: inherit;
     }
 
-    .message-menu {
-      position: relative;
+    .discord-input:focus {
+      background-color: #fff;
     }
 
-    /* Hide action buttons by default */
-    .message-row .flex.gap-2.mt-1 {
-      opacity: 0 !important;
-      pointer-events: none;
-      transition: opacity 0.2s ease-in-out;
-    }
-
-    /* Show action buttons on message row hover */
-    .message-row:hover .flex.gap-2.mt-1 {
-      opacity: 1 !important;
-      pointer-events: auto;
-    }
-
-    .menu-dropdown {
-      display: none !important;
-      animation: slideIn 0.15s ease-out;
-    }
-
-    .menu-dropdown:not(.hidden) {
-      display: block !important;
-    }
-
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateX(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateX(0);
-      }
+    .discord-input::placeholder {
+      color: #949ba4;
     }
 
   script
@@ -446,43 +425,36 @@ block scripts
               const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
               const isEdited = msg.is_edited;
 
-              msgDiv.className = `flex mb-4 message-row ${isOwn ? 'justify-end' : 'justify-start'} group`;
+              msgDiv.className = `message-row group px-4 py-3 mb-3 hover:bg-gray-100 rounded transition-colors`;
               msgDiv.setAttribute('data-message-id', msg.id);
 
-              // Refined Chat Bubble Design
+              // Discord-style message with avatar and username
               msgDiv.innerHTML = `
-                <div class="flex flex-col max-w-[75%] ${isOwn ? 'items-end' : 'items-start'}">
-                  <div class="px-4 py-2.5 shadow-sm text-[15px] leading-relaxed ${isOwn
-                    ? 'bg-blue-600 text-white rounded-2xl rounded-tr-sm'
-                    : 'bg-white border border-gray-100 text-gray-800 rounded-2xl rounded-tl-sm'}">
-                    <p class="whitespace-pre-wrap">${escapeHtml(msg.content)}</p>
+                <div class="flex gap-3 items-start">
+                  <div class="flex-shrink-0 mt-0.5">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold text-xs">
+                      ${(msg.user_name || 'U').charAt(0).toUpperCase()}
+                    </div>
                   </div>
-                  <div class="flex items-center gap-2 mt-1 px-1">
-                    <span class="text-[11px] text-gray-400">
-                      ${!isOwn ? 'Support • ' : ''}${time}
-                    </span>
-                    ${isEdited ? '<span class="text-[10px] text-gray-400 italic">(edited)</span>' : ''}
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-baseline gap-2">
+                      <span class="font-semibold text-gray-900 text-sm">${escapeHtml(msg.user_name || 'Unknown')}</span>
+                      <span class="text-xs text-gray-500">${time}</span>
+                    </div>
+                    <p class="text-gray-800 text-sm leading-relaxed break-words whitespace-pre-wrap">${escapeHtml(msg.content)}</p>
                   </div>
                   ${isOwn ? `
-                    <div class="flex gap-2 mt-1">
-                      <button class="relative edit-btn group/edit" aria-label="Editar">
-                        <svg class="w-5 h-5 text-gray-400 group-hover/edit:text-blue-600 transition-colors" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
+                      <button class="edit-btn text-gray-500 hover:text-gray-700 p-1" aria-label="Edit">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                           <path d="m13.96 5.46 4.58 4.58a1 1 0 0 0 1.42 0l1.38-1.38a2 2 0 0 0 0-2.82l-3.18-3.18a2 2 0 0 0-2.82 0l-1.38 1.38a1 1 0 0 0 0 1.42ZM2.11 20.16l.73-4.22a3 3 0 0 1 .83-1.61l7.87-7.87a1 1 0 0 1 1.42 0l4.58 4.58a1 1 0 0 1 0 1.42l-7.87 7.87a3 3 0 0 1-1.6.83l-4.23.73a1.5 1.5 0 0 1-1.73-1.73Z"></path>
                         </svg>
-                        <span class="edit-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 pointer-events-none transition-opacity whitespace-nowrap">Editar</span>
                       </button>
-                      <div class="relative message-menu">
-                        <button class="menu-trigger text-gray-400 hover:text-gray-600 transition-colors p-1">
-                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 8c1.1 0 2-1 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 1-2 2s.9 2 2 2 2-1 2-2-1-2-2-2zm0 6c-1.1 0-2 1-2 2s.9 2 2 2 2-1 2-2-1-2-2-2z"></path>
-                          </svg>
-                        </button>
-                        <div class="absolute right-full mr-2 bottom-0 hidden menu-dropdown bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-max">
-                          <button class="delete-btn w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
-                            Excluir mensagem
-                          </button>
-                        </div>
-                      </div>
+                      <button class="delete-btn text-gray-500 hover:text-red-600 p-1" aria-label="Delete">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7l1.41-1.41L12 10.59l2.12-2.12 1.41 1.41L13.41 12l2.12 2.12-1.41 1.41L12 13.41l-2.12 2.12-1.41-1.41L10.59 12 8.46 9.88zM15.5 4l-1-1h-5l-1 1H5v2h14V4z"></path>
+                        </svg>
+                      </button>
                     </div>
                   ` : ''}
                 </div>
@@ -497,11 +469,6 @@ block scripts
               <p>Start the conversation</p>
             </div>`;
         }
-        // Ensure all dropdowns start hidden
-        document.querySelectorAll('.menu-dropdown').forEach(menu => {
-          menu.classList.add('hidden');
-        });
-
         // Add event listeners for edit button
         document.querySelectorAll('.edit-btn').forEach(btn => {
           btn.addEventListener('click', function() {
@@ -510,43 +477,12 @@ block scripts
           });
         });
 
-        // Menu dropdown handlers
-        document.querySelectorAll('.menu-trigger').forEach(trigger => {
-          trigger.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const dropdown = this.closest('.message-menu').querySelector('.menu-dropdown');
-
-            // Close all other dropdowns
-            document.querySelectorAll('.menu-dropdown').forEach(menu => {
-              if (menu !== dropdown) {
-                menu.classList.add('hidden');
-              }
-            });
-
-            // Toggle this dropdown
-            dropdown.classList.toggle('hidden');
-          });
-        });
-
         // Delete button handlers
         document.querySelectorAll('.delete-btn').forEach(btn => {
-          btn.addEventListener('click', function(e) {
-            e.stopPropagation();
+          btn.addEventListener('click', function() {
             const messageId = this.closest('[data-message-id]').getAttribute('data-message-id');
-            // Close dropdown
-            this.closest('.menu-dropdown').classList.add('hidden');
-            // Delete message
             deleteMessage(parseInt(messageId));
           });
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-          if (!e.target.closest('.message-menu')) {
-            document.querySelectorAll('.menu-dropdown').forEach(menu => {
-              menu.classList.add('hidden');
-            });
-          }
         });
 
         messagesArea.scrollTop = messagesArea.scrollHeight;
@@ -649,17 +585,15 @@ block scripts
       const messageRow = document.querySelector(`[data-message-id="${messageId}"]`);
       if (!messageRow) return;
 
-      // Find the message text content
-      const textElement = messageRow.querySelector('p.whitespace-pre-wrap');
+      // Find the message text content (paragraph element)
+      const textElement = messageRow.querySelector('p');
       if (!textElement) return;
 
       const originalText = textElement.textContent;
       editingMessageId = messageId;
       editingMessageOriginal = originalText;
 
-      const bubbleElement = messageRow.querySelector('[class*="px-4"][class*="py-2"]');
-
-      // Replace with edit form
+      // Replace paragraph with textarea for editing
       const editForm = document.createElement('div');
       editForm.innerHTML = `
         <textarea id="editInput" class="w-full p-2 border border-gray-300 rounded text-gray-900 text-sm resize-none" style="min-height: 60px; max-height: 120px;"></textarea>
@@ -673,8 +607,7 @@ block scripts
         </div>
       `;
 
-      bubbleElement.innerHTML = '';
-      bubbleElement.appendChild(editForm);
+      textElement.replaceWith(editForm);
 
       // Focus and select text
       setTimeout(() => {
