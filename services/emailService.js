@@ -25,38 +25,46 @@ class EmailService {
             <head>
               <meta charset="UTF-8">
               <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-                .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; }
-                .credentials { background: white; padding: 15px; margin: 20px 0; border-left: 4px solid #2563eb; font-family: monospace; }
-                .button { display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-                .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; }
+                .container { max-width: 600px; margin: 0 auto; padding: 0; background: white; }
+                .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 40px 30px; border-radius: 8px 8px 0 0; text-align: center; }
+                .header h2 { margin: 0; font-size: 28px; font-weight: 700; }
+                .content { padding: 40px 30px; }
+                .credentials { background: #f0f4f8; padding: 20px; margin: 30px 0; border-left: 4px solid #2563eb; border-radius: 4px; font-family: 'Courier New', monospace; font-size: 14px; }
+                .credentials p { margin: 8px 0; }
+                .button { display: inline-block; background: #2563eb; color: white !important; padding: 14px 32px; text-decoration: none; border-radius: 6px; margin: 30px 0; font-weight: 600; font-size: 16px; }
+                .button:hover { background: #1d4ed8; text-decoration: none; }
+                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; text-align: center; }
+                .highlight { color: #2563eb; font-weight: 600; }
               </style>
             </head>
             <body>
               <div class="container">
                 <div class="header">
-                  <h2 style="margin: 0;">Welcome to ${process.env.APP_NAME}!</h2>
+                  <h2>Welcome to ${process.env.APP_NAME}!</h2>
+                  <p style="margin: 10px 0 0 0; font-size: 16px; opacity: 0.95;">Your account has been successfully created</p>
                 </div>
                 <div class="content">
-                  <p>Hello <strong>${name}</strong>,</p>
+                  <p>Hello <strong style="color: #1f2937;">${name}</strong>,</p>
 
-                  <p>Your account has been successfully created! Below are your login credentials:</p>
+                  <p>Welcome aboard! Your support ticket management account is ready to use. Below are your login credentials:</p>
 
                   <div class="credentials">
                     <p><strong>Email:</strong> ${email}</p>
-                    <p><strong>Temporary Password:</strong> ${temporaryPassword}</p>
+                    <p><strong>Temporary Password:</strong> <code style="background: white; padding: 2px 6px; border-radius: 3px; font-weight: 600;">${temporaryPassword}</code></p>
                   </div>
 
-                  <p><strong>⚠️ Important:</strong> Please change your password after your first login. Keep your credentials secure and do not share them with anyone.</p>
+                  <p style="background: #fef3c7; padding: 15px; border-radius: 4px; border-left: 4px solid #f59e0b;"><strong style="color: #92400e;">⚠️ Security Notice:</strong> Please change your temporary password immediately after your first login. Never share your credentials with anyone.</p>
 
-                  <p>You can now log in to your account using the credentials above.</p>
+                  <p style="margin-top: 30px;">To get started, click the button below:</p>
 
-                  <a href="${process.env.APP_URL}" class="button">Access Your Account</a>
+                  <div style="text-align: center;">
+                    <a href="${process.env.APP_URL}" class="button">Access Your Account</a>
+                  </div>
+
+                  <p style="font-size: 13px; color: #666; margin-top: 30px;">If you did not create this account, please contact our support team immediately.</p>
 
                   <div class="footer">
-                    <p>If you did not create this account or have any questions, please contact our support team.</p>
                     <p>© ${new Date().getFullYear()} ${process.env.APP_NAME}. All rights reserved.</p>
                   </div>
                 </div>
@@ -87,27 +95,35 @@ class EmailService {
             <head>
               <meta charset="UTF-8">
               <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-                .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; }
-                .button { display: inline-block; background: #2563eb; color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-                .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; }
+                .container { max-width: 600px; margin: 0 auto; padding: 0; background: white; }
+                .header { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; padding: 40px 30px; border-radius: 8px 8px 0 0; text-align: center; }
+                .header h2 { margin: 0; font-size: 28px; font-weight: 700; }
+                .content { padding: 40px 30px; }
+                .button { display: inline-block; background: #2563eb; color: white !important; padding: 14px 32px; text-decoration: none; border-radius: 6px; margin: 30px 0; font-weight: 600; font-size: 16px; }
+                .button:hover { background: #1d4ed8; text-decoration: none; }
+                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; text-align: center; }
               </style>
             </head>
             <body>
               <div class="container">
                 <div class="header">
-                  <h2 style="margin: 0;">Password Reset Request</h2>
+                  <h2>Reset Your Password</h2>
                 </div>
                 <div class="content">
                   <p>We received a request to reset your password for your ${process.env.APP_NAME} account.</p>
 
-                  <p>Click the button below to reset your password:</p>
+                  <p>Click the button below to create a new password:</p>
 
-                  <a href="${resetLink}" class="button">Reset Password</a>
+                  <div style="text-align: center;">
+                    <a href="${resetLink}" class="button">Reset Password</a>
+                  </div>
 
-                  <p><strong>Note:</strong> This link will expire in 24 hours. If you did not request this reset, please ignore this email.</p>
+                  <p style="background: #fef3c7; padding: 15px; border-radius: 4px; border-left: 4px solid #f59e0b; font-size: 14px;">
+                    <strong style="color: #92400e;">⏱️ Expires in 24 hours:</strong> This link will expire after 24 hours for security reasons. If you did not request a password reset, please ignore this email and your password will remain unchanged.
+                  </p>
+
+                  <p style="font-size: 13px; color: #666; margin-top: 30px;">If you're having trouble clicking the button, copy and paste the link in your browser. Never share this link with anyone.</p>
 
                   <div class="footer">
                     <p>© ${new Date().getFullYear()} ${process.env.APP_NAME}. All rights reserved.</p>
@@ -140,31 +156,43 @@ class EmailService {
             <head>
               <meta charset="UTF-8">
               <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
-                .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; border: 1px solid #e5e7eb; }
-                .ticket-info { background: white; padding: 15px; margin: 20px 0; border-left: 4px solid #10b981; }
-                .button { display: inline-block; background: #2563eb; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px 0; }
-                .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; }
+                body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; background: #f9fafb; }
+                .container { max-width: 600px; margin: 0 auto; padding: 0; background: white; }
+                .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px 30px; border-radius: 8px 8px 0 0; text-align: center; }
+                .header h2 { margin: 0; font-size: 28px; font-weight: 700; }
+                .content { padding: 40px 30px; }
+                .ticket-info { background: #f0fdf4; padding: 20px; margin: 30px 0; border-left: 4px solid #10b981; border-radius: 4px; }
+                .ticket-info p { margin: 8px 0; }
+                .button { display: inline-block; background: #10b981; color: white !important; padding: 14px 32px; text-decoration: none; border-radius: 6px; margin: 30px 0; font-weight: 600; font-size: 16px; }
+                .button:hover { background: #059669; text-decoration: none; }
+                .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #666; text-align: center; }
               </style>
             </head>
             <body>
               <div class="container">
                 <div class="header">
-                  <h2 style="margin: 0;">Ticket Created Successfully</h2>
+                  <h2>✓ Ticket Created Successfully</h2>
                 </div>
                 <div class="content">
-                  <p>Your support ticket has been created and is now being processed.</p>
+                  <p>Thank you for submitting a support ticket. Your request has been received and is now in our queue.</p>
 
                   <div class="ticket-info">
-                    <p><strong>Ticket ID:</strong> #${ticketId}</p>
-                    <p><strong>Title:</strong> ${ticketTitle}</p>
+                    <p><strong style="color: #10b981;">Ticket ID:</strong> <code style="background: white; padding: 4px 8px; border-radius: 3px; font-weight: 600;">#${ticketId}</code></p>
+                    <p><strong style="color: #10b981;">Subject:</strong> ${ticketTitle}</p>
                   </div>
 
-                  <p>You can view and manage your ticket by logging into your account.</p>
+                  <p><strong>What happens next?</strong></p>
+                  <ul style="color: #555;">
+                    <li>Our support team will review your ticket</li>
+                    <li>You'll receive updates via email when your ticket status changes</li>
+                    <li>You can also track progress in your account</li>
+                  </ul>
 
-                  <a href="${process.env.APP_URL}/tickets/${ticketId}" class="button">View Ticket</a>
+                  <div style="text-align: center;">
+                    <a href="${process.env.APP_URL}/tickets/${ticketId}" class="button">View Your Ticket</a>
+                  </div>
+
+                  <p style="font-size: 13px; color: #666; margin-top: 30px;">Average response time: 2-4 hours during business hours</p>
 
                   <div class="footer">
                     <p>© ${new Date().getFullYear()} ${process.env.APP_NAME}. All rights reserved.</p>

@@ -227,6 +227,22 @@ exports.customerDashboard = async (req, res, next) => {
       limit: 10
     });
 
+    // Get all my tickets for the modal
+    const [allTickets] = await db.query(`
+      SELECT
+        id,
+        title as subject,
+        description,
+        status,
+        priority,
+        created_at,
+        updated_at,
+        department_id
+      FROM tickets
+      WHERE customer_id = ?
+      ORDER BY created_at DESC
+    `, [customerId]);
+
     // Get my ticket stats
     const [myStats] = await db.query(`
       SELECT
@@ -241,7 +257,8 @@ exports.customerDashboard = async (req, res, next) => {
 
     res.render('dashboard/customer', {
       title: 'My Dashboard',
-      myTickets,
+      recentTickets: myTickets,
+      allTickets: allTickets,
       stats: myStats[0] || { total: 0, open: 0, in_progress: 0, resolved: 0, closed: 0 }
     });
   } catch (error) {

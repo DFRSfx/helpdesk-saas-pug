@@ -201,12 +201,16 @@ exports.show = async (req, res, next) => {
       return res.redirect('/tickets');
     }
 
-    // Check permissions
-    if (res.locals.currentUser.role === 'customer' && ticket.customer_id !== res.locals.currentUser.id) {
-      req.flash('error', 'You do not have permission to view this ticket');
-      return res.redirect('/tickets');
+    // Customers use the portal view instead
+    if (res.locals.currentUser.role === 'customer') {
+      if (ticket.customer_id !== res.locals.currentUser.id) {
+        req.flash('error', 'You do not have permission to view this ticket');
+        return res.redirect('/tickets');
+      }
+      return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
     }
 
+    // Check permissions for agents
     if (res.locals.currentUser.role === 'agent' && ticket.agent_id !== res.locals.currentUser.id) {
       req.flash('error', 'You do not have permission to view this ticket');
       return res.redirect('/tickets');

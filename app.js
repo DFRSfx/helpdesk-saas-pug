@@ -1,10 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 const flash = require('connect-flash');
 const path = require('path');
 const http = require('http');
 const socketIo = require('socket.io');
+const db = require('./config/database');
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -40,13 +42,34 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Session configuration
+// Session store configuration - uses database instead of memory
+const sessionStore = new MySQLStore({
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASS || '',
+  database: process.env.DB_NAME || 'zolentra_db',
+  schema: {
+    tableName: 'sessions',
+    columnNames: {
+      session_id: 'session_id',
+      expires: 'expires',
+      data: 'data'
+    }
+  }
+});
+
+// Session configuration with persistent database store
 app.use(session({
+  key: 'connect.sid',
   secret: process.env.SESSION_SECRET || 'your-secret-key-change-in-production',
+  store: sessionStore,
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24 // 24 hours
+    maxAge: 1000 * 60 * 60 * 8, // 8 hours
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production' // HTTPS only in production
   }
 }));
 

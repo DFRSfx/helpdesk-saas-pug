@@ -8,6 +8,10 @@ html(lang="en")
     link(rel="icon" type="image/x-icon" href="/favicon.ico")
     link(rel="stylesheet" href="/css/output.css")
     link(rel="stylesheet" href="/css/style.css")
+    style.
+      .opacity-100 { opacity: 1; }
+      .scale-100 { transform: scale(1); }
+      .scale-95 { transform: scale(0.95); }
 
   body(class="bg-gradient-to-b from-slate-50 to-slate-50 antialiased")
     header(class="fixed w-full bg-white border-b border-slate-200 z-50 shadow-sm")
@@ -24,21 +28,37 @@ html(lang="en")
           div(class="hidden md:flex items-center gap-3")
             if currentUser
               div(class="relative")
-                button#landingUserMenuButton(class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition" style="border: 2px solid #e5e7eb;")
-                  div(class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold")
+                button#landingUserMenuButton.flex.items-center.space-x-3.px-3.py-2.rounded-lg.hover_bg-gray-100.transition-colors
+                  .w-9.h-9.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.shadow-md
                     = currentUser.name.charAt(0).toUpperCase()
-                  span(class="text-sm font-medium text-gray-900")= currentUser.name.split(' ')[0]
+                  .hidden.md_block.text-left
+                    p.text-sm.font-semibold.text-gray-900= currentUser.name.split(' ')[0]
+                    p.text-xs.text-gray-500= currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+                  svg#landingMenuIcon.w-4.h-4.text-gray-500.transition-transform.duration-200(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
                 
-                #landingUserMenuDropdown(class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50")
-                  div(class="py-2")
-                    a(class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600" href="/dashboard")
-                      span Dashboard
+                #landingUserMenuDropdown.hidden.absolute.right-0.mt-2.w-56.bg-white.rounded-xl.shadow-2xl.border.border-gray-200.z-50.overflow-hidden
+                  .p-4.border-b.border-gray-100.bg-gradient-to-r.from-gray-50.to-white
+                    p.text-sm.font-semibold.text-gray-900= currentUser.name
+                    p.text-xs.text-gray-500= currentUser.email
+                  .py-2
+                    a.flex.items-center.px-4.py-2.text-sm.rounded-lg.relative.overflow-hidden(href="/dashboard" style="background-color: transparent; color: #374151; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#2563eb';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#374151';")
+                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(59,130,246,0), rgba(59,130,246,0.1), rgba(59,130,246,0)); opacity: 0; transition: opacity 300ms;")
+                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6")
+                      span.relative(style="z-index: 10;") Dashboard
                     if currentUser.role === 'customer'
-                      a(class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600" href="/tickets/portal")
-                        span My Tickets
-                  div(class="border-t border-gray-200 py-2")
-                    a(class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50" href="/auth/logout")
-                      span Logout
+                      a.flex.items-center.px-4.py-2.text-sm.rounded-lg.relative.overflow-hidden(href="/tickets/portal" style="background-color: transparent; color: #374151; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#2563eb';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#374151';")
+                        div.absolute.inset-0(style="background: linear-gradient(to right, rgba(59,130,246,0), rgba(59,130,246,0.1), rgba(59,130,246,0)); opacity: 0; transition: opacity 300ms;")
+                        svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
+                          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+                        span.relative(style="z-index: 10;") My Tickets
+                  .border-t.border-gray-100
+                    a.flex.items-center.px-4.py-3.text-sm.rounded-lg.relative.overflow-hidden(href="/auth/logout" style="background-color: transparent; color: #dc2626; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#991b1b';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#dc2626';")
+                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(220,38,38,0), rgba(220,38,38,0.1), rgba(220,38,38,0)); opacity: 0; transition: opacity 300ms;")
+                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1")
+                      span.relative(style="z-index: 10;") Sign Out
             else
               button(class="px-6 py-2.5 text-blue-600 bg-white border-2 border-blue-600 rounded-lg hover:bg-blue-50 font-medium" onclick="openLoginModal()")
                 span Sign In
@@ -196,8 +216,8 @@ html(lang="en")
               p(class="text-slate-600") Is my data secure?
               p(class="text-slate-500 text-sm mt-2") Yes! We use enterprise-grade security and encryption to protect your data. All communications are secure and confidential.
 
-    div#authModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.5);")
-      div(class="bg-white rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden" onclick="event.stopPropagation()")
+    div#authModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="background-color: rgba(0,0,0,0.5);")
+      div(class="bg-white rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()")
         //- Header with close button
         div(class="bg-white px-8 py-1 flex items-center justify-end border-b border-gray-200")
           button(class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-gray-100 transition-all duration-200" onclick="closeAuthModal()" type="button" title="Close")
@@ -253,8 +273,8 @@ html(lang="en")
             
             button(type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all") Create Account
 
-    div#ticketModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.5); align-items: center; min-height: 100vh;")
-      div(class="bg-white shadow-2xl max-w-6xl w-full rounded-3xl overflow-hidden flex flex-col" style="max-height: 90vh;")
+    div#ticketModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4 opacity-0 transition-opacity duration-300" style="background-color: rgba(0,0,0,0.5); align-items: center; min-height: 100vh;")
+      div(class="bg-white shadow-2xl max-w-6xl w-full rounded-3xl overflow-hidden flex flex-col transform scale-95 transition-transform duration-300" style="max-height: 90vh;")
         div(class="bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between")
           h2(class="text-2xl font-bold text-slate-900") Create Support Ticket
           button(class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-gray-100 transition-all duration-200" onclick="closeTicketModal()" type="button" title="Close")
@@ -262,6 +282,8 @@ html(lang="en")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
 
         div(class="p-8 overflow-y-auto flex-1")
+          div#ticketNotification(class="hidden mb-4 p-4 rounded-lg border")
+
           form#ticketForm(class="space-y-6")
             div(class="grid grid-cols-1 md:grid-cols-2 gap-6")
               div
@@ -324,25 +346,132 @@ html(lang="en")
 
               input#attachmentsInput(type="hidden" name="attachments" value="")
 
-        div(class="flex items-center justify-end gap-3 px-8 py-6 border-t border-gray-200 bg-gray-50")
-          button(class="px-6 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium" type="button" onclick="closeTicketModal()")
-            span Cancel
-          button#submitTicketBtn(class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium" type="submit")
-            span Create Ticket
+            div#ticketFormFooter(class="flex items-center justify-end gap-3 px-8 py-6 border-t border-gray-200 bg-gray-50")
+              button(class="px-6 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium" type="button" onclick="closeTicketModal()")
+                span Cancel
+              button#submitTicketBtn(class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium" type="submit")
+                span Create Ticket
 
     script.
+      // Wait for DOM to be ready before attaching event listeners
+      function initializeTicketForm() {
+        const ticketForm = document.getElementById('ticketForm');
+        if (!ticketForm) {
+          console.warn('Ticket form not found');
+          return;
+        }
+
+        ticketForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          console.log('Ticket form submitted');
+
+          const name = document.getElementById('ticketName').value.trim();
+          const email = document.getElementById('ticketEmail').value.trim();
+          const subject = document.getElementById('ticketSubject').value.trim();
+          const message = document.getElementById('ticketMessage').value.trim();
+          const department_id = document.getElementById('ticketDepartment').value;
+
+          // Validation
+          if (!name || !email || !subject || !message || !department_id) {
+            showTicketNotification('error', 'Missing Fields', 'Please fill in all required fields before submitting.');
+            console.log('Validation failed:', { name, email, subject, message, department_id });
+            return;
+          }
+
+          const submitBtn = document.getElementById('submitTicketBtn');
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Creating...';
+
+          try {
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('email', email);
+            formData.append('subject', subject);
+            formData.append('message', message);
+            formData.append('department_id', department_id);
+
+            uploadedFiles.forEach((file) => {
+              formData.append('attachments', file);
+            });
+
+            console.log('Sending ticket creation request...');
+            const response = await fetch('/api/tickets/public/create', {
+              method: 'POST',
+              body: formData
+            });
+
+            console.log('Response received:', response.status);
+            const data = await response.json();
+            console.log('Response data:', data);
+
+            if (data.success) {
+              showTicketNotification('success', 'Ticket created successfully!', 'Your support ticket has been created. Check your email for confirmation and visit your portal to track the status.');
+              document.getElementById('ticketForm').style.display = 'none';
+              document.getElementById('ticketFormFooter').style.display = 'none';
+            } else {
+              showTicketNotification('error', 'Failed to create ticket', data.message || 'An error occurred. Please try again.');
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Create Ticket';
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            showTicketNotification('error', 'Network Error', 'An error occurred while creating your ticket. Please check your connection and try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Ticket';
+          }
+        });
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          initializeTicketForm();
+          initializeFileUpload();
+        });
+      } else {
+        initializeTicketForm();
+        initializeFileUpload();
+      }
+
       function openLoginModal() {
-        document.getElementById('authModal').classList.remove('hidden');
+        const modal = document.getElementById('authModal');
+        const modalContent = modal.querySelector('div[class*="bg-white"]');
+        modal.classList.remove('hidden');
+        
+        requestAnimationFrame(() => {
+          modal.classList.add('opacity-100');
+          modalContent.classList.remove('scale-95');
+          modalContent.classList.add('scale-100');
+        });
+        
         switchAuthTab('login');
       }
 
       function openRegisterModal() {
-        document.getElementById('authModal').classList.remove('hidden');
+        const modal = document.getElementById('authModal');
+        const modalContent = modal.querySelector('div[class*="bg-white"]');
+        modal.classList.remove('hidden');
+        
+        requestAnimationFrame(() => {
+          modal.classList.add('opacity-100');
+          modalContent.classList.remove('scale-95');
+          modalContent.classList.add('scale-100');
+        });
+        
         switchAuthTab('register');
       }
 
       function closeAuthModal() {
-        document.getElementById('authModal').classList.add('hidden');
+        const modal = document.getElementById('authModal');
+        const modalContent = modal.querySelector('div[class*="bg-white"]');
+        
+        modal.classList.remove('opacity-100');
+        modalContent.classList.add('scale-95');
+        modalContent.classList.remove('scale-100');
+        
+        setTimeout(() => {
+          modal.classList.add('hidden');
+        }, 300);
       }
 
       function switchAuthTab(tab) {
@@ -372,23 +501,172 @@ html(lang="en")
       }
 
       function openTicketModal() {
-        document.getElementById('ticketModal').classList.remove('hidden');
+        const modal = document.getElementById('ticketModal');
+        const modalContent = modal.querySelector('div[style*="max-height"]');
+        modal.classList.remove('hidden');
         document.getElementById('ticketForm').classList.remove('hidden');
+        
+        requestAnimationFrame(() => {
+          modal.classList.add('opacity-100');
+          modalContent.classList.remove('scale-95');
+          modalContent.classList.add('scale-100');
+        });
       }
 
       function closeTicketModal() {
-        document.getElementById('ticketModal').classList.add('hidden');
+        const modal = document.getElementById('ticketModal');
+        const modalContent = modal.querySelector('div[style*="max-height"]');
+
+        modal.classList.remove('opacity-100');
+        modalContent.classList.add('scale-95');
+        modalContent.classList.remove('scale-100');
+
+        setTimeout(() => {
+          modal.classList.add('hidden');
+
+          // Reset form display for next opening
+          document.getElementById('ticketForm').style.display = '';
+          document.getElementById('ticketFormFooter').style.display = '';
+          document.getElementById('ticketNotification').classList.add('hidden');
+          document.getElementById('ticketForm').reset();
+          uploadedFiles = [];
+          displayFileList();
+          updateAttachmentsInput();
+          const submitBtn = document.getElementById('submitTicketBtn');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Ticket';
+        }, 300);
+      }
+
+      function showTicketNotification(type, title, message) {
+        const notification = document.getElementById('ticketNotification');
+
+        let bgColor, borderColor, titleColor, icon, bgIconColor;
+
+        if (type === 'success') {
+          bgColor = 'bg-green-50';
+          borderColor = 'border-green-200';
+          titleColor = 'text-green-900';
+          bgIconColor = '#10b981';
+          icon = '✓';
+        } else {
+          bgColor = 'bg-red-50';
+          borderColor = 'border-red-200';
+          titleColor = 'text-red-900';
+          bgIconColor = '#ef4444';
+          icon = '✕';
+        }
+
+        notification.className = `${bgColor} ${borderColor} border-l-4 p-6 rounded-lg mb-4`;
+        notification.innerHTML = `
+          <div class="flex gap-4">
+            <div class="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full" style="background-color: ${bgIconColor}; color: white;">
+              <span class="font-bold text-lg">${icon}</span>
+            </div>
+            <div class="flex-1">
+              <h3 class="${titleColor} font-bold text-lg">${title}</h3>
+              <p class="${titleColor} text-sm mt-2 opacity-90 leading-relaxed">${message}</p>
+            </div>
+          </div>
+        `;
+
+        notification.classList.remove('hidden');
+
+        // Auto-hide error messages after 5 seconds
+        if (type === 'error') {
+          setTimeout(() => {
+            notification.classList.add('hidden');
+          }, 5000);
+        }
       }
 
       let uploadedFiles = [];
-      const dropZone = document.getElementById('dropZone');
-      const fileInput = document.getElementById('ticketAttachments');
-      const attachmentsList = document.getElementById('attachmentsList');
-      const attachmentsInput = document.getElementById('attachmentsInput');
+      let dropZone, fileInput, attachmentsList, attachmentsInput;
 
-      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-      });
+      // Initialize file upload elements when DOM is ready
+      function initializeFileUpload() {
+        dropZone = document.getElementById('dropZone');
+        fileInput = document.getElementById('ticketAttachments');
+        attachmentsList = document.getElementById('attachmentsList');
+        attachmentsInput = document.getElementById('attachmentsInput');
+
+        if (!dropZone || !fileInput) {
+          console.warn('File upload elements not found');
+          return;
+        }
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        dropZone.addEventListener('dragenter', (e) => {
+          dragCounter++;
+          dropZone.style.borderColor = '#3b82f6';
+          dropZone.style.borderWidth = '2px';
+          dropZone.style.backgroundColor = '#eff6ff';
+          dropZone.style.boxShadow = '0 0 0 3px rgb(191, 219, 254)';
+          dropZone.style.transform = 'scale(1.02)';
+          dropZone.style.cursor = 'copy';
+          document.body.style.cursor = 'copy';
+        }, false);
+
+        dropZone.addEventListener('dragover', (e) => {
+          dropZone.style.borderColor = '#3b82f6';
+          dropZone.style.backgroundColor = '#eff6ff';
+          dropZone.style.cursor = 'copy';
+          document.body.style.cursor = 'copy';
+        }, false);
+
+        dropZone.addEventListener('dragleave', (e) => {
+          dragCounter--;
+          if (dragCounter === 0) {
+            dropZone.style.borderColor = '#d1d5db';
+            dropZone.style.backgroundColor = '#f9fafb';
+            dropZone.style.boxShadow = 'none';
+            dropZone.style.transform = 'scale(1)';
+            dropZone.style.cursor = 'pointer';
+            document.body.style.cursor = 'auto';
+          }
+        }, false);
+
+        dropZone.addEventListener('drop', (e) => {
+          dragCounter = 0;
+          dropZone.style.borderColor = '#d1d5db';
+          dropZone.style.backgroundColor = '#f9fafb';
+          dropZone.style.boxShadow = 'none';
+          dropZone.style.transform = 'scale(1)';
+          dropZone.style.cursor = 'pointer';
+          document.body.style.cursor = 'auto';
+        }, false);
+
+        dropZone.addEventListener('mouseenter', () => {
+          dropZone.style.cursor = 'pointer';
+          dropZone.style.backgroundColor = '#f3f4f6';
+          dropZone.style.borderColor = '#bfdbfe';
+        }, false);
+
+        dropZone.addEventListener('mouseleave', () => {
+          if (dragCounter === 0) {
+            dropZone.style.cursor = 'default';
+            dropZone.style.backgroundColor = '#f9fafb';
+            dropZone.style.borderColor = '#d1d5db';
+          }
+        }, false);
+
+        dropZone.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const files = dt.files;
+          handleFiles(files);
+        }, false);
+
+        dropZone.addEventListener('click', () => {
+          fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+          handleFiles(e.target.files);
+        });
+      }
 
       function preventDefaults(e) {
         e.preventDefault();
@@ -396,74 +674,6 @@ html(lang="en")
       }
 
       let dragCounter = 0;
-
-      dropZone.addEventListener('dragenter', (e) => {
-        dragCounter++;
-        dropZone.style.borderColor = '#3b82f6';
-        dropZone.style.borderWidth = '2px';
-        dropZone.style.backgroundColor = '#eff6ff';
-        dropZone.style.boxShadow = '0 0 0 3px rgb(191, 219, 254)';
-        dropZone.style.transform = 'scale(1.02)';
-        dropZone.style.cursor = 'copy';
-        document.body.style.cursor = 'copy';
-      }, false);
-
-      dropZone.addEventListener('dragover', (e) => {
-        dropZone.style.borderColor = '#3b82f6';
-        dropZone.style.backgroundColor = '#eff6ff';
-        dropZone.style.cursor = 'copy';
-        document.body.style.cursor = 'copy';
-      }, false);
-
-      dropZone.addEventListener('dragleave', (e) => {
-        dragCounter--;
-        if (dragCounter === 0) {
-          dropZone.style.borderColor = '#d1d5db';
-          dropZone.style.backgroundColor = '#f9fafb';
-          dropZone.style.boxShadow = 'none';
-          dropZone.style.transform = 'scale(1)';
-          dropZone.style.cursor = 'pointer';
-          document.body.style.cursor = 'auto';
-        }
-      }, false);
-
-      dropZone.addEventListener('drop', (e) => {
-        dragCounter = 0;
-        dropZone.style.borderColor = '#d1d5db';
-        dropZone.style.backgroundColor = '#f9fafb';
-        dropZone.style.boxShadow = 'none';
-        dropZone.style.transform = 'scale(1)';
-        dropZone.style.cursor = 'pointer';
-        document.body.style.cursor = 'auto';
-      }, false);
-
-      dropZone.addEventListener('mouseenter', () => {
-        dropZone.style.cursor = 'pointer';
-        dropZone.style.backgroundColor = '#f3f4f6';
-        dropZone.style.borderColor = '#bfdbfe';
-      }, false);
-
-      dropZone.addEventListener('mouseleave', () => {
-        if (dragCounter === 0) {
-          dropZone.style.cursor = 'default';
-          dropZone.style.backgroundColor = '#f9fafb';
-          dropZone.style.borderColor = '#d1d5db';
-        }
-      }, false);
-
-      dropZone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-      }, false);
-
-      dropZone.addEventListener('click', () => {
-        fileInput.click();
-      });
-
-      fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-      });
 
       function handleFiles(files) {
         const maxFileSize = 10 * 1024 * 1024;
@@ -532,54 +742,6 @@ html(lang="en")
         attachmentsInput.value = uploadedFiles.length;
       }
 
-      document.getElementById('ticketForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-
-        const name = document.getElementById('ticketName').value;
-        const email = document.getElementById('ticketEmail').value;
-        const subject = document.getElementById('ticketSubject').value;
-        const message = document.getElementById('ticketMessage').value;
-        const department_id = document.getElementById('ticketDepartment').value;
-
-        const submitBtn = document.getElementById('submitTicketBtn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Creating...';
-
-        try {
-          const formData = new FormData();
-          formData.append('name', name);
-          formData.append('email', email);
-          formData.append('subject', subject);
-          formData.append('message', message);
-          formData.append('department_id', department_id);
-
-          uploadedFiles.forEach((file) => {
-            formData.append('attachments', file);
-          });
-
-          const response = await fetch('/api/tickets/public/create', {
-            method: 'POST',
-            body: formData
-          });
-
-          const data = await response.json();
-
-          if (data.success) {
-            alert('Ticket created successfully!');
-            window.location.href = data.portalUrl;
-          } else {
-            alert('Error: ' + (data.message || 'Failed to create ticket'));
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Create Ticket';
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('An error occurred. Please try again.');
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Create Ticket';
-        }
-      });
-
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           closeAuthModal();
@@ -599,21 +761,29 @@ html(lang="en")
         }
       });
 
-      const userMenuBtn = document.getElementById('landingUserMenuButton');
-      const userMenuDropdown = document.getElementById('landingUserMenuDropdown');
+      const landingUserMenuBtn = document.getElementById('landingUserMenuButton');
+      const landingUserMenuDropdown = document.getElementById('landingUserMenuDropdown');
+      const landingMenuIcon = document.getElementById('landingMenuIcon');
 
-      if (userMenuBtn) {
-        userMenuBtn.addEventListener('click', function(e) {
+      if (landingUserMenuBtn && landingUserMenuDropdown) {
+        landingUserMenuBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          userMenuDropdown.classList.toggle('hidden');
+          const isOpen = !landingUserMenuDropdown.classList.contains('hidden');
+          
+          if (isOpen) {
+            landingUserMenuDropdown.classList.add('hidden');
+            landingMenuIcon.style.transform = 'rotate(0deg)';
+          } else {
+            landingUserMenuDropdown.classList.remove('hidden');
+            landingMenuIcon.style.transform = 'rotate(180deg)';
+          }
         });
-
-        document.addEventListener('click', function() {
-          userMenuDropdown.classList.add('hidden');
-        });
-
-        userMenuDropdown.addEventListener('click', function(e) {
-          e.stopPropagation();
+        
+        document.addEventListener('click', function(e) {
+          if (!landingUserMenuBtn.contains(e.target) && !landingUserMenuDropdown.contains(e.target)) {
+            landingUserMenuDropdown.classList.add('hidden');
+            landingMenuIcon.style.transform = 'rotate(0deg)';
+          }
         });
       }
 

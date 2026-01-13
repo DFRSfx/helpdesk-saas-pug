@@ -250,7 +250,7 @@ exports.register = async (req, res, next) => {
 // Handle logout
 exports.logout = (req, res) => {
   const userId = req.session.userId;
-  
+
   // Log logout activity
   if (userId) {
     try {
@@ -264,11 +264,13 @@ exports.logout = (req, res) => {
       console.error('Error logging logout:', error);
     }
   }
-  
+
   req.session.destroy((err) => {
     if (err) {
       console.error('Logout error:', err);
+      return res.redirect('/');
     }
+    res.clearCookie('connect.sid');
     res.redirect('/');
   });
 };

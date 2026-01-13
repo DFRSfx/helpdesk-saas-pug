@@ -251,11 +251,11 @@ class Ticket {
   }
 
   static async addAttachment(attachmentData) {
-    const { ticket_id, file_path, uploaded_by } = attachmentData;
+    const { ticket_id, file_path, uploaded_by, original_name = null, file_size = null } = attachmentData;
 
     const [result] = await db.query(
-      'INSERT INTO ticket_attachments (ticket_id, file_path, uploaded_by) VALUES (?, ?, ?)',
-      [ticket_id, file_path, uploaded_by]
+      'INSERT INTO ticket_attachments (ticket_id, file_path, original_name, file_size, uploaded_by) VALUES (?, ?, ?, ?, ?)',
+      [ticket_id, file_path, original_name, file_size, uploaded_by]
     );
 
     return result.insertId;

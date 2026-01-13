@@ -32,8 +32,7 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
       });
     }
 
-    // Set default priority - customers cannot select priority
-    // Priority will be assigned by support agent based on actual need
+    // Set default priority
     const priority = 'medium';
 
     // Check if department exists
@@ -49,7 +48,7 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
       });
     }
 
-    // Find or create user (check all roles, not just customer)
+    // Find or create user
     let [existingUser] = await db.query(
       'SELECT id FROM users WHERE email = ?',
       [email]
@@ -60,14 +59,12 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
     let temporaryPassword = null;
 
     if (existingUser.length > 0) {
-      // User exists with any role, use their ID
       customerId = existingUser[0].id;
     } else {
-      // Generate temporary password for new user
       temporaryPassword = generateTemporaryPassword();
+      // Hash password asynchronously in background (don't await)
       const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
-      // Create new customer user
       const [result] = await db.query(
         'INSERT INTO users (name, email, role, password_hash, is_active) VALUES (?, ?, ?, ?, ?)',
         [name, email, 'customer', hashedPassword, 1]
@@ -77,7 +74,6 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
     }
 
     // Create ticket
-    // Capitalize priority for database enum (Low, Medium, High, Critical)
     const capitalizedPriority = priority.charAt(0).toUpperCase() + priority.slice(1);
 
     const [ticketResult] = await db.query(
@@ -87,81 +83,87 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
 
     const ticketId = ticketResult.insertId;
 
-    // Create initial chat conversation for the ticket
-    const conversationId = await Chat.createConversation({
-      type: 'ticket',
-      ticket_id: ticketId,
-      created_by: customerId
-    });
-
-    // Add customer as participant
-    await Chat.addParticipant(conversationId, customerId);
-
-    // Create initial message with ticket description
-    if (message) {
-      await Chat.addMessage({
-        conversation_id: conversationId,
-        sender_id: customerId,
-        message
-      });
-    }
-
-    // Handle file attachments
-    if (req.files && req.files.length > 0) {
-      for (const file of req.files) {
-        await Ticket.addAttachment({
-          ticket_id: ticketId,
-          file_path: file.filename,
-          uploaded_by: customerId
-        });
-      }
-    }
-
-    // Log to audit
-    await Audit.log({
-      ticket_id: ticketId,
-      user_id: null,
-      action: 'ticket_created_public',
-      new_value: `Created from landing page by ${email}`
-    });
-
-    // Auto-assign to agent with lowest workload
-    const [agents] = await db.query(
-      `SELECT u.id FROM users u
-       LEFT JOIN tickets t ON u.id = t.agent_id
-       WHERE u.role = 'agent' AND u.is_active = 1 AND (u.department_id = ? OR u.department_id IS NULL)
-       GROUP BY u.id
-       ORDER BY COUNT(t.id) ASC
-       LIMIT 1`,
-      [department_id]
-    );
-
-    if (agents.length > 0) {
-      await db.query(
-        'UPDATE tickets SET agent_id = ? WHERE id = ?',
-        [agents[0].id, ticketId]
-      );
-    }
-
-    // Send welcome email with temporary password if new user (don't wait - send in background)
-    if (isNewUser && temporaryPassword) {
-      emailService.sendWelcomeEmail(email, name, temporaryPassword)
-        .catch(err => console.error('Email send failed:', err));
-    }
-
-    // Auto-login the user by creating a session
-    if (req.session) {
-      req.session.userId = customerId;
-      req.session.userRole = 'customer';
-    }
-
+    // Send response immediately - don't wait for background tasks
     res.json({
       success: true,
-      message: 'Account created and ticket submitted successfully',
+      message: 'Ticket submitted successfully',
       ticketId: ticketId,
       email: email,
       portalUrl: `/tickets/portal?ticketId=${ticketId}`
     });
+
+    // Execute background tasks AFTER response is sent
+    // This prevents slow database operations from blocking the response
+    process.nextTick(async () => {
+      try {
+        // Create initial chat conversation
+        const conversationId = await Chat.createConversation({
+          type: 'ticket',
+          ticket_id: ticketId,
+          created_by: customerId
+        });
+
+        // Add customer as participant
+        await Chat.addParticipant(conversationId, customerId);
+
+        // Create initial message
+        if (message) {
+          await Chat.addMessage({
+            conversation_id: conversationId,
+            sender_id: customerId,
+            message
+          });
+        }
+
+        // Handle file attachments
+        if (req.files && req.files.length > 0) {
+          for (const file of req.files) {
+            await Ticket.addAttachment({
+              ticket_id: ticketId,
+              file_path: file.filename,
+              uploaded_by: customerId,
+              original_name: file.originalname,
+              file_size: file.size
+            });
+          }
+        }
+
+        // Log to audit
+        await Audit.log({
+          ticket_id: ticketId,
+          user_id: null,
+          action: 'ticket_created_public',
+          new_value: `Created from landing page by ${email}`
+        });
+
+        // Auto-assign to agent with lowest workload
+        const [agents] = await db.query(
+          `SELECT u.id FROM users u
+           LEFT JOIN tickets t ON u.id = t.agent_id
+           WHERE u.role = 'agent' AND u.is_active = 1 AND (u.department_id = ? OR u.department_id IS NULL)
+           GROUP BY u.id
+           ORDER BY COUNT(t.id) ASC
+           LIMIT 1`,
+          [department_id]
+        );
+
+        if (agents.length > 0) {
+          await db.query(
+            'UPDATE tickets SET agent_id = ? WHERE id = ?',
+            [agents[0].id, ticketId]
+          );
+        }
+
+        // Send welcome email if new user
+        if (isNewUser && temporaryPassword) {
+          emailService.sendWelcomeEmail(email, name, temporaryPassword)
+            .catch(err => console.error('Email send failed:', err));
+        }
+      } catch (error) {
+        console.error('Error in ticket creation background tasks:', error);
+      }
+    });
+
   } catch (error) {
     console.error('Error creating public ticket:', error);
     res.status(500).json({
@@ -305,6 +307,16 @@ router.get('/tickets/:id', async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
+    // Get attachments with full details including who uploaded them
+    const [attachmentsData] = await db.query(
+      `SELECT ta.id, ta.file_path, ta.original_name, ta.file_size, ta.uploaded_by, u.name as uploader_name, ta.created_at
+       FROM ticket_attachments ta
+       LEFT JOIN users u ON ta.uploaded_by = u.id
+       WHERE ta.ticket_id = ?
+       ORDER BY ta.created_at DESC`,
+      [ticketId]
+    );
+
     res.json({
       success: true,
       ticket: {
@@ -314,7 +326,8 @@ router.get('/tickets/:id', async (req, res) => {
         priority: ticket.priority,
         status: ticket.status,
         created_at: ticket.created_at,
-        updated_at: ticket.updated_at
+        updated_at: ticket.updated_at,
+        attachments: attachmentsData || []
       }
     });
   } catch (error) {
@@ -353,7 +366,7 @@ router.get('/tickets/:id/messages', async (req, res) => {
 
     // Get or create chat conversation for this ticket
     const conversation = await Chat.getConversationByTicketId(ticketId);
-    
+
     if (!conversation) {
       // No messages yet
       return res.json({
@@ -367,20 +380,271 @@ router.get('/tickets/:id/messages', async (req, res) => {
 
     res.json({
       success: true,
-      messages: messages.map(m => ({
-        id: m.id,
-        user_id: m.sender_id,
-        message: m.message,
-        user_name: m.sender_name,
-        user_role: m.sender_role,
-        is_internal: false, // Chat messages are not internal
-        is_edited: m.is_edited,
-        edited_at: m.edited_at,
-        created_at: m.created_at
-      }))
+      messages: messages.map(m => {
+        // Check if message is an attachment (JSON string)
+        let isAttachment = false;
+        let attachmentData = null;
+
+        try {
+          const parsed = JSON.parse(m.message);
+          if (parsed.type === 'attachment') {
+            isAttachment = true;
+            attachmentData = parsed;
+          }
+        } catch (e) {
+          // Not JSON, treat as regular message
+        }
+
+        if (isAttachment && attachmentData) {
+          return {
+            id: m.id,
+            user_id: m.sender_id,
+            user_name: m.sender_name,
+            user_role: m.sender_role,
+            created_at: m.created_at,
+            is_attachment: true,
+            file_name: attachmentData.file_name,
+            file_path: attachmentData.file_path,
+            file_size: attachmentData.file_size,
+            file_url: attachmentData.file_url
+          };
+        } else {
+          return {
+            id: m.id,
+            user_id: m.sender_id,
+            content: m.message,
+            user_name: m.sender_name,
+            user_role: m.sender_role,
+            is_internal: false,
+            is_edited: m.is_edited,
+            edited_at: m.edited_at,
+            created_at: m.created_at,
+            isOwn: m.sender_id === userId,
+            is_attachment: false
+          };
+        }
+      })
     });
   } catch (error) {
     console.error('Error fetching messages:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Post a message to a ticket
+router.post('/tickets/:id/messages', upload.array('attachments', 5), async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const userId = req.session.userId;
+    const userRole = res.locals.currentUser.role;
+    const { content } = req.body;
+
+    // Validate that at least message or files are provided
+    if ((!content || content.trim() === '') && (!req.files || req.files.length === 0)) {
+      return res.status(400).json({ success: false, message: 'Message and/or attachments required' });
+    }
+
+    // Get ticket to check permissions
+    const [tickets] = await db.query(
+      'SELECT * FROM tickets WHERE id = ?',
+      [ticketId]
+    );
+
+    if (tickets.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const ticket = tickets[0];
+
+    // Check permissions
+    if (userRole === 'customer' && ticket.customer_id !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    if (userRole === 'agent' && ticket.agent_id !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    // Get or create chat conversation for this ticket
+    const conversation = await Chat.getOrCreateTicketConversation(ticketId, ticket.customer_id);
+
+    // Ensure user is a participant
+    await Chat.addParticipant(conversation, userId);
+
+    // Add message if content exists
+    let messageId = null;
+    if (content && content.trim()) {
+      messageId = await Chat.addMessage({
+        conversation_id: conversation,
+        sender_id: userId,
+        message: content.trim()
+      });
+    }
+
+    // Handle file attachments
+    if (req.files && req.files.length > 0) {
+      // Get user info for attachment message
+      const [userInfo] = await db.query('SELECT name FROM users WHERE id = ?', [userId]);
+      const userName = userInfo[0]?.name || 'User';
+
+      for (const file of req.files) {
+        // Add attachment to ticket with metadata
+        await Ticket.addAttachment({
+          ticket_id: ticketId,
+          file_path: file.filename,
+          uploaded_by: userId,
+          original_name: file.originalname,
+          file_size: file.size
+        });
+
+        // Create a special attachment message in chat
+        const fileSize = file.size ? `${(file.size / 1024).toFixed(2)} KB` : 'Unknown';
+        const attachmentMessage = await Chat.addMessage({
+          conversation_id: conversation,
+          sender_id: userId,
+          message: JSON.stringify({
+            type: 'attachment',
+            file_name: file.originalname,
+            file_path: file.filename,
+            file_size: fileSize,
+            file_url: `/uploads/tickets/${file.filename}`
+          })
+        });
+      }
+    }
+
+    // Log to audit
+    const auditAction = req.files && req.files.length > 0
+      ? `Chat message with ${req.files.length} attachment(s)`
+      : 'Chat message';
+
+    await Audit.log({
+      ticket_id: ticketId,
+      user_id: userId,
+      action: 'message_added',
+      new_value: auditAction
+    });
+
+    res.json({
+      success: true,
+      message: 'Message sent successfully',
+      messageId,
+      attachmentCount: req.files ? req.files.length : 0
+    });
+  } catch (error) {
+    console.error('Error posting message:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Edit a message
+router.put('/messages/:messageId', async (req, res) => {
+  try {
+    const messageId = req.params.messageId;
+    const userId = req.session.userId;
+    const { content } = req.body;
+
+    if (!content || content.trim() === '') {
+      return res.status(400).json({ success: false, message: 'Message cannot be empty' });
+    }
+
+    // Get the message to check if user is the sender
+    const [messages] = await db.query(
+      'SELECT cm.*, c.ticket_id FROM chat_messages cm LEFT JOIN chat_conversations c ON cm.conversation_id = c.id WHERE cm.id = ?',
+      [messageId]
+    );
+
+    if (messages.length === 0) {
+      return res.status(404).json({ success: false, message: 'Message not found' });
+    }
+
+    const message = messages[0];
+
+    // Only message sender can edit their own messages
+    if (message.sender_id !== userId) {
+      return res.status(403).json({ success: false, message: 'You can only edit your own messages' });
+    }
+
+    // Update the message
+    await Chat.editMessage(messageId, content.trim());
+
+    // Log to audit if ticket exists
+    if (message.ticket_id) {
+      await Audit.log({
+        ticket_id: message.ticket_id,
+        user_id: userId,
+        action: 'message_edited',
+        new_value: 'Chat message edited'
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Message updated successfully'
+    });
+  } catch (error) {
+    console.error('Error editing message:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+});
+
+// Download/View ticket attachment with permission check
+router.get('/tickets/:id/attachments/:attachmentId', async (req, res) => {
+  try {
+    const ticketId = req.params.id;
+    const attachmentId = req.params.attachmentId;
+    const userId = req.session.userId;
+    const userRole = res.locals.currentUser.role;
+
+    // Get ticket to check permissions
+    const [tickets] = await db.query(
+      'SELECT * FROM tickets WHERE id = ?',
+      [ticketId]
+    );
+
+    if (tickets.length === 0) {
+      return res.status(404).json({ success: false, message: 'Ticket not found' });
+    }
+
+    const ticket = tickets[0];
+
+    // Check basic permission to view ticket
+    if (userRole === 'customer' && ticket.customer_id !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    if (userRole === 'agent' && ticket.agent_id !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized' });
+    }
+
+    // Get attachment to check who uploaded it
+    const [attachments] = await db.query(
+      'SELECT * FROM ticket_attachments WHERE id = ? AND ticket_id = ?',
+      [attachmentId, ticketId]
+    );
+
+    if (attachments.length === 0) {
+      return res.status(404).json({ success: false, message: 'Attachment not found' });
+    }
+
+    const attachment = attachments[0];
+
+    // Check permission to access this specific attachment
+    // Allow if: user is admin, user is agent, or user uploaded the attachment
+    if (userRole !== 'admin' && userRole !== 'agent' && attachment.uploaded_by !== userId) {
+      return res.status(403).json({ success: false, message: 'Not authorized to access this attachment' });
+    }
+
+    // File download would happen here (currently just returns permission allowed)
+    res.json({
+      success: true,
+      message: 'Permission granted',
+      file_url: `/uploads/tickets/${attachment.file_path}`,
+      file_name: attachment.file_path,
+      original_name: attachment.file_path
+    });
+  } catch (error) {
+    console.error('Error accessing attachment:', error);
     res.status(500).json({ success: false, message: 'Server error' });
   }
 });
