@@ -11,6 +11,9 @@ router.use(isAuthenticated);
 // List tickets
 router.get('/', ticketController.index);
 
+// Customer portal (ticket selection and chat)
+router.get('/portal', ticketController.portal);
+
 // Create ticket
 router.get('/create', ticketController.showCreate);
 router.post('/create', ticketValidation.create, validate, ticketController.create);

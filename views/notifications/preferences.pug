@@ -1,0 +1,181 @@
+extends ../layout/layout
+
+block content
+  .max-w-2xl.mx-auto.py-6
+
+    //- Page Header
+    h1.text-3xl.font-bold.text-gray-900.dark_text-white.mb-6 Notification Preferences
+
+    //- Preferences Form
+    .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.dark_bg-neutral-800.dark_border-neutral-700
+
+      form(method="POST" action="/notifications/preferences" novalidate)
+
+        //- Email Notifications Section
+        .mb-8
+          h2.text-lg.font-semibold.text-gray-900.dark_text-white.mb-4
+            svg.w-5.h-5.inline.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z")
+            | Email Notifications
+
+          p.text-sm.text-gray-600.dark_text-neutral-400.mb-4 Get notified via email when:
+
+          .space-y-3
+
+            //- Ticket Assigned
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_ticket_assigned"
+                checked=preferences && preferences.email_ticket_assigned
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white A ticket is assigned to you
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Receive notifications when you're assigned to handle a ticket
+
+            //- New Message
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_new_message"
+                checked=preferences && preferences.email_new_message
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white A new message is posted on your ticket
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Get notified when someone replies to your ticket
+
+            //- Status Change
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_status_change"
+                checked=preferences && preferences.email_status_change
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white A ticket status changes
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Be notified when your ticket status is updated
+
+            //- Mention
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_mention"
+                checked=preferences && preferences.email_mention
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white You are mentioned
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Get notified when someone mentions you (@mention)
+
+            //- Escalation
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_escalation"
+                checked=preferences && preferences.email_escalation
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white A ticket is escalated
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Alert when a ticket is escalated to managers
+
+            //- Chat Message
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="email_chat_message"
+                checked=preferences && preferences.email_chat_message
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white You receive a chat message
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Get notified for new direct messages
+
+        //- Divider
+        .border-t.border-gray-200.dark_border-neutral-700.my-8
+
+        //- Push Notifications Section
+        .mb-8
+          h2.text-lg.font-semibold.text-gray-900.dark_text-white.mb-4
+            svg.w-5.h-5.inline.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9")
+            | In-App Notifications
+
+          p.text-sm.text-gray-600.dark_text-neutral-400.mb-4 Show in-app notifications for:
+
+          .space-y-3
+
+            //- Push Ticket Assigned
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_ticket_assigned"
+                checked=preferences && preferences.push_ticket_assigned
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white Ticket assignments
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Show notification in the bell icon
+
+            //- Push New Message
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_new_message"
+                checked=preferences && preferences.push_new_message
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white New messages
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Notify about new replies on your tickets
+
+            //- Push Status Change
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_status_change"
+                checked=preferences && preferences.push_status_change
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white Status changes
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Alert when ticket status is updated
+
+            //- Push Mention
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_mention"
+                checked=preferences && preferences.push_mention
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white Mentions (@mentions)
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Get alerted when someone mentions you
+
+            //- Push Chat
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_chat_message"
+                checked=preferences && preferences.push_chat_message
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white Chat messages
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Notify about direct messages
+
+            //- Push Escalation
+            label.flex.items-center.cursor-pointer.hover_bg-gray-50.dark_hover_bg-neutral-700/50.p-3.rounded-lg.transition-colors
+              input.w-4.h-4.rounded.text-blue-600.focus_ring-blue-500.dark_focus_ring-blue-400(
+                type="checkbox"
+                name="push_escalation"
+                checked=preferences && preferences.push_escalation
+              )
+              .ml-3
+                p.text-sm.font-medium.text-gray-900.dark_text-white Escalations
+                p.text-xs.text-gray-500.dark_text-neutral-400.mt-1 Alert about escalated tickets
+
+        //- Form Actions
+        .flex.gap-3.pt-6.border-t.border-gray-200.dark_border-neutral-700
+          button.px-6.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-offset-2.focus_ring-blue-500.font-medium.transition-colors(
+            type="submit"
+          )
+            | Save Preferences
+
+          a.px-6.py-2.text-gray-700.dark_text-neutral-300.bg-gray-100.dark_bg-neutral-700.rounded-lg.hover_bg-gray-200.dark_hover_bg-neutral-600.font-medium.transition-colors(
+            href="/notifications"
+          )
+            | Cancel

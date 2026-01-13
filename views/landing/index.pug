@@ -3,1173 +3,697 @@ html(lang="en")
   head
     meta(charset="UTF-8")
     meta(name="viewport" content="width=device-width, initial-scale=1.0")
-    meta(name="description" content="Zolentra - Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience. Start your 14-day free trial, no credit card required.")
-
-    //- Open Graph
-    meta(property="og:type" content="website")
-    meta(property="og:title" content="Zolentra - Professional Helpdesk Platform")
-    meta(property="og:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
-    meta(property="og:image" content="/images/og-image.png")
-    meta(property="og:url" content="https://zolentra.com")
-
-    //- Twitter Card
-    meta(name="twitter:card" content="summary_large_image")
-    meta(name="twitter:title" content="Zolentra - Professional Helpdesk Platform")
-    meta(name="twitter:description" content="Cut support response time by 60%. Modern helpdesk built for teams that care about customer experience.")
-    meta(name="twitter:image" content="/images/og-image.png")
-
-    title Zolentra - Professional Helpdesk Platform
-    //- Favicon support for all browsers
+    meta(name="description" content="Zolentra - Professional Helpdesk Platform")
+    title Zolentra - Support Portal
     link(rel="icon" type="image/x-icon" href="/favicon.ico")
-    link(rel="icon" type="image/png" sizes="32x32" href="/favicon.ico")
-    link(rel="icon" type="image/png" sizes="16x16" href="/favicon.ico")
-    link(rel="apple-touch-icon" href="/favicon.ico")
-    meta(name="theme-color" content="#2563eb")
-    link(rel="preconnect" href="https://fonts.googleapis.com")
     link(rel="stylesheet" href="/css/output.css")
     link(rel="stylesheet" href="/css/style.css")
 
-  body(class="bg-gradient-to-br from-slate-50 to-slate-100 antialiased")
-    //- Skip to content
-    a(class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded" href="#main-content") Skip to content
-
-    //- Navigation
-    header(class="fixed w-full bg-white border-b border-slate-200 z-50 shadow-sm" style="height: 70px;")
-      nav(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style="height: 100%;" aria-label="Main navigation")
-        div(class="flex justify-between items-center h-full")
-          //- Logo
-          div(class="flex items-center")
-            a(class="flex items-center gap-2 group" href="/")
-              img(class="h-11 transition-transform group-hover:scale-105" src="/images/zolentra_logo.webp" alt="Zolentra Logo")
-
-          //- Navigation Links
-          div(class="hidden md:flex items-center space-x-1")
-            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#features") Features
-            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#pricing") Pricing
-            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#testimonials") Testimonials
-            a(class="px-4 py-2 text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all duration-200 text-sm font-medium" href="#faq") FAQ
-
-          //- Auth Buttons
-          div(class="hidden md:flex items-center gap-4")
+  body(class="bg-gradient-to-b from-slate-50 to-slate-50 antialiased")
+    header(class="fixed w-full bg-white border-b border-slate-200 z-50 shadow-sm")
+      nav(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4")
+        div(class="flex justify-between items-center")
+          a(class="flex items-center gap-2" href="/")
+            img(class="h-10" src="/images/zolentra_logo.webp" alt="Zolentra")
+          
+          div(class="hidden md:flex items-center space-x-2")
+            a(class="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-sm" href="#features") Features
+            a(class="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-sm" href="#how-it-works") How It Works
+            a(class="px-4 py-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-sm" href="#faq") FAQ
+          
+          div(class="hidden md:flex items-center gap-3")
             if currentUser
-              //- Logged in user dropdown
-              .relative
-                button#landingUserMenuButton.flex.items-center.space-x-3.px-3.py-2.rounded-lg.hover_bg-gray-100.transition-colors(style="border: 2px solid #e5e7eb;")
-                  .w-9.h-9.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.font-bold.shadow-md
+              div(class="relative")
+                button#landingUserMenuButton(class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition" style="border: 2px solid #e5e7eb;")
+                  div(class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-bold")
                     = currentUser.name.charAt(0).toUpperCase()
-                  .text-left
-                    p.text-sm.font-semibold.text-gray-900= currentUser.name
-                    p.text-xs.text-gray-500= currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
-                  svg#landingUserMenuIcon.w-4.h-4.text-gray-500.transition-transform.duration-200(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-
-                //- Dropdown menu
-                #landingUserMenuDropdown.hidden.absolute.right-0.mt-2.w-56.bg-white.rounded-xl.shadow-2xl.border.border-gray-200.z-50.overflow-hidden
-                  .p-4.border-b.border-gray-100.bg-gradient-to-r.from-gray-50.to-white
-                    p.text-sm.font-semibold.text-gray-900= currentUser.name
-                    p.text-xs.text-gray-500= currentUser.email
-                  .py-2
-                    a.flex.items-center.px-4.py-2.text-sm.rounded-lg.relative.overflow-hidden(href="/dashboard" style="background-color: transparent; color: #374151; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#2563eb';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#374151';")
-                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(59,130,246,0), rgba(59,130,246,0.1), rgba(59,130,246,0)); opacity: 0; transition: opacity 300ms;")
-                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
-                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 0v10")
-                      span.relative(style="z-index: 10;") Admin Panel
-                  .border-t.border-gray-100
-                    a.flex.items-center.px-4.py-3.text-sm.rounded-lg.relative.overflow-hidden(href="/auth/logout" style="background-color: transparent; color: #dc2626; transition: all 300ms ease;" onmouseover="const bg = this.querySelector('div'); bg.style.opacity='1'; this.style.color='#991b1b';" onmouseout="const bg = this.querySelector('div'); bg.style.opacity='0'; this.style.color='#dc2626';")
-                      div.absolute.inset-0(style="background: linear-gradient(to right, rgba(220,38,38,0), rgba(220,38,38,0.1), rgba(220,38,38,0)); opacity: 0; transition: opacity 300ms;")
-                      svg.w-4.h-4.mr-3(fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: inherit; transition: color 300ms;")
-                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1")
-                      span.relative(style="z-index: 10;") Logout
+                  span(class="text-sm font-medium text-gray-900")= currentUser.name.split(' ')[0]
+                
+                #landingUserMenuDropdown(class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50")
+                  div(class="py-2")
+                    a(class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600" href="/dashboard")
+                      span Dashboard
+                    if currentUser.role === 'customer'
+                      a(class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-600" href="/tickets/portal")
+                        span My Tickets
+                  div(class="border-t border-gray-200 py-2")
+                    a(class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50" href="/auth/logout")
+                      span Logout
             else
-              //- Not logged in buttons
-              button(class="px-6 py-2.5 bg-white text-slate-700 font-semibold transition-all duration-300 text-sm rounded-xl border-2 border-slate-200 hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 relative overflow-hidden group" onclick="openLoginModal()")
-                div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/20 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
-                span(class="relative z-10") Login
-              button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold text-sm shadow-lg flex items-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)';" onclick="openRegisterModal()")
-                span(class="relative z-10") Get Started
-                svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
+              button(class="px-6 py-2.5 text-blue-600 bg-white border-2 border-blue-600 rounded-lg hover:bg-blue-50 font-medium" onclick="openLoginModal()")
+                span Sign In
+              button(class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium" onclick="openRegisterModal()")
+                span Get Started
 
-          //- Mobile menu button
-          button#mobile-menu-btn(class="block md:hidden text-slate-700 hover:text-blue-600 hover:bg-slate-50 p-2 rounded-lg transition-all" type="button" aria-label="Toggle mobile menu" aria-expanded="false" aria-controls="mobile-menu")
-            svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16")
+    main(style="padding-top: 6rem; padding-bottom: 4rem;")
+      div(class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8")
+        section(class="text-center mb-32 pt-16")
+          div(class="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold mb-6")
+            svg(class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20")
+              path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
+            | Professional Support Platform
 
-    //- Mobile Menu
-    div#mobile-menu(class="hidden fixed inset-0 bg-white z-40 pt-20")
-      div(class="flex flex-col items-stretch space-y-2 p-6 max-w-sm mx-auto")
-        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#features") Features
-        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#pricing") Pricing
-        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#testimonials") Testimonials
-        a(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all font-medium text-center" href="#faq") FAQ
-        div(class="border-t border-slate-200 my-4")
-        button(class="px-6 py-4 text-lg text-slate-700 hover:text-blue-600 hover:bg-slate-50 rounded-lg transition-all font-semibold" onclick="openLoginModal()") Login
-        button(class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all text-lg shadow-md font-semibold" onclick="openRegisterModal()")
-          span Get Started
-          svg(class="inline-block w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
+          h1(class="text-5xl md:text-6xl font-bold text-slate-900 mb-6 leading-tight")
+            | Get Support,
+            br
+            span(style="background: linear-gradient(to right, #2563eb, #4f46e5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;") Fast & Easy
 
-    main#main-content(class="mt-[70px]")
-      //- Hero Section
-      section(class="pt-32 pb-20 px-4 sm:px-6 lg:px-8")
-        div(class="max-w-7xl mx-auto")
-          div(class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center")
-            div(class="space-y-8")
-              //- Social Proof Badge
-              div(class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium")
-                svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
-                  path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
-                span Trusted by 2,000+ support teams
+          p(class="text-xl text-slate-600 mb-8 max-w-2xl mx-auto")
+            | Submit support tickets, track your issues in real-time, and get resolutions from our expert team. We're here to help you succeed.
 
-              h1(class="text-5xl lg:text-6xl font-bold text-slate-900 leading-tight")
-                | Cut Response Time by
-                span(class="text-blue-600")  60%
-                br
-                | With Intelligent Support
+          div(class="flex flex-col sm:flex-row gap-4 justify-center")
+            if currentUser
+              a(class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-semibold flex items-center justify-center gap-2" href="/tickets/create")
+                svg(class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+                | Create Support Ticket
+              a(class="px-8 py-4 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-all font-semibold text-center" href="/tickets")
+                | View My Tickets
+            else
+              button(class="px-8 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all font-semibold flex items-center justify-center gap-2 mx-auto" onclick="openTicketModal()")
+                svg(class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+                | Create Your First Ticket
 
-              p(class="text-xl text-slate-600")
-                | Stop drowning in tickets. Zolentra's smart routing and automation help teams resolve issues 2x faster while keeping customers happy.
-
-              div(class="flex flex-col sm:flex-row gap-4")
-                button(class="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl transition-all duration-300 font-semibold shadow-lg flex items-center justify-center gap-2 relative overflow-hidden group" style="background-image: linear-gradient(to right, #2563eb, #1d4ed8);" onmouseover="this.style.backgroundImage='linear-gradient(to right, #1d4ed8, #1e40af)'; this.style.transform='scale(1.05)'; this.style.boxShadow='0 25px 50px -12px rgba(37, 99, 235, 0.3)';" onmouseout="this.style.backgroundImage='linear-gradient(to right, #2563eb, #1d4ed8)'; this.style.transform='scale(1)'; this.style.boxShadow='0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)';" onclick="openRegisterModal()")
-                  span(class="relative z-10") Start Free Trial
-                  svg(class="relative z-10 inline-block w-5 h-5 transition-transform duration-300" style="transform: translateX(0);" onmouseover="this.style.transform='translateX(4px)';" onmouseout="this.style.transform='translateX(0)';" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6")
-                a(class="px-8 py-3 border-2 border-slate-300 text-slate-700 rounded-xl hover:border-blue-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 font-semibold text-center relative overflow-hidden group" href="#pricing")
-                  div(class="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-400/10 to-blue-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300")
-                  span(class="relative z-10") View Pricing
-
-              div(class="flex items-center gap-6 text-sm text-slate-600")
-                div(class="flex items-center gap-2")
-                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span No credit card required
-                div(class="flex items-center gap-2")
-                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span 14-day free trial
-                div(class="flex items-center gap-2")
-                  svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span Cancel anytime
-
-            div(class="relative")
-              img(class="relative rounded-2xl shadow-xl border border-slate-200" src="/images/dashboard-preview.webp" alt="Dashboard Preview" loading="lazy" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22800%22 height=%22600%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2236%22 fill=%22%239ca3af%22%3EDashboard Preview%3C/text%3E%3C/svg%3E'")
-
-      //- Trust Indicators
-      section(class="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200")
-        div(class="max-w-7xl mx-auto")
-          div(class="text-center mb-8")
-            p(class="text-sm text-slate-500 uppercase tracking-wide font-semibold") Trusted by support teams at
-          div(class="flex flex-wrap justify-center items-center gap-8 opacity-50")
-            div(class="text-2xl font-bold text-slate-400") TechCorp
-            div(class="text-2xl font-bold text-slate-400") StartupXYZ
-            div(class="text-2xl font-bold text-slate-400") CloudSolutions
-            div(class="text-2xl font-bold text-slate-400") DataFlow
-
-      //- Features Section
-      section#features(class="py-20 px-4 sm:px-6 lg:px-8")
-        div(class="max-w-7xl mx-auto")
+        //- Features Section
+        section#features(class="py-20")
           div(class="text-center mb-16")
-            h2(class="text-4xl font-bold text-slate-900 mb-4") Everything your support team needs
-            p(class="text-xl text-slate-600 max-w-3xl mx-auto")
-              | Stop juggling multiple tools. Get everything in one powerful platform.
-
-          div(class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8")
-            //- Feature 1
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Smart Ticket Management
-              p(class="text-slate-600") AI-powered routing sends tickets to the right agent automatically. No manual sorting, no bottlenecks.
-
-            //- Feature 2
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Real-Time Collaboration
-              p(class="text-slate-600") Internal notes, @mentions, and collision detection. Your team stays in sync without stepping on toes.
-
-            //- Feature 3
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Analytics That Matter
-              p(class="text-slate-600") Track CSAT, first response time, and resolution rates. See what's working and what needs fixing.
-
-            //- Feature 4
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Automation Engine
-              p(class="text-slate-600") Set triggers for common scenarios. Auto-assign, auto-tag, auto-respond. Your team focuses on complex issues.
-
-            //- Feature 5
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Bank-Grade Security
-              p(class="text-slate-600") SOC 2 Type II certified. Role-based access, 2FA, and end-to-end encryption. Your data stays safe.
-
-            //- Feature 6
-            div(class="p-8 bg-white rounded-2xl border border-slate-200 hover:shadow-xl transition")
-              div(class="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center mb-6")
-                svg(class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4")
-              h3(class="text-xl font-semibold text-slate-900 mb-3") Custom Workflows
-              p(class="text-slate-600") Build workflows that match how your team actually works. No forcing square pegs into round holes.
-
-      //- Testimonials Section
-      section#testimonials(class="py-20 px-4 sm:px-6 lg:px-8 bg-white")
-        div(class="max-w-7xl mx-auto")
-          div(class="text-center mb-16")
-            h2(class="text-4xl font-bold text-slate-900 mb-4") Loved by support teams worldwide
-            p(class="text-xl text-slate-600 max-w-3xl mx-auto")
-              | Don't just take our word for it. Here's what real teams are saying.
+            h2(class="text-4xl font-bold text-slate-900 mb-4") Why Choose Zolentra?
+            p(class="text-xl text-slate-600") Everything you need for professional customer support
 
           div(class="grid grid-cols-1 md:grid-cols-3 gap-8")
-            //- Testimonial 1
-            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
-              div(class="flex items-center gap-1 mb-4")
-                each star in [1,2,3,4,5]
-                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
-                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
-              p(class="text-slate-700 mb-6 leading-relaxed") "We cut our average response time from 4 hours to 45 minutes. Our CSAT score jumped 32% in the first month."
-              div(class="flex items-center gap-3")
-                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") SM
-                div
-                  div(class="font-semibold text-slate-900") Sarah Mitchell
-                  div(class="text-sm text-slate-600") Head of Support, TechFlow
+            div(class="p-8 bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              svg(class="w-12 h-12 text-blue-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z")
+              h3(class="text-xl font-bold text-slate-900 mb-2") Lightning Fast
+              p(class="text-slate-600") Get instant notifications and real-time updates on your tickets
 
-            //- Testimonial 2
-            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
-              div(class="flex items-center gap-1 mb-4")
-                each star in [1,2,3,4,5]
-                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
-                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
-              p(class="text-slate-700 mb-6 leading-relaxed") "The automation features are a game changer. We handle 3x the ticket volume with the same team size."
-              div(class="flex items-center gap-3")
-                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") JK
-                div
-                  div(class="font-semibold text-slate-900") James Kim
-                  div(class="text-sm text-slate-600") Customer Success Lead, DataSync
+            div(class="p-8 bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              svg(class="w-12 h-12 text-blue-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
+              h3(class="text-xl font-bold text-slate-900 mb-2") Easy to Use
+              p(class="text-slate-600") Intuitive interface that requires no training or technical knowledge
 
-            //- Testimonial 3
-            div(class="bg-slate-50 rounded-2xl p-8 border border-slate-200")
-              div(class="flex items-center gap-1 mb-4")
-                each star in [1,2,3,4,5]
-                  svg(class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20")
-                    path(d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z")
-              p(class="text-slate-700 mb-6 leading-relaxed") "Best investment we made this year. Setup took 20 minutes and we were onboarding the team the same day."
-              div(class="flex items-center gap-3")
-                div(class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold") ER
-                div
-                  div(class="font-semibold text-slate-900") Emily Rodriguez
-                  div(class="text-sm text-slate-600") Operations Manager, CloudBase
+            div(class="p-8 bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              svg(class="w-12 h-12 text-blue-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z")
+              h3(class="text-xl font-bold text-slate-900 mb-2") Secure
+              p(class="text-slate-600") Enterprise-grade security to protect your customer data
 
-      //- Pricing Section
-      section#pricing(class="py-20 px-4 sm:px-6 lg:px-8")
-        div(class="max-w-7xl mx-auto")
-          div(class="text-center mb-12")
-            h2(class="text-4xl font-bold text-slate-900 mb-4") Simple, transparent pricing
-            p(class="text-xl text-slate-600 max-w-3xl mx-auto mb-8")
-              | Choose the perfect plan for your team. All plans include 14-day free trial.
+        //- How It Works Section
+        section#how-it-works(class="py-20")
+          div(class="text-center mb-16")
+            h2(class="text-4xl font-bold text-slate-900 mb-4") How It Works
+            p(class="text-xl text-slate-600") Simple steps to get started
 
-            //- Billing Toggle
-            div(class="flex items-center justify-center gap-3 mb-4")
-              span(class="text-slate-700 font-medium") Monthly
-              button#billing-toggle(class="relative w-14 h-7 bg-slate-200 rounded-full transition-colors duration-200" style="background-color: #e2e8f0;" aria-label="Toggle billing period")
-                div(class="absolute left-1 top-1 w-5 h-5 bg-white rounded-full transition-transform duration-200")
-              span(class="text-slate-700 font-medium")
-                | Annual
-                span(class="text-green-600 text-sm")  (Save 20%)
+          div(class="grid grid-cols-1 md:grid-cols-4 gap-8")
+            div(class="text-center")
+              div(class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4")
+                span(class="text-2xl font-bold text-blue-600") 1
+              h3(class="text-lg font-bold text-slate-900 mb-2") Create Ticket
+              p(class="text-slate-600") Submit a support request with details about your issue
 
-          div(class="grid grid-cols-1 md:grid-cols-3 gap-8")
-            //- Starter Plan
-            div(class="bg-white rounded-2xl border-2 border-slate-200 p-8 hover:shadow-xl transition flex flex-col")
-              div(class="text-center mb-8")
-                h3(class="text-2xl font-bold text-slate-900 mb-2") Starter
-                div(class="text-4xl font-bold text-slate-900 mb-1")
-                  span(class="monthly-price") $29
-                  span(class="annual-price hidden") $23
-                  span(class="text-lg text-slate-600 font-normal") /month
-                p(class="text-slate-600") Perfect for small teams
+            div(class="text-center")
+              div(class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4")
+                span(class="text-2xl font-bold text-blue-600") 2
+              h3(class="text-lg font-bold text-slate-900 mb-2") Get Assigned
+              p(class="text-slate-600") Your ticket is assigned to the right support specialist
 
-              ul(class="space-y-4 mb-10 flex-grow")
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") Up to 3 agents
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") 500 tickets/month
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") Email support
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") Basic analytics
+            div(class="text-center")
+              div(class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4")
+                span(class="text-2xl font-bold text-blue-600") 3
+              h3(class="text-lg font-bold text-slate-900 mb-2") Stay Updated
+              p(class="text-slate-600") Receive real-time updates on your ticket progress
 
-              button(class="block w-full py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-semibold text-center" onclick="openRegisterModal()")
-                | Start Free Trial
+            div(class="text-center")
+              div(class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4")
+                span(class="text-2xl font-bold text-blue-600") 4
+              h3(class="text-lg font-bold text-slate-900 mb-2") Resolution
+              p(class="text-slate-600") Your issue gets resolved quickly and efficiently
 
-            //- Professional Plan (Featured)
-            div(class="bg-blue-600 rounded-2xl border-2 border-blue-600 p-8 shadow-xl transform scale-105 relative flex flex-col")
-              div(class="absolute -top-4 left-1/2 transform -translate-x-1/2")
-                span(class="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold") Most Popular
+        //- CTA Section
+        section(class="py-20 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl text-center text-white")
+          h2(class="text-4xl font-bold mb-4") Ready to Get Support?
+          p(class="text-xl mb-8 max-w-2xl mx-auto") Create your first ticket now and experience the difference
 
-              div(class="text-center mb-8")
-                h3(class="text-2xl font-bold text-white mb-2") Professional
-                div(class="text-4xl font-bold text-white mb-1")
-                  span(class="monthly-price") $79
-                  span(class="annual-price hidden") $63
-                  span(class="text-lg text-blue-100 font-normal") /month
-                p(class="text-blue-100") For growing teams
+          if currentUser
+            a(class="px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold transition-all inline-block" href="/tickets/create") Create Support Ticket
+          else
+            button(class="px-8 py-4 bg-white text-blue-600 rounded-lg hover:bg-gray-100 font-semibold transition-all" onclick="openRegisterModal()") Get Started
 
-              ul(class="space-y-4 mb-10 flex-grow")
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-white") Up to 10 agents
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-white") Unlimited tickets
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-white") Priority support
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-white") Advanced analytics
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-white mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-white") Custom workflows
-
-              button(class="block w-full py-3 px-6 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-all duration-200 font-semibold text-center shadow-sm" onclick="openRegisterModal()")
-                | Start Free Trial
-
-            //- Enterprise Plan
-            div(class="bg-white rounded-2xl border-2 border-slate-200 p-8 hover:shadow-xl transition flex flex-col")
-              div(class="text-center mb-8")
-                h3(class="text-2xl font-bold text-slate-900 mb-2") Enterprise
-                div(class="text-4xl font-bold text-slate-900 mb-1") Custom
-                p(class="text-slate-600") For large organizations
-
-              ul(class="space-y-4 mb-10 flex-grow")
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") Unlimited agents
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") Unlimited tickets
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") 24/7 dedicated support
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") White-label options
-                li(class="flex items-start")
-                  svg(class="w-6 h-6 text-green-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-                    path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-                  span(class="text-slate-700") 99.9% SLA guarantee
-
-              a(class="block w-full py-3 px-6 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all duration-200 font-semibold text-center" href="mailto:sales@zolentra.com")
-                | Contact Sales
-
-          div(class="text-center mt-8")
-            div(class="inline-flex items-center gap-2 text-green-600 font-medium")
-              svg(class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20")
-                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-              span 30-day money-back guarantee on all plans
-
-      //- FAQ Section
-      section#faq(class="py-20 px-4 sm:px-6 lg:px-8 bg-white")
-        div(class="max-w-4xl mx-auto")
+        //- FAQ Section
+        section#faq(class="py-20")
           div(class="text-center mb-16")
             h2(class="text-4xl font-bold text-slate-900 mb-4") Frequently Asked Questions
-            p(class="text-xl text-slate-600")
-              | Everything you need to know about Zolentra
+            p(class="text-xl text-slate-600") Find answers to common questions about Zolentra
 
-          div(class="space-y-6")
-            //- FAQ 1
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") How long does setup take?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Most teams are up and running in under 30 minutes. Our onboarding wizard walks you through connecting your email, importing existing tickets (optional), and inviting your team. No technical expertise required.
+          div(class="grid grid-cols-1 md:grid-cols-2 gap-8")
+            //- FAQ Item 1
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")
+              p(class="text-slate-600") How do I create a support ticket?
+              p(class="text-slate-500 text-sm mt-2") You can create a ticket by clicking the "Create Ticket" button on our landing page or from your dashboard. Fill in the required information and submit.
 
-            //- FAQ 2
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") Can I migrate from my current helpdesk?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Yes. We support migrations from Zendesk, Freshdesk, Intercom, and most major platforms. Our migration tool preserves your ticket history, customer data, and agent assignments. Professional+ plans include white-glove migration assistance.
+            //- FAQ Item 2
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+              p(class="text-slate-600") How long does it take to get a response?
+              p(class="text-slate-500 text-sm mt-2") Response times vary based on priority and our support capacity. Urgent tickets typically receive a response within 2 hours.
 
-            //- FAQ 3
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") What happens after the 14-day trial?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Your trial ends after 14 days. If you don't upgrade, your account becomes read-only - you can view existing tickets but can't respond or create new ones. Your data is preserved for 60 days in case you decide to return. No auto-charges, ever.
+            //- FAQ Item 3
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z")
+              p(class="text-slate-600") Can I attach files to my ticket?
+              p(class="text-slate-500 text-sm mt-2") Yes! You can attach files like screenshots, documents, and logs to your ticket. Maximum file size is 10MB per file.
 
-            //- FAQ 4
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") Is my data secure?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Absolutely. We're SOC 2 Type II certified and GDPR compliant. All data is encrypted in transit (TLS 1.3) and at rest (AES-256). We perform regular security audits and penetration testing. Your data is backed up every 6 hours to multiple geographic regions.
+            //- FAQ Item 4
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z")
+              p(class="text-slate-600") Can I track my ticket status?
+              p(class="text-slate-500 text-sm mt-2") Absolutely! You can track your ticket in real-time from your dashboard and receive updates as your issue progresses.
 
-            //- FAQ 5
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") Can I cancel anytime?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Yes. No contracts, no cancellation fees. Cancel from your account settings with one click. If you're on a monthly plan, you won't be charged again. Annual plans receive a prorated refund for unused months within the first 30 days.
+            //- FAQ Item 5
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z")
+              p(class="text-slate-600") What if my issue is urgent?
+              p(class="text-slate-500 text-sm mt-2") You can mark your ticket as urgent or critical when creating it. Our team will prioritize urgent tickets accordingly.
 
-            //- FAQ 6
-            div(class="border border-slate-200 rounded-xl overflow-hidden")
-              button(class="faq-toggle w-full text-left p-6 bg-white hover:bg-slate-50 transition-all duration-200 flex justify-between items-center" type="button")
-                h3(class="text-lg font-semibold text-slate-900") Do you offer discounts for nonprofits?
-                svg(class="w-6 h-6 text-slate-400 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7")
-              div(class="faq-content hidden max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-out bg-white" style="padding: 0 1.5rem;")
-                p(class="text-slate-600 py-6") Yes! Registered nonprofits and educational institutions receive 30% off all plans. Contact our sales team with your organization details to verify eligibility and get your discount code.
+            //- FAQ Item 6
+            div(class="bg-white p-6 rounded-2xl border border-gray-200 hover:shadow-lg transition-shadow")
+              h3(class="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2")
+                svg(class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4")
+              p(class="text-slate-600") Is my data secure?
+              p(class="text-slate-500 text-sm mt-2") Yes! We use enterprise-grade security and encryption to protect your data. All communications are secure and confidential.
 
-      //- CTA Section
-      section(class="py-20 px-4 sm:px-6 lg:px-8 bg-blue-600")
-        div(class="max-w-4xl mx-auto text-center")
-          h2(class="text-4xl font-bold text-white mb-4") Ready to transform your support?
-          p(class="text-xl text-blue-100 mb-8")
-            | Join 2,000+ teams delivering exceptional customer experiences with Zolentra
-          div(class="flex flex-col sm:flex-row gap-4 justify-center")
-            button(class="px-8 py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition font-semibold text-center shadow-sm" onclick="openRegisterModal()")
-              | Start Free Trial →
-            a(class="px-8 py-3 border-2 border-white text-white rounded-lg hover:bg-white hover:text-blue-600 transition font-semibold text-center" href="mailto:sales@zolentra.com")
-              | Talk to Sales
+    div#authModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.5);")
+      div(class="bg-white rounded-2xl shadow-2xl max-w-md w-full relative overflow-hidden" onclick="event.stopPropagation()")
+        //- Header with close button
+        div(class="bg-white px-8 py-1 flex items-center justify-end border-b border-gray-200")
+          button(class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-gray-100 transition-all duration-200" onclick="closeAuthModal()" type="button" title="Close")
+            svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
 
-    //- Footer
-    footer(class="bg-slate-900 text-slate-300 py-12 px-4 sm:px-6 lg:px-8")
-      div(class="max-w-7xl mx-auto")
-        div(class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8")
-          div(class="col-span-1 md:col-span-2")
-            img(class="h-10 mb-4" src="/images/zolentra_logo.webp" alt="Zolentra Logo")
-            p(class="text-slate-400 max-w-md") Cut response time by 60%. Modern helpdesk built for teams that care about customer experience.
+        div(class="bg-white relative flex")
+          div#tabIndicator(class="absolute bottom-0 h-1 transition-all duration-300" style="width: 50%; left: 0%; background: linear-gradient(to right, #2563eb, #4f46e5); box-shadow: 0 2px 8px rgba(37,99,235,0.3);")
+          
+          button#loginTabBtn(class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-blue-600 font-semibold transition-colors")
+            span Sign In
+          
+          div(class="w-px bg-gray-300")
+          
+          button#registerTabBtn(class="flex-1 flex items-center justify-center gap-2 px-4 py-4 text-gray-500 font-semibold transition-colors")
+            span Sign Up
 
-          div
-            h4(class="font-semibold text-white mb-4") Product
-            ul(class="space-y-2")
-              li: a(class="hover:text-white transition" href="#features") Features
-              li: a(class="hover:text-white transition" href="#pricing") Pricing
-              li: button(class="hover:text-white transition text-left" onclick="openRegisterModal()") Get Started
-
-          div
-            h4(class="font-semibold text-white mb-4") Support
-            ul(class="space-y-2")
-              li: a(class="hover:text-white transition" href="mailto:support@zolentra.com") Contact
-              li: a(class="hover:text-white transition" href="#faq") FAQ
-              li: a(class="hover:text-white transition" href="#") Status
-
-        div(class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4")
-          p(class="text-slate-400 text-center md:text-left") &copy; #{new Date().getFullYear()} Zolentra. All rights reserved.
-          div(class="flex items-center gap-4")
-            a(class="text-slate-400 hover:text-white transition" href="#") Privacy Policy
-            a(class="text-slate-400 hover:text-white transition" href="#") Terms of Service
-            div(class="flex items-center gap-2 text-slate-400")
-              svg(class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20")
-                path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z")
-              span SOC 2 Certified
-
-    //- JSON-LD Schema for SEO
-    script(type="application/ld+json").
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Zolentra",
-        "description": "Professional helpdesk platform for modern teams",
-        "applicationCategory": "BusinessApplication",
-        "offers": [
-          {
-            "@type": "Offer",
-            "name": "Starter",
-            "price": "29",
-            "priceCurrency": "USD"
-          },
-          {
-            "@type": "Offer",
-            "name": "Professional",
-            "price": "79",
-            "priceCurrency": "USD"
-          }
-        ],
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.9",
-          "reviewCount": "247"
-        }
-      }
-
-    //- Login Modal
-    div#loginModal(class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4")
-      div(class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative" onclick="event.stopPropagation()")
-        //- Close Button
-        button(class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition" onclick="closeModal('loginModal')" type="button")
-          svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
-
-        //- Header
-        div(class="text-center mb-6")
-          div(class="inline-flex items-center justify-center mb-4")
-            img(class="h-12" src="/images/zolentra_logo.webp" alt="Zolentra Logo")
+        div#loginTab(class="p-8")
           h2(class="text-2xl font-bold text-slate-900 mb-2") Welcome Back
-          p(class="text-slate-600 text-sm") Sign in to access your support dashboard
+          p(class="text-slate-600 mb-6") Sign in to continue
+          
+          form#loginForm(class="space-y-4")
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2") Email
+              input#loginEmail(type="email" placeholder="your@email.com" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500")
+            
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2") Password
+              input#loginPassword(type="password" placeholder="••••••••" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500")
+            
+            div#loginErrors
+            
+            button(type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all") Sign In
 
-        //- Error Alert
-        div#login-error(class="hidden p-4 bg-red-50 border border-red-200 rounded-lg")
-          div(class="flex items-start")
-            svg(class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z")
-            p#login-error-message(class="text-sm text-red-800")
+        div#registerTab(class="p-8 hidden")
+          h2(class="text-2xl font-bold text-slate-900 mb-2") Create Account
+          p(class="text-slate-600 mb-6") Join us to create tickets
+          
+          form#registerForm(class="space-y-4")
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2") Full Name
+              input#registerName(type="text" placeholder="John Doe" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500")
+            
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2") Email
+              input#registerEmail(type="email" placeholder="your@email.com" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500")
+            
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2") Password
+              input#registerPassword(type="password" placeholder="••••••••" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500")
+            
+            div#registerErrors
+            
+            button(type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-all") Create Account
 
-        //- Login Form
-        form#loginForm(class="space-y-5")
-          //- Email Field
-          div(class="relative")
-            input#login-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="text" autocomplete="email" data-validate="required|email" data-label="Email" placeholder=" ")
-            label(class="floating-label" for="login-email") Email Address
-            p.error-message-login.hidden.text-xs.text-red-600.mt-1
+    div#ticketModal(class="fixed inset-0 bg-black z-50 hidden flex items-center justify-center p-4" style="background-color: rgba(0,0,0,0.5); align-items: center; min-height: 100vh;")
+      div(class="bg-white shadow-2xl max-w-6xl w-full rounded-3xl overflow-hidden flex flex-col" style="max-height: 90vh;")
+        div(class="bg-white border-b border-gray-200 px-8 py-6 flex items-center justify-between")
+          h2(class="text-2xl font-bold text-slate-900") Create Support Ticket
+          button(class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-gray-100 transition-all duration-200" onclick="closeTicketModal()" type="button" title="Close")
+            svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
 
-          //- Password Field
-          div(class="relative")
-            input#login-password(class="floating-input w-full px-4 pt-6 pb-2 pr-12 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="current-password" data-validate="required|minLength:6" data-label="password" placeholder=" ")
-            label(class="floating-label" for="login-password") Password
-            p.error-message-login.hidden.text-xs.text-red-600.mt-1
-            button#login-toggle-password(class="absolute flex items-center z-20 px-3 cursor-pointer text-slate-400 hover:text-slate-600 focus:outline-none" type="button" style="right: 0; top: 50%; transform: translateY(-50%);")
-              svg(class="eye-slash w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21")
-              svg(class="eye-open w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-                path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z")
-                circle(cx="12" cy="12" r="3")
+        div(class="p-8 overflow-y-auto flex-1")
+          form#ticketForm(class="space-y-6")
+            div(class="grid grid-cols-1 md:grid-cols-2 gap-6")
+              div
+                label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                  svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z")
+                  | Full Name
+                input#ticketName(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" type="text" placeholder="Your full name" required)
 
-          //- Remember Me
-          div(class="flex items-center justify-between")
-            div(class="flex items-center")
-              input#login-remember(class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500" name="remember" type="checkbox")
-              label(class="ml-2 block text-sm text-slate-700" for="login-remember") Remember me
-            div(class="text-sm")
-              a(class="font-medium text-blue-600 hover:text-blue-500" href="#") Forgot password?
+              div
+                label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                  svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                    path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z")
+                  | Email
+                input#ticketEmail(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" type="email" placeholder="your@email.com" required)
 
-          //- Submit Button
-          button#login-submit(class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit")
-            span#login-submit-text Sign In
-            svg#login-submit-spinner(class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24")
-              circle(class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4")
-              path(class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z")
+                | Department
+              select#ticketDepartment(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" required)
+                option(value="") Select a department...
+                option(value="1") 🔧 Technical Support
+                option(value="2") 💳 Billing & Payments
+                option(value="3") 💼 Sales & Pre-Sales
+                option(value="4") ❓ General Inquiries
 
-        //- Divider
-        div(class="relative my-6")
-          div(class="absolute inset-0 flex items-center")
-            div(class="w-full border-t border-slate-300")
-          div(class="relative flex justify-center text-sm")
-            span(class="px-4 bg-white text-slate-500") New to Zolentra?
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-3l-4 4z")
+                | Subject
+              input#ticketSubject(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" type="text" placeholder="e.g., Cannot login to my account" required)
 
-        //- Register Link
-        div(class="text-center")
-          button(class="font-medium text-blue-600 text-sm transition duration-150 hover:text-blue-500" type="button" onclick="switchModal('loginModal', 'registerModal')")
-            | Create an account
-            svg(class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z")
+                | Describe Your Issue
+              textarea#ticketMessage(class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" placeholder="Please provide detailed information: What are you trying to do? What error or issue are you experiencing?" rows="4" required)
+              p(class="text-xs text-gray-500 mt-2") Be as specific as possible. Include error messages, steps to reproduce, or screenshots.
 
-    //- Register Modal
-    div#registerModal(class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4")
-      div(class="bg-white rounded-2xl shadow-xl max-w-md w-full p-8 relative" onclick="event.stopPropagation()")
-        //- Close Button
-        button(class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition" onclick="closeModal('registerModal')" type="button")
-          svg(class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12")
+            div
+              label(class="block text-sm font-semibold text-slate-800 mb-2 flex items-center gap-2")
+                svg(class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+                | Attachments (Optional)
 
-        //- Header
-        div(class="text-center mb-6")
-          div(class="inline-flex items-center justify-center mb-4")
-            img(class="h-12" src="/images/zolentra_logo.webp" alt="Zolentra Logo")
-          h2(class="text-2xl font-bold text-slate-900 mb-2") Create your account
-          p(class="text-slate-600 text-sm") Join Zolentra to access our support platform
+              div#dropZone(class="relative border-2 border-dashed border-gray-300 rounded-lg p-6 text-center bg-gray-50 transition-all duration-200" style="cursor: pointer;")
+                svg(class="mx-auto h-12 w-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12")
 
-        //- Error Alert
-        div#register-error(class="hidden p-4 bg-red-50 border border-red-200 rounded-lg")
-          div(class="flex items-start")
-            svg(class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20")
-              path(fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z")
-            div#register-error-messages(class="text-sm text-red-800")
+                p(class="text-sm text-gray-600 mb-1") Drag and drop files here or click to browse
+                p(class="text-xs text-gray-500") Supported: Images, PDFs, Word documents (max 10MB per file)
 
-        //- Register Form
-        form#registerForm(class="space-y-5")
-          //- Full Name Field
-          div(class="relative")
-            input#register-name(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="name" type="text" data-validate="required|minLength:2|maxLength:150" data-label="Full Name" placeholder=" ")
-            label(class="floating-label" for="register-name") Full Name
-            p.error-message-register.hidden.text-xs.text-red-600.mt-1
+                input#ticketAttachments(class="hidden" type="file" multiple accept="image/*,.pdf,.doc,.docx,.txt")
 
-          //- Email Field
-          div(class="relative")
-            input#register-email(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="email" type="text" autocomplete="email" data-validate="required|email" data-label="Email" placeholder=" ")
-            label(class="floating-label" for="register-email") Email Address
-            p.error-message-register.hidden.text-xs.text-red-600.mt-1
+              div#attachmentsList(class="mt-4 space-y-2")
 
-          //- Password Field
-          div(class="relative")
-            input#register-password(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="password" type="password" autocomplete="new-password" data-validate="required|minLength:6" data-label="password" placeholder=" ")
-            label(class="floating-label" for="register-password") Password
-            p.error-message-register.hidden.text-xs.text-red-600.mt-1
+              input#attachmentsInput(type="hidden" name="attachments" value="")
 
-          //- Confirm Password Field
-          div(class="relative")
-            input#register-confirmPassword(class="floating-input w-full px-4 pt-6 pb-2 border-2 border-slate-300 rounded-lg bg-white text-gray-900 transition-all duration-200 outline-none focus:border-blue-600" name="confirmPassword" type="password" autocomplete="new-password" data-validate="required|match:register-password" data-label="password" placeholder=" ")
-            label(class="floating-label" for="register-confirmPassword") Confirm Password
-            p.error-message-register.hidden.text-xs.text-red-600.mt-1
+        div(class="flex items-center justify-end gap-3 px-8 py-6 border-t border-gray-200 bg-gray-50")
+          button(class="px-6 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium" type="button" onclick="closeTicketModal()")
+            span Cancel
+          button#submitTicketBtn(class="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium" type="submit")
+            span Create Ticket
 
-          //- Submit Button
-          button#register-submit(class="w-full flex justify-center py-3 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-blue-600 shadow-sm transition duration-150 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" type="submit")
-            span#register-submit-text Sign Up
-            svg#register-submit-spinner(class="hidden animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24")
-              circle(class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4")
-              path(class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z")
-
-        //- Divider
-        div(class="relative my-6")
-          div(class="absolute inset-0 flex items-center")
-            div(class="w-full border-t border-slate-300")
-          div(class="relative flex justify-center text-sm")
-            span(class="px-4 bg-white text-slate-500") Already have an account?
-
-        //- Login Link
-        div(class="text-center")
-          button(class="font-medium text-blue-600 text-sm transition duration-150 hover:text-blue-500" type="button" onclick="switchModal('registerModal', 'loginModal')")
-            | Sign in instead
-            svg(class="inline-block w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24")
-              path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7")
-
-    //- Floating Label Styles
-    style.
-      .floating-input::placeholder {
-        color: transparent;
-      }
-
-      .floating-label {
-        position: absolute;
-        left: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 1rem;
-        line-height: 1;
-        color: #737373;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        pointer-events: none;
-      }
-
-      .floating-input:focus ~ .floating-label,
-      .floating-input:not(:placeholder-shown) ~ .floating-label {
-        top: 0.75rem;
-        transform: translateY(0);
-        font-size: 0.75rem;
-      }
-
-      .floating-input:focus ~ .floating-label {
-        color: #2563eb;
-      }
-
-      .floating-input:not(:focus):not(:placeholder-shown) ~ .floating-label {
-        color: #737373;
-      }
-
-      /* Error state styling */
-      .floating-input.error {
-        border-color: #dc2626 !important;
-      }
-
-      .floating-input.error:focus {
-        border-color: #dc2626 !important;
-        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-      }
-
-      .floating-input.error:focus ~ .floating-label {
-        color: #dc2626;
-      }
-
-      /* Valid state styling */
-      .floating-input.valid:not(:focus) {
-        border-color: #16a34a;
-      }
-
-      /* Error message styling */
-      .error-message-login,
-      .error-message-register {
-        color: #dc2626;
-        font-size: 0.75rem;
-        margin-top: 0.25rem;
-      }
-
-      .error-message-login.hidden,
-      .error-message-register.hidden {
-        display: none;
-      }
-
-    script(src="/js/form-validator.js")
     script.
-      // Modal functions
       function openLoginModal() {
-        document.getElementById('loginModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        document.getElementById('authModal').classList.remove('hidden');
+        switchAuthTab('login');
       }
 
       function openRegisterModal() {
-        document.getElementById('registerModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+        document.getElementById('authModal').classList.remove('hidden');
+        switchAuthTab('register');
       }
 
-      function closeModal(modalId) {
-        document.getElementById(modalId).classList.add('hidden');
-        document.body.style.overflow = 'auto';
+      function closeAuthModal() {
+        document.getElementById('authModal').classList.add('hidden');
       }
 
-      function switchModal(fromModalId, toModalId) {
-        closeModal(fromModalId);
-        setTimeout(() => {
-          if (toModalId === 'loginModal') {
-            openLoginModal();
-          } else {
-            openRegisterModal();
+      function switchAuthTab(tab) {
+        const loginTab = document.getElementById('loginTab');
+        const registerTab = document.getElementById('registerTab');
+        const loginTabBtn = document.getElementById('loginTabBtn');
+        const registerTabBtn = document.getElementById('registerTabBtn');
+        const tabIndicator = document.getElementById('tabIndicator');
+
+        if (tab === 'login') {
+          loginTab.classList.remove('hidden');
+          registerTab.classList.add('hidden');
+          tabIndicator.style.left = '0%';
+          loginTabBtn.classList.remove('text-gray-500');
+          loginTabBtn.classList.add('text-blue-600');
+          registerTabBtn.classList.remove('text-blue-600');
+          registerTabBtn.classList.add('text-gray-500');
+        } else {
+          loginTab.classList.add('hidden');
+          registerTab.classList.remove('hidden');
+          tabIndicator.style.left = '50%';
+          registerTabBtn.classList.remove('text-gray-500');
+          registerTabBtn.classList.add('text-blue-600');
+          loginTabBtn.classList.remove('text-blue-600');
+          loginTabBtn.classList.add('text-gray-500');
+        }
+      }
+
+      function openTicketModal() {
+        document.getElementById('ticketModal').classList.remove('hidden');
+        document.getElementById('ticketForm').classList.remove('hidden');
+      }
+
+      function closeTicketModal() {
+        document.getElementById('ticketModal').classList.add('hidden');
+      }
+
+      let uploadedFiles = [];
+      const dropZone = document.getElementById('dropZone');
+      const fileInput = document.getElementById('ticketAttachments');
+      const attachmentsList = document.getElementById('attachmentsList');
+      const attachmentsInput = document.getElementById('attachmentsInput');
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      let dragCounter = 0;
+
+      dropZone.addEventListener('dragenter', (e) => {
+        dragCounter++;
+        dropZone.style.borderColor = '#3b82f6';
+        dropZone.style.borderWidth = '2px';
+        dropZone.style.backgroundColor = '#eff6ff';
+        dropZone.style.boxShadow = '0 0 0 3px rgb(191, 219, 254)';
+        dropZone.style.transform = 'scale(1.02)';
+        dropZone.style.cursor = 'copy';
+        document.body.style.cursor = 'copy';
+      }, false);
+
+      dropZone.addEventListener('dragover', (e) => {
+        dropZone.style.borderColor = '#3b82f6';
+        dropZone.style.backgroundColor = '#eff6ff';
+        dropZone.style.cursor = 'copy';
+        document.body.style.cursor = 'copy';
+      }, false);
+
+      dropZone.addEventListener('dragleave', (e) => {
+        dragCounter--;
+        if (dragCounter === 0) {
+          dropZone.style.borderColor = '#d1d5db';
+          dropZone.style.backgroundColor = '#f9fafb';
+          dropZone.style.boxShadow = 'none';
+          dropZone.style.transform = 'scale(1)';
+          dropZone.style.cursor = 'pointer';
+          document.body.style.cursor = 'auto';
+        }
+      }, false);
+
+      dropZone.addEventListener('drop', (e) => {
+        dragCounter = 0;
+        dropZone.style.borderColor = '#d1d5db';
+        dropZone.style.backgroundColor = '#f9fafb';
+        dropZone.style.boxShadow = 'none';
+        dropZone.style.transform = 'scale(1)';
+        dropZone.style.cursor = 'pointer';
+        document.body.style.cursor = 'auto';
+      }, false);
+
+      dropZone.addEventListener('mouseenter', () => {
+        dropZone.style.cursor = 'pointer';
+        dropZone.style.backgroundColor = '#f3f4f6';
+        dropZone.style.borderColor = '#bfdbfe';
+      }, false);
+
+      dropZone.addEventListener('mouseleave', () => {
+        if (dragCounter === 0) {
+          dropZone.style.cursor = 'default';
+          dropZone.style.backgroundColor = '#f9fafb';
+          dropZone.style.borderColor = '#d1d5db';
+        }
+      }, false);
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      }, false);
+
+      dropZone.addEventListener('click', () => {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+      });
+
+      function handleFiles(files) {
+        const maxFileSize = 10 * 1024 * 1024;
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+
+        for (let file of files) {
+          if (file.size > maxFileSize) {
+            alert(`File "${file.name}" exceeds 10MB limit.`);
+            continue;
           }
-        }, 150);
+
+          if (!allowedTypes.includes(file.type)) {
+            alert(`File type "${file.type}" is not allowed. Please use images, PDFs, or Word documents.`);
+            continue;
+          }
+
+          if (uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+            alert(`File "${file.name}" is already added.`);
+            continue;
+          }
+
+          uploadedFiles.push(file);
+        }
+
+        displayFileList();
+        updateAttachmentsInput();
       }
 
-      // Close modal on outside click
-      document.getElementById('loginModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeModal('loginModal');
+      function displayFileList() {
+        attachmentsList.innerHTML = '';
+
+        uploadedFiles.forEach((file, index) => {
+          const fileSize = (file.size / 1024).toFixed(2);
+          const fileExt = file.name.split('.').pop().toUpperCase();
+
+          const fileItem = document.createElement('div');
+          fileItem.className = 'flex items-center justify-between bg-gray-50 p-3 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors';
+          fileItem.innerHTML = `
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+              <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <span class="text-xs font-bold text-blue-600">${fileExt}</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-900 truncate">${file.name}</p>
+                <p class="text-xs text-gray-500">${fileSize} KB</p>
+              </div>
+            </div>
+            <button type="button" class="ml-2 flex-shrink-0 text-red-500 hover:text-red-700 transition-colors" onclick="removeFile(${index})">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          `;
+          attachmentsList.appendChild(fileItem);
+        });
+      }
+
+      function removeFile(index) {
+        uploadedFiles.splice(index, 1);
+        displayFileList();
+        updateAttachmentsInput();
+        fileInput.value = '';
+      }
+
+      function updateAttachmentsInput() {
+        attachmentsInput.value = uploadedFiles.length;
+      }
+
+      document.getElementById('ticketForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('ticketName').value;
+        const email = document.getElementById('ticketEmail').value;
+        const subject = document.getElementById('ticketSubject').value;
+        const message = document.getElementById('ticketMessage').value;
+        const department_id = document.getElementById('ticketDepartment').value;
+
+        const submitBtn = document.getElementById('submitTicketBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating...';
+
+        try {
+          const formData = new FormData();
+          formData.append('name', name);
+          formData.append('email', email);
+          formData.append('subject', subject);
+          formData.append('message', message);
+          formData.append('department_id', department_id);
+
+          uploadedFiles.forEach((file) => {
+            formData.append('attachments', file);
+          });
+
+          const response = await fetch('/api/tickets/public/create', {
+            method: 'POST',
+            body: formData
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            alert('Ticket created successfully!');
+            window.location.href = data.portalUrl;
+          } else {
+            alert('Error: ' + (data.message || 'Failed to create ticket'));
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Create Ticket';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An error occurred. Please try again.');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Create Ticket';
         }
       });
 
-      document.getElementById('registerModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-          closeModal('registerModal');
-        }
-      });
-
-      // Close modal on ESC key
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-          closeModal('loginModal');
-          closeModal('registerModal');
+          closeAuthModal();
+          closeTicketModal();
         }
       });
 
-      // Password toggle for login modal
-      const loginToggleBtn = document.getElementById('login-toggle-password');
-      const loginPasswordInput = document.getElementById('login-password');
-
-      if (loginToggleBtn && loginPasswordInput) {
-        loginToggleBtn.addEventListener('click', function() {
-          const eyeSlash = loginToggleBtn.querySelector('.eye-slash');
-          const eyeOpen = loginToggleBtn.querySelector('.eye-open');
-
-          if (loginPasswordInput.type === 'password') {
-            loginPasswordInput.type = 'text';
-            eyeSlash.classList.add('hidden');
-            eyeOpen.classList.remove('hidden');
-          } else {
-            loginPasswordInput.type = 'password';
-            eyeSlash.classList.remove('hidden');
-            eyeOpen.classList.add('hidden');
-          }
-        });
-      }
-
-      // Create a custom FormValidator for auth forms
-      class AuthFormValidator {
-        constructor(formSelector, errorContainerSelector) {
-          this.form = document.querySelector(formSelector);
-          this.errorContainers = document.querySelectorAll(errorContainerSelector);
-          if (this.form) {
-            this.findFields();
-          }
+      document.getElementById('authModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeAuthModal();
         }
-
-        findFields() {
-          this.fields = {};
-          const inputs = this.form.querySelectorAll('[data-validate]');
-          inputs.forEach(field => {
-            const rules = field.getAttribute('data-validate');
-            this.fields[field.id] = {
-              element: field,
-              rules: this.parseRules(rules)
-            };
-          });
-        }
-
-        parseRules(rulesString) {
-          return rulesString.split('|').map(rule => {
-            const [ruleName, param] = rule.split(':');
-            return { rule: ruleName.trim(), param: param?.trim() };
-          });
-        }
-
-        validateField(fieldId) {
-          const field = this.fields[fieldId];
-          if (!field) return true;
-
-          const element = field.element;
-          const value = element.value;
-          const rules = field.rules;
-
-          for (const { rule, param } of rules) {
-            const ruleConfig = FormValidator.rules[rule];
-            if (!ruleConfig) continue;
-
-            const isValid = ruleConfig.validate(value, param);
-            if (!isValid) {
-              this.showError(fieldId, typeof ruleConfig.message === 'function' ? ruleConfig.message(param) : ruleConfig.message);
-              return false;
-            }
-          }
-
-          this.clearError(fieldId);
-          return true;
-        }
-
-        validateForm() {
-          let isValid = true;
-          Object.keys(this.fields).forEach(fieldId => {
-            if (!this.validateField(fieldId)) {
-              isValid = false;
-            }
-          });
-          return isValid;
-        }
-
-        showError(fieldId, message) {
-          const field = this.fields[fieldId];
-          if (!field) return;
-
-          const element = field.element;
-          element.classList.add('error');
-          element.classList.remove('valid');
-
-          const errorContainer = element.parentElement.querySelector('.error-message-login, .error-message-register');
-          if (errorContainer) {
-            errorContainer.textContent = message;
-            errorContainer.classList.remove('hidden');
-          }
-        }
-
-        clearError(fieldId) {
-          const field = this.fields[fieldId];
-          if (!field) return;
-
-          const element = field.element;
-          element.classList.remove('error');
-          element.classList.add('valid');
-
-          const errorContainer = element.parentElement.querySelector('.error-message-login, .error-message-register');
-          if (errorContainer) {
-            errorContainer.textContent = '';
-            errorContainer.classList.add('hidden');
-          }
-        }
-      }
-
-      // Initialize auth form validators
-      const loginValidator = new AuthFormValidator('#loginForm', '.error-message-login');
-      const registerValidator = new AuthFormValidator('#registerForm', '.error-message-register');
-
-      // Login form AJAX submission
-      const loginForm = document.getElementById('loginForm');
-      if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-
-          // Validate first
-          if (!loginValidator.validateForm()) {
-            return;
-          }
-
-          // Hide previous errors
-          const errorDiv = document.getElementById('login-error');
-          errorDiv.classList.add('hidden');
-
-          // Get form data
-          const formData = {
-            email: document.getElementById('login-email').value,
-            password: document.getElementById('login-password').value,
-            remember: document.getElementById('login-remember').checked
-          };
-
-          // Show loading state
-          const submitBtn = document.getElementById('login-submit');
-          const submitText = document.getElementById('login-submit-text');
-          const submitSpinner = document.getElementById('login-submit-spinner');
-          submitBtn.disabled = true;
-          submitText.classList.add('hidden');
-          submitSpinner.classList.remove('hidden');
-
-          try {
-            const response = await fetch('/auth/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              // Success - redirect to dashboard
-              window.location.href = data.redirect || '/dashboard';
-            } else {
-              // Show error
-              const errorMessage = document.getElementById('login-error-message');
-              errorMessage.textContent = data.error || 'Invalid email or password';
-              errorDiv.classList.remove('hidden');
-
-              // Reset loading state
-              submitBtn.disabled = false;
-              submitText.classList.remove('hidden');
-              submitSpinner.classList.add('hidden');
-            }
-          } catch (error) {
-            // Network error
-            const errorMessage = document.getElementById('login-error-message');
-            errorMessage.textContent = 'Network error. Please try again.';
-            errorDiv.classList.remove('hidden');
-
-            // Reset loading state
-            submitBtn.disabled = false;
-            submitText.classList.remove('hidden');
-            submitSpinner.classList.add('hidden');
-          }
-        });
-      }
-
-      // Register form AJAX submission
-      const registerForm = document.getElementById('registerForm');
-      if (registerForm) {
-        registerForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-
-          // Validate first
-          if (!registerValidator.validateForm()) {
-            return;
-          }
-
-          // Hide previous errors
-          const errorDiv = document.getElementById('register-error');
-          errorDiv.classList.add('hidden');
-
-          // Get form data
-          const formData = {
-            name: document.getElementById('register-name').value,
-            email: document.getElementById('register-email').value,
-            password: document.getElementById('register-password').value,
-            confirmPassword: document.getElementById('register-confirmPassword').value
-          };
-
-          // Show loading state
-          const submitBtn = document.getElementById('register-submit');
-          const submitText = document.getElementById('register-submit-text');
-          const submitSpinner = document.getElementById('register-submit-spinner');
-          submitBtn.disabled = true;
-          submitText.classList.add('hidden');
-          submitSpinner.classList.remove('hidden');
-
-          try {
-            const response = await fetch('/auth/register', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(formData)
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-              // Success - redirect to dashboard
-              window.location.href = data.redirect || '/dashboard';
-            } else {
-              // Show errors
-              const errorMessages = document.getElementById('register-error-messages');
-
-              if (data.errors && Array.isArray(data.errors)) {
-                // Multiple validation errors
-                errorMessages.innerHTML = '<ul class="list-disc ml-4">' +
-                  data.errors.map(err => `<li>${err.msg}</li>`).join('') +
-                  '</ul>';
-              } else {
-                // Single error message
-                errorMessages.textContent = data.error || 'Registration failed. Please check your input.';
-              }
-
-              errorDiv.classList.remove('hidden');
-
-              // Reset loading state
-              submitBtn.disabled = false;
-              submitText.classList.remove('hidden');
-              submitSpinner.classList.add('hidden');
-            }
-          } catch (error) {
-            // Network error
-            const errorMessages = document.getElementById('register-error-messages');
-            errorMessages.textContent = 'Network error. Please try again.';
-            errorDiv.classList.remove('hidden');
-
-            // Reset loading state
-            submitBtn.disabled = false;
-            submitText.classList.remove('hidden');
-            submitSpinner.classList.add('hidden');
-          }
-        });
-      }
-
-      // Mobile menu toggle
-      const mobileMenuBtn = document.getElementById('mobile-menu-btn');
-      const mobileMenu = document.getElementById('mobile-menu');
-
-      if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', () => {
-          const isExpanded = mobileMenu.classList.toggle('hidden');
-          mobileMenuBtn.setAttribute('aria-expanded', !isExpanded);
-        });
-
-        mobileMenu.querySelectorAll('a, button').forEach(link => {
-          link.addEventListener('click', () => {
-            mobileMenu.classList.add('hidden');
-            mobileMenuBtn.setAttribute('aria-expanded', 'false');
-          });
-        });
-      }
-
-      // Smooth scroll for anchor links
-      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-          const href = this.getAttribute('href');
-          if (href === '#') return;
-
-          e.preventDefault();
-          const target = document.querySelector(href);
-          if (target) {
-            target.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
-          }
-        });
       });
 
-      // FAQ Accordion
-      document.querySelectorAll('.faq-toggle').forEach(button => {
-        button.addEventListener('click', () => {
-          const content = button.nextElementSibling;
-          const icon = button.querySelector('svg');
-
-          const isOpen = !content.classList.contains('hidden');
-
-          if (isOpen) {
-            content.style.maxHeight = '0';
-            content.style.opacity = '0';
-            icon.style.transform = 'rotate(0deg)';
-            button.style.backgroundColor = '#ffffff';
-            button.querySelector('h3').style.color = '#111827';
-            icon.style.color = '#9ca3af';
-            setTimeout(() => {
-              content.classList.add('hidden');
-            }, 300);
-          } else {
-            content.classList.remove('hidden');
-            const scrollHeight = content.scrollHeight;
-            content.style.maxHeight = '0';
-            content.style.opacity = '0';
-            button.style.backgroundColor = '#1d4ed8';
-            button.querySelector('h3').style.color = '#ffffff';
-            icon.style.color = '#ffffff';
-
-            requestAnimationFrame(() => {
-              content.style.maxHeight = scrollHeight + 'px';
-              content.style.opacity = '1';
-              icon.style.transform = 'rotate(180deg)';
-            });
-          }
-        });
+      document.getElementById('ticketModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeTicketModal();
+        }
       });
 
-      // Billing toggle
-      const billingToggle = document.getElementById('billing-toggle');
-      const monthlyPrices = document.querySelectorAll('.monthly-price');
-      const annualPrices = document.querySelectorAll('.annual-price');
+      const userMenuBtn = document.getElementById('landingUserMenuButton');
+      const userMenuDropdown = document.getElementById('landingUserMenuDropdown');
 
-      if (billingToggle) {
-        billingToggle.addEventListener('click', () => {
-          const isActive = billingToggle.style.backgroundColor === 'rgb(37, 99, 235)';
-          billingToggle.style.backgroundColor = isActive ? '#e2e8f0' : '#2563eb';
-          billingToggle.querySelector('div').style.transform = isActive ? 'translateX(0)' : 'translateX(28px)';
-
-          monthlyPrices.forEach(el => el.classList.toggle('hidden'));
-          annualPrices.forEach(el => el.classList.toggle('hidden'));
-        });
-      }
-
-      // User menu dropdown toggle for landing page
-      const landingMenuButton = document.getElementById('landingUserMenuButton');
-      const landingMenuDropdown = document.getElementById('landingUserMenuDropdown');
-      const landingMenuIcon = document.getElementById('landingUserMenuIcon');
-      
-      if (landingMenuButton && landingMenuDropdown) {
-        landingMenuButton.addEventListener('click', function(e) {
+      if (userMenuBtn) {
+        userMenuBtn.addEventListener('click', function(e) {
           e.stopPropagation();
-          const isOpen = !landingMenuDropdown.classList.contains('hidden');
-          
-          if (isOpen) {
-            landingMenuDropdown.classList.add('hidden');
-            landingMenuIcon.style.transform = 'rotate(0deg)';
-            landingMenuIcon.querySelector('path').setAttribute('d', 'M19 9l-7 7-7-7');
-          } else {
-            landingMenuDropdown.classList.remove('hidden');
-            landingMenuIcon.style.transform = 'rotate(180deg)';
-            landingMenuIcon.querySelector('path').setAttribute('d', 'M6 18L18 6M6 6l12 12');
-          }
+          userMenuDropdown.classList.toggle('hidden');
         });
-        
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-          if (!landingMenuButton.contains(e.target) && !landingMenuDropdown.contains(e.target)) {
-            landingMenuDropdown.classList.add('hidden');
-            landingMenuIcon.style.transform = 'rotate(0deg)';
-            landingMenuIcon.querySelector('path').setAttribute('d', 'M19 9l-7 7-7-7');
-          }
+
+        document.addEventListener('click', function() {
+          userMenuDropdown.classList.add('hidden');
+        });
+
+        userMenuDropdown.addEventListener('click', function(e) {
+          e.stopPropagation();
         });
       }
+
+      // Login Form Submission
+      document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('loginEmail').value;
+        const password = document.getElementById('loginPassword').value;
+        const loginErrors = document.getElementById('loginErrors');
+
+        loginErrors.innerHTML = '';
+
+        try {
+          const response = await fetch('/auth/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email,
+              password
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.href = data.redirect || '/dashboard';
+          } else {
+            loginErrors.innerHTML = `<div class="text-red-500 text-sm bg-red-50 p-3 rounded">${data.message || 'Login failed'}</div>`;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          loginErrors.innerHTML = '<div class="text-red-500 text-sm bg-red-50 p-3 rounded">An error occurred. Please try again.</div>';
+        }
+      });
+
+      // Register Form Submission
+      document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const name = document.getElementById('registerName').value;
+        const email = document.getElementById('registerEmail').value;
+        const password = document.getElementById('registerPassword').value;
+        const registerErrors = document.getElementById('registerErrors');
+
+        registerErrors.innerHTML = '';
+
+        try {
+          const response = await fetch('/auth/register', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              password
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.href = data.redirect || '/dashboard';
+          } else {
+            if (data.errors && Array.isArray(data.errors)) {
+              registerErrors.innerHTML = '<ul class="text-red-500 text-sm bg-red-50 p-3 rounded space-y-1">' + 
+                data.errors.map(err => `<li>• ${err}</li>`).join('') + 
+              '</ul>';
+            } else {
+              registerErrors.innerHTML = `<div class="text-red-500 text-sm bg-red-50 p-3 rounded">${data.message || 'Registration failed'}</div>`;
+            }
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          registerErrors.innerHTML = '<div class="text-red-500 text-sm bg-red-50 p-3 rounded">An error occurred. Please try again.</div>';
+        }
+      });
+
+      document.getElementById('loginTabBtn').addEventListener('click', () => switchAuthTab('login'));
+      document.getElementById('registerTabBtn').addEventListener('click', () => switchAuthTab('register'));

@@ -1,5 +1,12 @@
 /* Custom styles for Zolentra */
 
+/* Reset default margins */
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
@@ -17,8 +24,69 @@ html {
   }
 }
 
+@keyframes underlineSlide {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.6s ease-out;
+}
+
+.underline-animation {
+  position: relative;
+  display: inline-block;
+}
+
+.underline-animation::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: currentColor;
+  transition: width 0.3s ease-out;
+}
+
+.group:hover .underline-animation::after {
+  width: 100%;
+}
+
+/* Loading skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    #374151 25%,
+    #4b5563 50%,
+    #374151 75%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
 }
 
 /* Gradient text */
@@ -40,4 +108,177 @@ button:focus {
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Modal specific styles */
+#ticketModal {
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+#ticketModal .bg-white {
+  background-color: #ffffff !important;
+  border-radius: 1.5rem;
+}
+
+#ticketModal input,
+#ticketModal select,
+#ticketModal textarea {
+  background-color: #ffffff;
+  border-radius: 1rem;
+}
+
+#ticketModal input:focus,
+#ticketModal select:focus,
+#ticketModal textarea:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Message content styling */
+.message-content {
+  display: block;
+  width: 100%;
+  overflow: visible;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  min-height: auto;
+}
+
+.message-item {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Auth Modal Tabbed Design */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#authModal {
+  animation: fadeIn 0.3s ease-out;
+}
+
+#authModal .bg-white {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Tab button active state */
+#loginTabBtn.border-b-2,
+#registerTabBtn.border-b-2 {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0.7;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tab content animations */
+#loginTab:not(.hidden),
+#registerTab:not(.hidden) {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Form input styling */
+#authModal input,
+#authModal button {
+  transition: all 0.2s ease-out;
+}
+
+#authModal input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+#authModal button[type="submit"] {
+  position: relative;
+  overflow: hidden;
+}
+
+#authModal button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+#authModal button[type="submit"]:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Tab button styling with improved design */
+#loginTabBtn,
+#registerTabBtn {
+  position: relative;
+  color: inherit;
+  transition: all 0.3s ease-out;
+  font-weight: 600;
+  outline: none;
+  border: none;
+}
+
+#loginTabBtn:focus,
+#registerTabBtn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Active tab styling */
+#loginTabBtn.text-blue-600,
+#registerTabBtn.text-blue-600 {
+  color: #2563eb;
+}
+
+/* Inactive tab styling */
+#loginTabBtn.text-gray-500,
+#registerTabBtn.text-gray-500 {
+  background-color: transparent;
+  color: #6b7280;
+}
+
+/* Tab button hover effect for inactive tabs */
+#loginTabBtn:hover:not(.bg-blue-50),
+#registerTabBtn:hover:not(.bg-blue-50) {
+  background-color: rgba(107, 114, 128, 0.05);
+  color: #4b5563;
+}
+
+/* Tab indicator bar */
+#tabIndicator {
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(to right, #2563eb, #4f46e5);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Icon styling in labels */
+#authModal label svg {
+  flex-shrink: 0;
+}
+
+/* Divider line between tabs */
+.w-px.bg-gray-300 {
+  opacity: 0.4;
 }

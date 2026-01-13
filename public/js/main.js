@@ -1,8 +1,132 @@
-// Initialize Socket.io
-const socket = io();
+/**
+ * Main Application Script
+ * Handles Socket.io initialization, global event handlers, and utilities
+ */
 
-// Auto-hide flash messages
+// Initialize Socket.io with reconnection options
+const socket = io({
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionDelayMax: 5000,
+  reconnectionAttempts: 10,
+  transports: ['websocket', 'polling']
+});
+
+// Track connection status
+let isConnected = false;
+
+/**
+ * SOCKET.IO CONNECTION EVENTS
+ */
+
+socket.on('connect', () => {
+  console.log('Connected to server (Socket ID:', socket.id, ')');
+  isConnected = true;
+  document.body.classList.remove('socket-disconnected');
+  document.body.classList.add('socket-connected');
+});
+
+socket.on('disconnect', (reason) => {
+  console.warn('Disconnected from server:', reason);
+  isConnected = false;
+  document.body.classList.add('socket-disconnected');
+  document.body.classList.remove('socket-connected');
+});
+
+socket.on('connect_error', (error) => {
+  console.error('Socket.io connection error:', error);
+});
+
+socket.on('authenticated', (data) => {
+  console.log('Socket authenticated for user:', data.userId, 'Role:', data.userRole);
+});
+
+/**
+ * SOCKET.IO EVENT HANDLERS
+ */
+
+// Notification events
+socket.on('notification:new', (notification) => {
+  console.log('New notification received:', notification);
+  showNotification(notification.title + ': ' + notification.message, 'info');
+});
+
+socket.on('notification:read', (data) => {
+  console.log('Notification marked as read:', data.id);
+});
+
+// Ticket events
+socket.on('ticket:created', (data) => {
+  showNotification('New ticket created: ' + data.title, 'info');
+  if (window.location.pathname.includes('/tickets')) {
+    // Could add dynamic refresh instead of reload
+    // For now, using reload for simplicity
+  }
+});
+
+socket.on('ticket:updated', (data) => {
+  showNotification('Ticket updated: ' + data.title, 'info');
+});
+
+socket.on('ticket:assigned', (data) => {
+  showNotification('You have been assigned ticket: ' + data.title, 'success');
+});
+
+socket.on('ticket:status_changed', (data) => {
+  showNotification(`Ticket #${data.id} status changed to: ${data.newStatus}`, 'info');
+});
+
+socket.on('ticket:escalated', (data) => {
+  showNotification('Ticket escalated: ' + data.title, 'warning');
+});
+
+// Message events
+socket.on('message:new', (data) => {
+  showNotification('New message on ticket: ' + data.ticketTitle, 'info');
+});
+
+socket.on('message:edited', (data) => {
+  showNotification('A message was edited', 'info');
+});
+
+socket.on('message:deleted', (data) => {
+  showNotification('A message was deleted', 'info');
+});
+
+socket.on('typing:indicator', (data) => {
+  if (data.isTyping) {
+    console.log(`${data.userName} is typing...`);
+  }
+});
+
+// Chat events
+socket.on('chat:message', (data) => {
+  console.log('New chat message:', data);
+});
+
+socket.on('chat:typing', (data) => {
+  console.log(`${data.userName} is typing in chat...`);
+});
+
+socket.on('chat:unread', (data) => {
+  console.log('Unread messages in chat:', data.unreadCount);
+});
+
+// User presence events
+socket.on('user:online', (data) => {
+  console.log(`${data.userName} came online`);
+});
+
+socket.on('user:offline', (data) => {
+  console.log(`${data.userName} went offline`);
+});
+
+/**
+ * DOM READY - Initialize UI components
+ */
+
 document.addEventListener('DOMContentLoaded', () => {
+  // Auto-hide flash messages
   const flashMessages = document.querySelectorAll('.flash-message');
   flashMessages.forEach((message, index) => {
     // Add slide-in animation with stagger
@@ -23,6 +147,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 5000 + (index * 100));
   });
 });
+
+/**
+ * UTILITY FUNCTIONS
+ */
 
 // Close flash message manually
 function closeFlashMessage(element) {
@@ -73,35 +201,6 @@ function previewFile(input) {
     reader.readAsDataURL(file);
   }
 }
-
-// Socket.io real-time updates
-socket.on('ticket:created', (data) => {
-  showNotification('New ticket created: ' + data.title, 'info');
-  // Refresh ticket list if on tickets page
-  if (window.location.pathname.includes('/tickets')) {
-    location.reload();
-  }
-});
-
-socket.on('ticket:updated', (data) => {
-  showNotification('Ticket updated: ' + data.title, 'info');
-  // Update specific ticket if viewing it
-  if (window.location.pathname.includes('/tickets/' + data.id)) {
-    location.reload();
-  }
-});
-
-socket.on('ticket:assigned', (data) => {
-  showNotification('You have been assigned ticket: ' + data.title, 'success');
-});
-
-socket.on('message:new', (data) => {
-  showNotification('New message on ticket: ' + data.ticketTitle, 'info');
-  // Reload if viewing the ticket
-  if (window.location.pathname.includes('/tickets/' + data.ticketId)) {
-    location.reload();
-  }
-});
 
 // Show notification
 function showNotification(message, type = 'info') {

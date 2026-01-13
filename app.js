@@ -14,10 +14,17 @@ const departmentRoutes = require('./routes/departments');
 const dashboardRoutes = require('./routes/dashboard');
 const auditRoutes = require('./routes/audit');
 const apiRoutes = require('./routes/api');
+const notificationRoutes = require('./routes/notifications');
+const chatRoutes = require('./routes/chat');
+const slaRoutes = require('./routes/sla');
+const bulkRoutes = require('./routes/bulk');
+const feedbackRoutes = require('./routes/feedback');
+const searchRoutes = require('./routes/search');
 
 // Import middleware
 const errorHandler = require('./middlewares/errorHandler');
 const { setLocals } = require('./middlewares/locals');
+const socketAuthMiddleware = require('./middlewares/socketAuthMiddleware');
 
 const app = express();
 const server = http.createServer(app);
@@ -68,6 +75,12 @@ app.use('/departments', departmentRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/audit', auditRoutes);
 app.use('/api', apiRoutes);
+app.use('/notifications', notificationRoutes);
+app.use('/chat', chatRoutes);
+app.use('/sla', slaRoutes);
+app.use('/api/bulk', bulkRoutes);
+app.use('/feedback', feedbackRoutes);
+app.use('/search', searchRoutes);
 
 // Root - Landing Page
 app.get('/', (req, res) => {
@@ -77,12 +90,9 @@ app.get('/', (req, res) => {
   });
 });
 
-// Socket.io connection handling
-io.on('connection', (socket) => {
-  socket.on('disconnect', () => {
-    // Connection closed
-  });
-});
+// Socket.io authentication and event handling
+// Initialize Socket.io with authentication middleware
+const socketService = socketAuthMiddleware(io);
 
 // Error handling
 app.use((req, res) => {

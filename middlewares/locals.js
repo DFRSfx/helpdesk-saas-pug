@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // Set local variables for all views
 const setLocals = async (req, res, next) => {
@@ -11,12 +12,16 @@ const setLocals = async (req, res, next) => {
   // User session
   res.locals.userId = req.session.userId || null;
   res.locals.currentUser = null;
+  res.locals.unreadCount = 0;
 
   // If user is logged in, get user data
   if (req.session.userId) {
     try {
       const user = await User.findById(req.session.userId);
       res.locals.currentUser = user;
+
+      // Get unread notification count
+      res.locals.unreadCount = await Notification.getUnreadCount(req.session.userId);
     } catch (error) {
       console.error('Error fetching user:', error);
     }

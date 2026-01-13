@@ -1,0 +1,211 @@
+//- Notification Bell Component
+//- Shows unread notification count and recent notifications dropdown
+
+.relative.inline-block.ml-4
+
+  //- Bell Icon Button
+  button.relative.p-2.text-gray-600.hover_text-gray-900.dark_text-gray-400.dark_hover_text-white.transition-colors(
+    id="notificationBellBtn"
+    title="Notifications"
+    aria-label="Notifications"
+  )
+    //- Bell Icon
+    svg.w-6.h-6(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+      path(
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+      )
+
+    //- Unread Badge
+    if unreadCount > 0
+      .absolute.top-0.right-0.bg-red-500.text-white.text-xs.font-bold.rounded-full.h-5.w-5.flex.items-center.justify-center(
+        id="notificationBadge"
+      )
+        = unreadCount > 99 ? '99+' : unreadCount
+
+  //- Dropdown Menu
+  div.absolute.right-0.mt-2.w-80.bg-white.dark_bg-neutral-800.border.border-gray-200.dark_border-neutral-700.rounded-lg.shadow-lg.z-50(
+    id="notificationDropdown"
+    style="display: none;"
+  )
+    //- Header
+    .px-4.py-3.border-b.border-gray-200.dark_border-neutral-700
+      .flex.items-center.justify-between
+        h3.font-semibold.text-gray-900.dark_text-white Notifications
+        a.text-xs.text-blue-600.dark_text-blue-400.hover_underline(href="/notifications") View All
+
+    //- Notification List
+    #notificationsList.max-h-96.overflow-y-auto
+
+      //- Loading State
+      .px-4.py-4.text-center.text-gray-500.dark_text-neutral-400
+        span Loading notifications...
+
+    //- Footer
+    .px-4.py-3.border-t.border-gray-200.dark_border-neutral-700.flex.gap-2
+      a.flex-1.text-center.text-sm.text-blue-600.dark_text-blue-400.hover_underline(href="/notifications") All Notifications
+      if unreadCount > 0
+        button.flex-1.text-center.text-sm.text-blue-600.dark_text-blue-400.hover_underline(
+          id="markAllReadBtn"
+          type="button"
+        ) Mark All Read
+
+script.
+  // Notification Bell Component Script
+  (function() {
+    const bellBtn = document.getElementById('notificationBellBtn');
+    const dropdown = document.getElementById('notificationDropdown');
+    const badge = document.getElementById('notificationBadge');
+    const notificationsList = document.getElementById('notificationsList');
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    let isDropdownOpen = false;
+
+    // Toggle dropdown
+    bellBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      isDropdownOpen ? closeDropdown() : openDropdown();
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+      if (isDropdownOpen) {
+        closeDropdown();
+      }
+    });
+
+    function openDropdown() {
+      dropdown.style.display = 'block';
+      isDropdownOpen = true;
+      loadNotifications();
+    }
+
+    function closeDropdown() {
+      dropdown.style.display = 'none';
+      isDropdownOpen = false;
+    }
+
+    // Load recent notifications
+    async function loadNotifications() {
+      try {
+        const response = await fetch('/api/notifications?limit=5');
+        const data = await response.json();
+
+        if (data.success && data.notifications) {
+          if (data.notifications.length === 0) {
+            notificationsList.innerHTML = `
+              <div class="px-4 py-6 text-center text-gray-500 dark:text-neutral-400">
+                <p>No notifications</p>
+              </div>
+            `;
+          } else {
+            notificationsList.innerHTML = data.notifications.map(notif => `
+              <div class="px-4 py-3 border-b border-gray-200 dark:border-neutral-700 hover:bg-gray-50 dark:hover:bg-neutral-700/50 cursor-pointer transition-colors"
+                   onclick="window.location.href='${notif.action_url}'"
+              >
+                <div class="flex items-start gap-3">
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${escapeHtml(notif.title)}</p>
+                      ${!notif.is_read ? '<span class="flex-shrink-0 h-2 w-2 bg-blue-500 rounded-full"></span>' : ''}
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-neutral-400 mt-1 line-clamp-2">${escapeHtml(notif.message)}</p>
+                    <p class="text-xs text-gray-500 dark:text-neutral-500 mt-1">${formatTime(notif.created_at)}</p>
+                  </div>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+        notificationsList.innerHTML = '<div class="px-4 py-4 text-center text-red-500">Error loading notifications</div>';
+      }
+    }
+
+    // Mark all as read
+    if (markAllReadBtn) {
+      markAllReadBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const response = await fetch('/api/notifications/read-all', { method: 'PATCH' });
+          const data = await response.json();
+
+          if (data.success) {
+            location.reload();
+          }
+        } catch (error) {
+          console.error('Error marking as read:', error);
+        }
+      });
+    }
+
+    // Socket.io real-time notifications
+    if (window.socket) {
+      socket.on('notification:new', (notification) => {
+        // Update badge
+        const badgeNum = parseInt(badge?.textContent || '0');
+        if (badge) {
+          badge.textContent = (badgeNum + 1) > 99 ? '99+' : (badgeNum + 1);
+          badge.style.display = 'flex';
+        }
+
+        // Reload dropdown if open
+        if (isDropdownOpen) {
+          loadNotifications();
+        }
+
+        // Show browser notification (optional)
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(notification.title, {
+            body: notification.message,
+            icon: '/images/logo.png'
+          });
+        }
+      });
+
+      socket.on('notification:read', () => {
+        // Update badge
+        if (badge) {
+          const current = parseInt(badge.textContent) || 0;
+          if (current > 1) {
+            badge.textContent = current - 1;
+          } else {
+            badge.style.display = 'none';
+          }
+        }
+      });
+
+      socket.on('notifications:all_read', () => {
+        // Hide badge
+        if (badge) {
+          badge.style.display = 'none';
+        }
+        loadNotifications();
+      });
+    }
+
+    // Helper functions
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatTime(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diff = now - date;
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      if (days < 7) return `${days}d ago`;
+
+      return date.toLocaleDateString();
+    }
+  })();

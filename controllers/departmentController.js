@@ -180,7 +180,7 @@ exports.delete = async (req, res, next) => {
   }
 };
 
-// Show department stats
+// Show department stats (all departments)
 exports.stats = async (req, res, next) => {
   try {
     const stats = await Department.getStats();
@@ -188,6 +188,29 @@ exports.stats = async (req, res, next) => {
     res.render('departments/stats', {
       title: 'Department Statistics',
       stats
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Show individual department stats
+exports.departmentStats = async (req, res, next) => {
+  try {
+    const department = await Department.findById(req.params.id);
+
+    if (!department) {
+      req.flash('error', 'Department not found');
+      return res.redirect('/departments');
+    }
+
+    const { stats, chartData } = await Department.getDetailedStats(req.params.id);
+
+    res.render('departments/stats', {
+      title: `${department.name} - Statistics`,
+      stats,
+      chartData,
+      department
     });
   } catch (error) {
     next(error);

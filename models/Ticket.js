@@ -177,7 +177,7 @@ class Ticket {
         u.role as user_role
       FROM ticket_messages tm
       LEFT JOIN users u ON tm.user_id = u.id
-      WHERE tm.ticket_id = ?
+      WHERE tm.ticket_id = ? AND tm.is_deleted = 0
     `;
 
     if (!isInternal) {
@@ -199,6 +199,103 @@ class Ticket {
     );
 
     return result.insertId;
+  }
+
+  /**
+   * Edit a message (within 15 minutes of creation)
+   * @param {number} messageId - Message ID
+   * @param {string} newMessage - New message text
+   * @param {number} userId - User ID (for permission check)
+   * @returns {Promise<boolean>} - Success status
+   */
+  static async editMessage(messageId, newMessage, userId) {
+    // Get message details
+    const [messages] = await db.query(
+      'SELECT user_id, created_at FROM ticket_messages WHERE id = ?',
+      [messageId]
+    );
+
+    if (!messages || messages.length === 0) {
+      throw new Error('Message not found');
+    }
+
+    const message = messages[0];
+
+    // Check permission (only sender can edit)
+    if (message.user_id !== userId) {
+      throw new Error('Permission denied - only sender can edit');
+    }
+
+    // Check time limit (15 minutes)
+    const createdTime = new Date(message.created_at);
+    const now = new Date();
+    const minutesPassed = (now - createdTime) / (1000 * 60);
+
+    if (minutesPassed > 15) {
+      throw new Error('Cannot edit message older than 15 minutes');
+    }
+
+    // Update message
+    await db.query(
+      'UPDATE ticket_messages SET message = ?, is_edited = 1, edited_at = NOW() WHERE id = ?',
+      [newMessage, messageId]
+    );
+
+    return true;
+  }
+
+  /**
+   * Delete a message (soft delete)
+   * @param {number} messageId - Message ID
+   * @param {number} userId - User ID (for permission check)
+   * @returns {Promise<boolean>} - Success status
+   */
+  static async deleteMessage(messageId, userId) {
+    // Get message details
+    const [messages] = await db.query(
+      'SELECT user_id FROM ticket_messages WHERE id = ?',
+      [messageId]
+    );
+
+    if (!messages || messages.length === 0) {
+      throw new Error('Message not found');
+    }
+
+    const message = messages[0];
+
+    // Check permission (only sender can delete)
+    if (message.user_id !== userId) {
+      throw new Error('Permission denied - only sender can delete');
+    }
+
+    // Soft delete
+    await db.query(
+      'UPDATE ticket_messages SET is_deleted = 1, deleted_at = NOW() WHERE id = ?',
+      [messageId]
+    );
+
+    return true;
+  }
+
+  /**
+   * Get message by ID with all details
+   * @param {number} messageId - Message ID
+   * @returns {Promise<Object|null>} - Message or null
+   */
+  static async getMessageById(messageId) {
+    const [rows] = await db.query(
+      `SELECT
+        tm.*,
+        u.name as user_name,
+        u.role as user_role,
+        u.email as user_email
+       FROM ticket_messages tm
+       LEFT JOIN users u ON tm.user_id = u.id
+       WHERE tm.id = ?`,
+      [messageId]
+    );
+
+    return rows[0] || null;
   }
 
   static async getAttachments(ticketId) {

@@ -72,6 +72,63 @@ class Department {
     `);
     return rows;
   }
+
+  static async getDetailedStats(departmentId) {
+    // Get basic stats
+    const [statsRows] = await db.query(`
+      SELECT
+        d.id,
+        d.name,
+        COUNT(t.id) as totalTickets,
+        SUM(CASE WHEN t.status = 'Open' THEN 1 ELSE 0 END) as openTickets,
+        SUM(CASE WHEN t.status = 'In Progress' THEN 1 ELSE 0 END) as inProgressTickets,
+        SUM(CASE WHEN t.status = 'Resolved' THEN 1 ELSE 0 END) as resolvedTickets,
+        SUM(CASE WHEN t.status = 'Closed' THEN 1 ELSE 0 END) as closedTickets,
+        SUM(CASE WHEN t.priority = 'Low' THEN 1 ELSE 0 END) as lowPriority,
+        SUM(CASE WHEN t.priority = 'Medium' THEN 1 ELSE 0 END) as mediumPriority,
+        SUM(CASE WHEN t.priority = 'High' THEN 1 ELSE 0 END) as highPriority,
+        SUM(CASE WHEN t.priority = 'Urgent' THEN 1 ELSE 0 END) as urgentPriority
+      FROM departments d
+      LEFT JOIN tickets t ON d.id = t.department_id
+      WHERE d.id = ?
+      GROUP BY d.id, d.name
+    `, [departmentId]);
+
+    const stats = statsRows[0] || {
+      id: departmentId,
+      name: '',
+      totalTickets: 0,
+      openTickets: 0,
+      inProgressTickets: 0,
+      resolvedTickets: 0,
+      closedTickets: 0,
+      lowPriority: 0,
+      mediumPriority: 0,
+      highPriority: 0,
+      urgentPriority: 0
+    };
+
+    // Get chart data for last 30 days
+    const [chartRows] = await db.query(`
+      SELECT
+        DATE(created_at) as date,
+        SUM(CASE WHEN status != 'Closed' THEN 1 ELSE 0 END) as created,
+        SUM(CASE WHEN status IN ('Resolved', 'Closed') THEN 1 ELSE 0 END) as resolved
+      FROM tickets
+      WHERE department_id = ? AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+      GROUP BY DATE(created_at)
+      ORDER BY date ASC
+    `, [departmentId]);
+
+    // Format chart data
+    const chartData = {
+      dates: chartRows.map(row => row.date),
+      created: chartRows.map(row => row.created || 0),
+      resolved: chartRows.map(row => row.resolved || 0)
+    };
+
+    return { stats, chartData };
+  }
 }
 
 module.exports = Department;

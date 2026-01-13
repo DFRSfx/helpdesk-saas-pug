@@ -23,60 +23,63 @@ block content
             | View Tickets
 
     //- Stats cards
-    .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-4.gap-6.mb-6
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+    .grid.grid-cols-2.md_grid-cols-4.gap-3.mb-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-3
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Total Tickets
-            p.text-3xl.font-bold.text-gray-900= stats.totalTickets || 0
-          .w-12.h-12.bg-gray-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            p.text-xs.text-gray-600 Total Tickets
+            p.text-2xl.font-bold.text-gray-900= stats.totalTickets || 0
+          .w-10.h-10.bg-gray-100.rounded.flex.items-center.justify-center
+            svg.w-5.h-5.text-gray-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-3
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Open Tickets
-            p.text-3xl.font-bold.text-blue-600= stats.openTickets || 0
-          .w-12.h-12.bg-blue-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            p.text-xs.text-gray-600 Open Tickets
+            p.text-2xl.font-bold.text-blue-600= stats.openTickets || 0
+          .w-10.h-10.bg-blue-100.rounded.flex.items-center.justify-center
+            svg.w-5.h-5.text-blue-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-3
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 In Progress
-            p.text-3xl.font-bold.text-yellow-600= stats.inProgressTickets || 0
-          .w-12.h-12.bg-yellow-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-yellow-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            p.text-xs.text-gray-600 In Progress
+            p.text-2xl.font-bold.text-yellow-600= stats.inProgressTickets || 0
+          .w-10.h-10.bg-yellow-100.rounded.flex.items-center.justify-center
+            svg.w-5.h-5.text-yellow-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
 
-      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
+      .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-3
         .flex.items-center.justify-between
           div
-            p.text-sm.text-gray-600 Resolved
-            p.text-3xl.font-bold.text-green-600= stats.resolvedTickets || 0
+            p.text-xs.text-gray-600 Resolved
+            p.text-2xl.font-bold.text-green-600= stats.resolvedTickets || 0
             - const resolvedRate = stats.totalTickets > 0 ? ((stats.resolvedTickets / stats.totalTickets) * 100).toFixed(0) : 0
-            p.text-sm.text-gray-500= resolvedRate + '% resolution rate'
-          .w-12.h-12.bg-green-100.rounded-lg.flex.items-center.justify-center
-            svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            p.text-xs.text-gray-500= resolvedRate + '%'
+          .w-10.h-10.bg-green-100.rounded.flex.items-center.justify-center
+            svg.w-5.h-5.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
 
     .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
       //- Tickets by status
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Status
-        canvas#statusChart
+        .relative(style="height: 300px;")
+          canvas#statusChart
 
       //- Tickets by priority
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets by Priority
-        canvas#priorityChart
+        .relative(style="height: 300px;")
+          canvas#priorityChart
 
     //- Tickets over time
     .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6.mb-6
       h3.text-lg.font-semibold.text-gray-900.mb-4 Tickets Over Time (Last 30 Days)
-      canvas#ticketsOverTimeChart
+      .relative(style="height: 300px;")
+        canvas#ticketsOverTimeChart
 
     .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
       //- Agents in department
@@ -197,6 +200,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'bottom'
@@ -226,6 +230,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               display: false
@@ -249,16 +254,16 @@ block scripts
       new Chart(timeCtx, {
         type: 'line',
         data: {
-          labels: !{JSON.stringify(chartData?.dates || [])},
+          labels: !{JSON.stringify((chartData && chartData.dates) || [])},
           datasets: [{
             label: 'Created',
-            data: !{JSON.stringify(chartData?.created || [])},
+            data: !{JSON.stringify((chartData && chartData.created) || [])},
             borderColor: '#3B82F6',
             backgroundColor: 'rgba(59, 130, 246, 0.1)',
             tension: 0.4
           }, {
             label: 'Resolved',
-            data: !{JSON.stringify(chartData?.resolved || [])},
+            data: !{JSON.stringify((chartData && chartData.resolved) || [])},
             borderColor: '#10B981',
             backgroundColor: 'rgba(16, 185, 129, 0.1)',
             tension: 0.4
@@ -266,6 +271,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
           plugins: {
             legend: {
               position: 'bottom'

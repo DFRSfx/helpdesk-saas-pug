@@ -10,6 +10,9 @@ exports.index = async (req, res, next) => {
     const limit = 100; // Increased for Kanban view to show all tickets
     const offset = (page - 1) * limit;
 
+    // Extract showEscalated parameter
+    const showEscalated = req.query.showEscalated === 'true';
+
     const filters = {
       limit,
       offset,
@@ -18,6 +21,11 @@ exports.index = async (req, res, next) => {
       department_id: req.query.department,
       search: req.query.search
     };
+
+    // Apply showEscalated filter
+    if (showEscalated) {
+      filters.status = 'Escalated';
+    }
 
     // Apply role-based filtering
     if (res.locals.currentUser.role === 'customer') {
@@ -44,6 +52,16 @@ exports.index = async (req, res, next) => {
 
     const totalPages = Math.ceil(total / limit);
 
+    // Get escalated count for badge (only when not in escalated view)
+    let escalatedCount = 0;
+    if (!showEscalated && (res.locals.currentUser.role === 'admin' || res.locals.currentUser.role === 'agent')) {
+      const escalatedFilters = { ...filters };
+      escalatedFilters.status = 'Escalated';
+      delete escalatedFilters.limit;
+      delete escalatedFilters.offset;
+      escalatedCount = await Ticket.count(escalatedFilters);
+    }
+
     // Determine view mode
     const viewMode = req.query.view || 'board';
     const viewTemplate = viewMode === 'list' ? 'tickets/index-list' : 'tickets/index';
@@ -60,6 +78,8 @@ exports.index = async (req, res, next) => {
       departmentFilter: req.query.department,
       assignedTo: req.query.assignedTo,
       filters: req.query,
+      showEscalated,
+      escalatedCount,
       pagination: {
         currentPage: page,
         totalPages: totalPages,
@@ -67,6 +87,34 @@ exports.index = async (req, res, next) => {
         startItem: offset + 1,
         endItem: Math.min(offset + limit, total)
       }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Customer portal - ticket selection and chat
+exports.portal = async (req, res, next) => {
+  try {
+    // Only customers can access this page
+    if (res.locals.currentUser.role !== 'customer') {
+      req.flash('error', 'Customers only');
+      return res.redirect('/tickets');
+    }
+
+    // Get all tickets for this customer
+    const filters = {
+      customer_id: res.locals.currentUser.id,
+      limit: 100,
+      offset: 0
+    };
+
+    const tickets = await Ticket.getAll(filters);
+
+    res.render('tickets/portal', {
+      title: 'Your Tickets',
+      tickets,
+      selectedTicketId: req.query.ticketId ? parseInt(req.query.ticketId) : null
     });
   } catch (error) {
     next(error);

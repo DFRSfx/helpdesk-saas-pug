@@ -1,0 +1,244 @@
+extends ../layout/layout
+
+block content
+  .max-w-6xl.mx-auto.py-6
+
+    //- Page Header
+    .flex.items-center.justify-between.mb-6
+      h1.text-3xl.font-bold.text-gray-900.dark_text-white SLA Management
+
+      button.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-blue-500.font-medium.transition-colors#newPolicyBtn(type="button")
+        svg.w-5.h-5.inline.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+          path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
+        | New Policy
+
+    //- Statistics Overview
+    .grid.grid-cols-1.md_grid-cols-4.gap-4.mb-6
+      .bg-white.dark_bg-neutral-800.rounded-lg.shadow-sm.border.border-gray-200.dark_border-neutral-700.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.font-medium.text-gray-600.dark_text-neutral-400 Total Tickets
+            p.text-3xl.font-bold.text-gray-900.dark_text-white= stats.total_tickets || 0
+          svg.w-12.h-12.text-blue-600.opacity-20(fill="currentColor" viewBox="0 0 24 24")
+            path(d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
+
+      .bg-white.dark_bg-neutral-800.rounded-lg.shadow-sm.border.border-gray-200.dark_border-neutral-700.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.font-medium.text-gray-600.dark_text-neutral-400 Response Breaches
+            p.text-3xl.font-bold.text-red-600= stats.response_breached || 0
+            p.text-xs.text-gray-500.dark_text-neutral-400.mt-1= stats.response_breach_rate + '%'
+          svg.w-12.h-12.text-red-600.opacity-20(fill="currentColor" viewBox="0 0 24 24")
+            path(d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")
+
+      .bg-white.dark_bg-neutral-800.rounded-lg.shadow-sm.border.border-gray-200.dark_border-neutral-700.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.font-medium.text-gray-600.dark_text-neutral-400 Resolution Breaches
+            p.text-3xl.font-bold.text-red-600= stats.resolution_breached || 0
+            p.text-xs.text-gray-500.dark_text-neutral-400.mt-1= stats.resolution_breach_rate + '%'
+          svg.w-12.h-12.text-red-600.opacity-20(fill="currentColor" viewBox="0 0 24 24")
+            path(d="M13 10V3L4 14h7v7l9-11h-7z")
+
+      .bg-white.dark_bg-neutral-800.rounded-lg.shadow-sm.border.border-gray-200.dark_border-neutral-700.p-6
+        .flex.items-center.justify-between
+          div
+            p.text-sm.font-medium.text-gray-600.dark_text-neutral-400 Avg Response Time
+            p.text-3xl.font-bold.text-gray-900.dark_text-white
+              = (stats.avg_response_time_seconds / 3600).toFixed(1)
+              span.text-lg hours
+          svg.w-12.h-12.text-green-600.opacity-20(fill="currentColor" viewBox="0 0 24 24")
+            path(d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
+
+    //- SLA Policies Table
+    .bg-white.dark_bg-neutral-800.rounded-lg.shadow-sm.border.border-gray-200.dark_border-neutral-700.overflow-hidden
+
+      .p-6.border-b.border-gray-200.dark_border-neutral-700
+        h2.text-lg.font-semibold.text-gray-900.dark_text-white SLA Policies
+
+      .overflow-x-auto
+        table.w-full.text-sm
+          thead
+            tr.bg-gray-50.dark_bg-neutral-700/50.border-b.border-gray-200.dark_border-neutral-700
+              th.px-6.py-3.text-left.font-semibold.text-gray-700.dark_text-neutral-300 Name
+              th.px-6.py-3.text-left.font-semibold.text-gray-700.dark_text-neutral-300 Priority
+              th.px-6.py-3.text-center.font-semibold.text-gray-700.dark_text-neutral-300 Response Time
+              th.px-6.py-3.text-center.font-semibold.text-gray-700.dark_text-neutral-300 Resolution Time
+              th.px-6.py-3.text-center.font-semibold.text-gray-700.dark_text-neutral-300 Status
+              th.px-6.py-3.text-right.font-semibold.text-gray-700.dark_text-neutral-300 Actions
+
+          tbody
+            if policies && policies.length > 0
+              each policy in policies
+                tr.border-b.border-gray-200.dark_border-neutral-700.hover_bg-gray-50.dark_hover_bg-neutral-700/50.transition-colors
+                  td.px-6.py-4.text-gray-900.dark_text-white.font-medium= policy.name
+                  td.px-6.py-4
+                    span(class={
+                      'Critical': 'px-3 py-1 bg-red-100 dark_bg-red-900/30 text-red-800 dark_text-red-300 rounded-full text-xs font-semibold',
+                      'High': 'px-3 py-1 bg-orange-100 dark_bg-orange-900/30 text-orange-800 dark_text-orange-300 rounded-full text-xs font-semibold',
+                      'Medium': 'px-3 py-1 bg-yellow-100 dark_bg-yellow-900/30 text-yellow-800 dark_text-yellow-300 rounded-full text-xs font-semibold',
+                      'Low': 'px-3 py-1 bg-green-100 dark_bg-green-900/30 text-green-800 dark_text-green-300 rounded-full text-xs font-semibold'
+                    }[policy.priority])= policy.priority
+
+                  td.px-6.py-4.text-center.text-gray-700.dark_text-neutral-300
+                    = policy.response_time_hours
+                    span.text-gray-500.dark_text-neutral-400.text-xs hours
+
+                  td.px-6.py-4.text-center.text-gray-700.dark_text-neutral-300
+                    = policy.resolution_time_hours
+                    span.text-gray-500.dark_text-neutral-400.text-xs hours
+
+                  td.px-6.py-4.text-center
+                    span(class=policy.is_active ? 'px-3 py-1 bg-green-100 dark_bg-green-900/30 text-green-800 dark_text-green-300 rounded-full text-xs font-semibold' : 'px-3 py-1 bg-gray-100 dark_bg-gray-700 text-gray-800 dark_text-gray-300 rounded-full text-xs font-semibold')
+                      = policy.is_active ? 'Active' : 'Inactive'
+
+                  td.px-6.py-4.text-right
+                    button.text-blue-600.hover_text-blue-800.dark_text-blue-400.dark_hover_text-blue-300.font-medium.text-sm.transition-colors(type="button" onclick=`editPolicy(${policy.id})`)
+                      svg.w-5.h-5.inline.mr-1(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z")
+                      | Edit
+            else
+              tr
+                td.px-6.py-4.text-center.text-gray-500.dark_text-neutral-400(colspan="6")
+                  p No SLA policies configured yet.
+
+  //- New/Edit Policy Modal
+  .fixed.inset-0.bg-black.bg-opacity-50.hidden.flex.items-center.justify-center.z-50#policyModal
+    .bg-white.dark_bg-neutral-800.rounded-lg.shadow-lg.max-w-md.w-full.mx-4
+
+      .p-6.border-b.border-gray-200.dark_border-neutral-700
+        h3.text-lg.font-semibold.text-gray-900.dark_text-white#modalTitle Add SLA Policy
+
+      .p-6.space-y-4
+        .form-group
+          label.block.text-sm.font-medium.text-gray-700.dark_text-neutral-300.mb-1(for="policyName")
+            | Policy Name
+          input#policyName.w-full.px-4.py-2.bg-gray-100.dark_bg-neutral-700.text-gray-900.dark_text-white.placeholder-gray-500.border.border-gray-300.dark_border-neutral-600.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+            type="text"
+            placeholder="e.g., Critical Priority SLA"
+          )
+
+        .form-group
+          label.block.text-sm.font-medium.text-gray-700.dark_text-neutral-300.mb-1(for="policyPriority")
+            | Priority
+          select#policyPriority.w-full.px-4.py-2.bg-gray-100.dark_bg-neutral-700.text-gray-900.dark_text-white.border.border-gray-300.dark_border-neutral-600.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500
+            option(value="") Select priority...
+            option(value="Low") Low
+            option(value="Medium") Medium
+            option(value="High") High
+            option(value="Critical") Critical
+
+        .grid.grid-cols-2.gap-4
+          .form-group
+            label.block.text-sm.font-medium.text-gray-700.dark_text-neutral-300.mb-1(for="responseTime")
+              | Response Time (hours)
+            input#responseTime.w-full.px-4.py-2.bg-gray-100.dark_bg-neutral-700.text-gray-900.dark_text-white.placeholder-gray-500.border.border-gray-300.dark_border-neutral-600.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              type="number"
+              min="1"
+              placeholder="24"
+            )
+
+          .form-group
+            label.block.text-sm.font-medium.text-gray-700.dark_text-neutral-300.mb-1(for="resolutionTime")
+              | Resolution Time (hours)
+            input#resolutionTime.w-full.px-4.py-2.bg-gray-100.dark_bg-neutral-700.text-gray-900.dark_text-white.placeholder-gray-500.border.border-gray-300.dark_border-neutral-600.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500(
+              type="number"
+              min="1"
+              placeholder="120"
+            )
+
+      .p-6.border-t.border-gray-200.dark_border-neutral-700.flex.gap-3
+        button.flex-1.px-4.py-2.text-gray-700.dark_text-neutral-300.bg-gray-100.dark_bg-neutral-700.rounded-lg.hover_bg-gray-200.dark_hover_bg-neutral-600.font-medium.transition-colors(type="button" onclick="closeModal()")
+          | Cancel
+        button.flex-1.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.focus_outline-none.focus_ring-2.focus_ring-blue-500.font-medium.transition-colors(type="button" id="savePolicyBtn" onclick="savePolicy()")
+          | Save Policy
+
+  script.
+    let editingPolicyId = null;
+
+    // Show modal
+    document.getElementById('newPolicyBtn').addEventListener('click', () => {
+      editingPolicyId = null;
+      document.getElementById('modalTitle').textContent = 'Add SLA Policy';
+      document.getElementById('policyName').value = '';
+      document.getElementById('policyPriority').value = '';
+      document.getElementById('responseTime').value = '';
+      document.getElementById('resolutionTime').value = '';
+      document.getElementById('policyModal').classList.remove('hidden');
+      document.getElementById('policyName').focus();
+    });
+
+    // Close modal
+    function closeModal() {
+      document.getElementById('policyModal').classList.add('hidden');
+      editingPolicyId = null;
+    }
+
+    // Edit policy
+    function editPolicy(policyId) {
+      editingPolicyId = policyId;
+      document.getElementById('modalTitle').textContent = 'Edit SLA Policy';
+      // In a real application, you would fetch the policy data first
+      document.getElementById('policyModal').classList.remove('hidden');
+    }
+
+    // Save policy
+    async function savePolicy() {
+      const name = document.getElementById('policyName').value.trim();
+      const priority = document.getElementById('policyPriority').value.trim();
+      const responseTime = parseInt(document.getElementById('responseTime').value);
+      const resolutionTime = parseInt(document.getElementById('resolutionTime').value);
+
+      if (!name || !priority || !responseTime || !resolutionTime) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      if (resolutionTime < responseTime) {
+        alert('Resolution time must be >= response time');
+        return;
+      }
+
+      try {
+        let response;
+        if (editingPolicyId) {
+          response = await fetch(`/sla/api/policies/${editingPolicyId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+              name,
+              response_time_hours: responseTime,
+              resolution_time_hours: resolutionTime
+            })
+          });
+        } else {
+          response = await fetch('/sla/api/policies', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({
+              name,
+              priority,
+              response_time_hours: responseTime,
+              resolution_time_hours: resolutionTime
+            })
+          });
+        }
+
+        if (response.ok) {
+          closeModal();
+          location.reload();
+        } else {
+          const data = await response.json();
+          alert(data.error || 'Error saving policy');
+        }
+      } catch (error) {
+        console.error('Error saving policy:', error);
+        alert('Error saving policy');
+      }
+    }

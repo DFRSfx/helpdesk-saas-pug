@@ -6,12 +6,12 @@
       .flex.items-center.space-x-2.bg-gray-100.rounded-lg.p-1
         - const viewMode = filters.view || 'board'
         a.px-3.py-1_5.text-sm.font-medium.rounded-md.transition-all.duration-200(
-          href=`/tickets?view=board${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
-          class=viewMode === 'board' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 hover_bg-white'
+          href=`/tickets?view=board${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}${showEscalated ? '&showEscalated=true' : ''}`
+          class=viewMode === 'board' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 ' + (viewMode !== 'board' ? 'hover:bg-white' : '')
         ) Board
         a.px-3.py-1_5.text-sm.font-medium.rounded-md.transition-all.duration-200(
-          href=`/tickets?view=list${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}`
-          class=viewMode === 'list' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 hover_bg-white'
+          href=`/tickets?view=list${search ? '&search=' + search : ''}${priority ? '&priority=' + priority : ''}${departmentFilter ? '&department=' + departmentFilter : ''}${assignedTo ? '&assignedTo=' + assignedTo : ''}${showEscalated ? '&showEscalated=true' : ''}`
+          class=viewMode === 'list' ? 'text-white bg-blue-600 shadow-sm' : 'text-gray-700 ' + (viewMode !== 'list' ? 'hover:bg-white' : '')
         ) List
 
     .flex.items-center.space-x-3
@@ -19,23 +19,41 @@
       .relative.flex.items-center
         svg.absolute.left-3.w-5.h-5.text-gray-400.pointer-events-none(fill="none" stroke="currentColor" viewBox="0 0 24 24")
           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z")
-        input#searchInput.w-64.pl-10.pr-4.py-2.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.transition-all.duration-200(
+        input#searchInput.w-64.pl-10.pr-4.py-2.border.border-gray-300.rounded-lg.transition-all.duration-200(
           type="text"
           placeholder="Search tickets..."
           value=search || ""
+          class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         )
+
+      //- Show Escalated Toggle (only for agents/admins)
+      if isAdmin() || isAgent()
+        button#escalatedToggle.flex.items-center.space-x-2.px-4.py-2.text-sm.font-medium.rounded-lg.transition-all.duration-200.transform.cursor-pointer(
+          class=showEscalated ? 'bg-red-600 text-white shadow-md hover:bg-red-700 hover:shadow-xl hover:text-red-50 hover:scale-105 active:scale-95' : 'text-gray-700 bg-white border-2 border-gray-300 hover:bg-red-50 hover:border-red-300 hover:shadow-md hover:text-red-700 hover:scale-105 active:scale-95'
+          data-active=showEscalated ? 'true' : 'false'
+        )
+          svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+            path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z")
+          span= showEscalated ? 'Show All' : 'Show Escalated'
+          if escalatedCount > 0 && !showEscalated
+            span.ml-1.px-2.py-0_5.text-xs.font-semibold.text-gray-900.bg-red-300.rounded-full= escalatedCount
 
       //- Filters
       .relative
-        button#filterBtn.flex.items-center.space-x-2.px-4.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95
+        button#filterBtn.flex.items-center.space-x-2.px-4.py-2.text-sm.font-medium.text-gray-700.bg-white.border.border-gray-300.rounded-lg.transition-all.duration-200.transform(
+          class="hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 hover:scale-105 active:scale-95"
+        )
           svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z")
           span Filters
-          if priority || departmentFilter || assignedTo
-            - const filterCount = (priority ? 1 : 0) + (departmentFilter ? 1 : 0) + (assignedTo ? 1 : 0)
+          if priority || departmentFilter || assignedTo || showEscalated
+            - const filterCount = (priority ? 1 : 0) + (departmentFilter ? 1 : 0) + (assignedTo ? 1 : 0) + (showEscalated ? 1 : 0)
             span.ml-1.px-2.py-0_5.text-xs.font-semibold.text-white.bg-blue-600.rounded-full= filterCount
 
-      a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-lg.active_bg-blue-800.transition-all.duration-200.shadow-sm.transform.hover_scale-105.active_scale-95(href="/tickets/create")
+      a.inline-flex.items-center.px-4.py-2.bg-blue-600.text-white.rounded-lg.transition-all.duration-200.shadow-sm.transform(
+        href="/tickets/create"
+        class="hover:bg-blue-700 hover:shadow-lg active:bg-blue-800 hover:scale-105 active:scale-95"
+      )
         svg.w-5.h-5.mr-2(fill="none" stroke="currentColor" viewBox="0 0 24 24")
           path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4")
         | New Ticket
@@ -48,7 +66,10 @@
     div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;")
       div
         label.block.text-xs.font-semibold.text-gray-600.mb-1 Priority
-        select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="priority")
+        select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.bg-white.transition-all.duration-200(
+          name="priority"
+          class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400"
+        )
           option(value="" selected=!priority) All Priority
           option(value="low" selected=priority === "low") Low
           option(value="medium" selected=priority === "medium") Medium
@@ -58,7 +79,10 @@
       if isAdmin() || isAgent()
         div
           label.block.text-xs.font-semibold.text-gray-600.mb-1 Department
-          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="department")
+          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.bg-white.transition-all.duration-200(
+            name="department"
+            class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400"
+          )
             option(value="" selected=!departmentFilter) All Departments
             if departments
               each dept in departments
@@ -66,7 +90,10 @@
 
         div
           label.block.text-xs.font-semibold.text-gray-600.mb-1 Agent
-          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.focus_outline-none.focus_ring-2.focus_ring-blue-500.focus_border-blue-500.bg-white.transition-all.duration-200.hover_border-gray-400(name="assignedTo")
+          select.w-full.px-3.py-2.text-sm.border.border-gray-300.rounded-lg.bg-white.transition-all.duration-200(
+            name="assignedTo"
+            class="focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-400"
+          )
             option(value="" selected=!assignedTo) All Agents
             option(value="me" selected=assignedTo === "me") My Tickets
             option(value="unassigned" selected=assignedTo === "unassigned") Unassigned
@@ -75,8 +102,14 @@
                 option(value=agent.id selected=assignedTo == agent.id)= agent.name
 
     .flex.items-center.gap-2
-      button.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.hover_bg-blue-700.hover_shadow-md.active_bg-blue-800.transition-all.duration-200.transform.hover_scale-105.active_scale-95(type="submit") Apply
-      a.px-4.py-2.text-sm.text-gray-700.bg-white.border.border-gray-300.rounded-lg.hover_bg-gray-50.hover_border-gray-400.active_bg-gray-100.transition-all.duration-200.transform.hover_scale-105.active_scale-95(href=`/tickets?view=${viewMode}`) Clear
+      button.px-4.py-2.text-sm.bg-blue-600.text-white.rounded-lg.transition-all.duration-200.transform(
+        type="submit"
+        class="hover:bg-blue-700 hover:shadow-md active:bg-blue-800 hover:scale-105 active:scale-95"
+      ) Apply
+      a.px-4.py-2.text-sm.text-gray-700.bg-white.border.border-gray-300.rounded-lg.transition-all.duration-200.transform(
+        href=`/tickets?view=${viewMode}`
+        class="hover:bg-gray-50 hover:border-gray-400 active:bg-gray-100 hover:scale-105 active:scale-95"
+      ) Clear
 
 script.
   document.addEventListener('DOMContentLoaded', function() {
@@ -86,6 +119,23 @@ script.
     if (filterBtn && filterPanel) {
       filterBtn.addEventListener('click', function() {
         filterPanel.classList.toggle('hidden');
+      });
+    }
+
+    // Escalated toggle handler
+    const escalatedToggle = document.getElementById('escalatedToggle');
+    if (escalatedToggle) {
+      escalatedToggle.addEventListener('click', function() {
+        const currentUrl = new URL(window.location.href);
+        const isActive = this.dataset.active === 'true';
+
+        if (isActive) {
+          currentUrl.searchParams.delete('showEscalated');
+        } else {
+          currentUrl.searchParams.set('showEscalated', 'true');
+        }
+
+        window.location.href = currentUrl.toString();
       });
     }
   });

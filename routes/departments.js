@@ -17,6 +17,9 @@ router.get('/stats', hasRole('admin', 'agent'), departmentController.stats);
 router.get('/create', hasRole('admin'), departmentController.showCreate);
 router.post('/create', hasRole('admin'), departmentValidation.create, validate, departmentController.create);
 
+// Department stats for specific department (admin and agents)
+router.get('/:id/stats', hasRole('admin', 'agent'), departmentController.departmentStats);
+
 // Edit department (admin only)
 router.get('/:id/edit', hasRole('admin'), departmentController.showEdit);
 router.post('/:id/edit', hasRole('admin'), departmentValidation.create, validate, departmentController.update);
