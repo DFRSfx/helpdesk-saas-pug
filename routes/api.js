@@ -4,6 +4,7 @@ const db = require('../config/database');
 const bcrypt = require('bcrypt');
 const { isAuthenticated, hasRole } = require('../middlewares/authMiddleware');
 const Audit = require('../models/Audit');
+const Chat = require('../models/Chat');
 const userController = require('../controllers/userController');
 const emailService = require('../services/emailService');
 const { generateTemporaryPassword } = require('../utils/passwordGenerator');
@@ -86,12 +87,23 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
 
     const ticketId = ticketResult.insertId;
 
+    // Create initial chat conversation for the ticket
+    const conversationId = await Chat.createConversation({
+      type: 'ticket',
+      ticket_id: ticketId,
+      created_by: customerId
+    });
+
+    // Add customer as participant
+    await Chat.addParticipant(conversationId, customerId);
+
     // Create initial message with ticket description
     if (message) {
-      await db.query(
-        'INSERT INTO ticket_messages (ticket_id, user_id, message, is_internal) VALUES (?, ?, ?, ?)',
-        [ticketId, customerId, message, false]
-      );
+      await Chat.addMessage({
+        conversation_id: conversationId,
+        sender_id: customerId,
+        message
+      });
     }
 
     // Handle file attachments
@@ -131,9 +143,10 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
       );
     }
 
-    // Send welcome email with temporary password if new user
+    // Send welcome email with temporary password if new user (don't wait - send in background)
     if (isNewUser && temporaryPassword) {
-      await emailService.sendWelcomeEmail(email, name, temporaryPassword);
+      emailService.sendWelcomeEmail(email, name, temporaryPassword)
+        .catch(err => console.error('Email send failed:', err));
     }
 
     // Auto-login the user by creating a session
@@ -156,6 +169,40 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
       message: 'Failed to create ticket'
     });
   }
+});
+
+// Session endpoints (no auth required for check, refresh uses session auth)
+router.get('/session/check', (req, res) => {
+  // Returns current session status
+  if (req.session && req.session.userId) {
+    // Refresh the session
+    req.session.touch();
+    return res.json({
+      authenticated: true,
+      userId: req.session.userId,
+      userRole: req.session.userRole
+    });
+  }
+  res.json({ authenticated: false });
+});
+
+router.post('/session/refresh', (req, res) => {
+  // Explicitly refresh session (extend expiry)
+  if (req.session && req.session.userId) {
+    req.session.touch();
+    return res.json({
+      success: true,
+      message: 'Session refreshed',
+      authenticated: true,
+      userId: req.session.userId,
+      userRole: req.session.userRole
+    });
+  }
+  res.status(401).json({ 
+    success: false,
+    authenticated: false,
+    message: 'Not authenticated'
+  });
 });
 
 // All other API routes require authentication
@@ -304,25 +351,33 @@ router.get('/tickets/:id/messages', async (req, res) => {
       return res.status(403).json({ success: false, message: 'Not authorized' });
     }
 
-    // Get messages - filter internal messages for customers
-    let query = `
-      SELECT tm.*, u.name as user_name, u.role as user_role
-      FROM ticket_messages tm
-      LEFT JOIN users u ON tm.user_id = u.id
-      WHERE tm.ticket_id = ?
-    `;
-
-    if (userRole === 'customer') {
-      query += ' AND tm.is_internal = FALSE';
+    // Get or create chat conversation for this ticket
+    const conversation = await Chat.getConversationByTicketId(ticketId);
+    
+    if (!conversation) {
+      // No messages yet
+      return res.json({
+        success: true,
+        messages: []
+      });
     }
 
-    query += ' ORDER BY tm.created_at ASC';
-
-    const [messages] = await db.query(query, [ticketId]);
+    // Get messages from chat conversation
+    const messages = await Chat.getMessages(conversation.id);
 
     res.json({
       success: true,
-      messages: messages
+      messages: messages.map(m => ({
+        id: m.id,
+        user_id: m.sender_id,
+        message: m.message,
+        user_name: m.sender_name,
+        user_role: m.sender_role,
+        is_internal: false, // Chat messages are not internal
+        is_edited: m.is_edited,
+        edited_at: m.edited_at,
+        created_at: m.created_at
+      }))
     });
   } catch (error) {
     console.error('Error fetching messages:', error);

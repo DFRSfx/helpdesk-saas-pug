@@ -14,40 +14,12 @@ const Audit = require('../models/Audit');
 exports.index = async (req, res, next) => {
   try {
     const userId = req.session.userId;
-    const conversationId = req.query.conversation;
+    const user = await User.findById(userId);
 
-    // Get user's conversations
-    const conversations = await Chat.getConversationsByUser(userId, { limit: 50 });
-
-    // Get selected conversation (if any)
-    let selectedConversation = null;
-    let messages = [];
-    let participants = [];
-
-    if (conversationId) {
-      // Check if user is participant
-      const isParticipant = await Chat.isParticipant(conversationId, userId);
-      if (!isParticipant) {
-        return res.status(403).render('errors/404', {
-          title: 'Conversation Not Found'
-        });
-      }
-
-      selectedConversation = await Chat.getConversationById(conversationId);
-      messages = await Chat.getMessages(conversationId, { limit: 50, offset: 0 });
-      participants = await Chat.getParticipants(conversationId);
-
-      // Mark as read
-      await Chat.markAsRead(conversationId, userId);
-    }
-
-    res.render('chat/index', {
-      title: 'Messages',
-      conversations,
-      selectedConversation,
-      messages,
-      participants,
-      currentUserId: userId
+    res.render('chat/external', {
+      title: 'Chat',
+      currentUserId: userId,
+      currentUser: user
     });
   } catch (error) {
     next(error);

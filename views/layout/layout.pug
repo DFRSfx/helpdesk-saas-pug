@@ -43,4 +43,12 @@ html(lang="en")
     //- Main JavaScript
     script(src="/js/main.js")
     script(src="/js/chat.js")
+    
+    //- Make currentUser available to JavaScript
+    script.
+      window.currentUser = !{JSON.stringify(currentUser || null)};
+    
+    //- Session keeper for keeping user logged in during activity
+    script(src="/js/sessionKeeper.js")
+    
     block scripts

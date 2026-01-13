@@ -16,10 +16,7 @@ const auditRoutes = require('./routes/audit');
 const apiRoutes = require('./routes/api');
 const notificationRoutes = require('./routes/notifications');
 const chatRoutes = require('./routes/chat');
-const slaRoutes = require('./routes/sla');
-const bulkRoutes = require('./routes/bulk');
 const feedbackRoutes = require('./routes/feedback');
-const searchRoutes = require('./routes/search');
 
 // Import middleware
 const errorHandler = require('./middlewares/errorHandler');
@@ -59,6 +56,14 @@ app.use(flash());
 // Set local variables for views
 app.use(setLocals);
 
+// Extend session expiry on each request (keeps user logged in during activity)
+app.use((req, res, next) => {
+  if (req.session && req.session.userId) {
+    req.session.touch();
+  }
+  next();
+});
+
 // Prevent caching of dynamic content and redirects
 app.use((req, res, next) => {
   res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -77,10 +82,7 @@ app.use('/audit', auditRoutes);
 app.use('/api', apiRoutes);
 app.use('/notifications', notificationRoutes);
 app.use('/chat', chatRoutes);
-app.use('/sla', slaRoutes);
-app.use('/api/bulk', bulkRoutes);
 app.use('/feedback', feedbackRoutes);
-app.use('/search', searchRoutes);
 
 // Root - Landing Page
 app.get('/', (req, res) => {

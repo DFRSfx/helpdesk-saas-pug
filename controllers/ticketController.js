@@ -1,4 +1,5 @@
 const Ticket = require('../models/Ticket');
+const Chat = require('../models/Chat');
 const Department = require('../models/Department');
 const User = require('../models/User');
 const Audit = require('../models/Audit');
@@ -212,7 +213,12 @@ exports.show = async (req, res, next) => {
     }
 
     const isInternal = res.locals.currentUser.role !== 'customer';
-    const messages = await Ticket.getMessages(ticketId, isInternal);
+    
+    // Get or create chat conversation for this ticket
+    const conversation = await Chat.getOrCreateTicketConversation(ticketId, ticket.customer_id);
+    const messages = await Chat.getMessages(conversation);
+    const participants = await Chat.getParticipants(conversation);
+    
     const attachments = await Ticket.getAttachments(ticketId);
     const auditLogs = await Audit.getByTicket(ticketId);
     const departments = await Department.getAll();
@@ -222,6 +228,8 @@ exports.show = async (req, res, next) => {
       title: `Ticket #${ticket.id}`,
       ticket,
       messages,
+      participants,
+      conversationId: conversation,
       attachments,
       auditLogs,
       departments,
@@ -363,7 +371,7 @@ exports.update = async (req, res, next) => {
 exports.addMessage = async (req, res, next) => {
   try {
     const ticketId = req.params.id;
-    const { message, is_internal } = req.body;
+    const { message } = req.body;
 
     const ticket = await Ticket.findById(ticketId);
 
@@ -372,23 +380,32 @@ exports.addMessage = async (req, res, next) => {
       return res.redirect('/tickets');
     }
 
-    await Ticket.addMessage({
-      ticket_id: ticketId,
-      user_id: res.locals.currentUser.id,
-      message,
-      is_internal: is_internal === 'true' && res.locals.currentUser.role !== 'customer'
+    // Get or create chat conversation for this ticket
+    const conversationId = await Chat.getOrCreateTicketConversation(ticketId, ticket.customer_id);
+
+    // Ensure user is a participant
+    await Chat.addParticipant(conversationId, res.locals.currentUser.id);
+
+    // Add message to conversation
+    const messageId = await Chat.addMessage({
+      conversation_id: conversationId,
+      sender_id: res.locals.currentUser.id,
+      message
     });
 
     await Audit.log({
       ticket_id: ticketId,
       user_id: res.locals.currentUser.id,
       action: 'message_added',
-      new_value: is_internal === 'true' ? 'Internal note' : 'Public message'
+      new_value: 'Chat message'
     });
 
     // Emit socket event
     const io = req.app.get('io');
     io.emit('message:new', { ticketId, ticketTitle: ticket.title });
+
+    req.flash('success', 'Message added successfully');
+    res.redirect(`/tickets/${ticketId}`);
 
     req.flash('success', 'Message added successfully');
     res.redirect(`/tickets/${ticketId}`);

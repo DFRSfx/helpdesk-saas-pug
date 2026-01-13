@@ -12,11 +12,11 @@ class Chat {
    * @returns {Promise<number>} - Conversation ID
    */
   static async createConversation(conversationData) {
-    const { type = 'direct', name, created_by, participant_ids = [] } = conversationData;
+    const { type = 'direct', name, created_by, participant_ids = [], ticket_id = null } = conversationData;
 
     const [result] = await db.query(
-      'INSERT INTO chat_conversations (type, name, created_by) VALUES (?, ?, ?)',
-      [type, name || null, created_by]
+      'INSERT INTO chat_conversations (type, name, created_by, ticket_id) VALUES (?, ?, ?, ?)',
+      [type, name || null, created_by, ticket_id]
     );
 
     const conversationId = result.insertId;
@@ -254,7 +254,7 @@ class Chat {
     // Check if conversation exists
     const [existing] = await db.query(
       `SELECT c.id FROM chat_conversations c
-       WHERE c.type = 'direct'
+       WHERE c.type = 'direct' AND c.ticket_id IS NULL
        AND (
          (SELECT COUNT(*) FROM chat_participants WHERE conversation_id = c.id AND user_id IN (?, ?)) = 2
        )
@@ -272,6 +272,49 @@ class Chat {
       created_by: smaller,
       participant_ids: [larger]
     });
+  }
+
+  /**
+   * Get or create ticket chat conversation
+   * @param {number} ticketId - Ticket ID
+   * @param {number} createdBy - User creating the conversation
+   * @returns {Promise<number>} - Conversation ID
+   */
+  static async getOrCreateTicketConversation(ticketId, createdBy) {
+    // Check if conversation already exists for this ticket
+    const [existing] = await db.query(
+      `SELECT id FROM chat_conversations WHERE ticket_id = ?`,
+      [ticketId]
+    );
+
+    if (existing.length > 0) {
+      return existing[0].id;
+    }
+
+    // Create new ticket conversation
+    return await Chat.createConversation({
+      type: 'ticket',
+      ticket_id: ticketId,
+      created_by: createdBy
+    });
+  }
+
+  /**
+   * Get conversation by ticket ID
+   * @param {number} ticketId - Ticket ID
+   * @returns {Promise<Object|null>} - Conversation or null
+   */
+  static async getConversationByTicketId(ticketId) {
+    const [rows] = await db.query(
+      `SELECT c.*,
+              u.name as creator_name,
+              (SELECT COUNT(*) FROM chat_messages WHERE conversation_id = c.id) as message_count
+       FROM chat_conversations c
+       LEFT JOIN users u ON c.created_by = u.id
+       WHERE c.ticket_id = ?`,
+      [ticketId]
+    );
+    return rows[0] || null;
   }
 
   /**

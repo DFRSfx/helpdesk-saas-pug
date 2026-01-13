@@ -128,12 +128,15 @@ class User {
     const [rows] = await db.query(`
       SELECT u.id, u.name, u.email, COUNT(t.id) as ticket_count
       FROM users u
-      LEFT JOIN tickets t ON u.id = t.agent_id AND t.status NOT IN ('Resolved', 'Closed')
-      WHERE u.role = 'agent'
+      LEFT JOIN tickets t ON u.id = t.agent_id 
+        AND t.status IN ('Open', 'In Progress', 'Waiting', 'Escalated')
+      WHERE u.role = 'agent' 
+        AND u.is_active = 1
+        AND (u.department_id = ? OR u.department_id IS NULL)
       GROUP BY u.id, u.name, u.email
-      ORDER BY ticket_count ASC
+      ORDER BY ticket_count ASC, u.id ASC
       LIMIT 1
-    `);
+    `, [departmentId]);
     return rows[0];
   }
 }

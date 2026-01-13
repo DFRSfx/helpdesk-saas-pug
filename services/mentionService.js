@@ -175,14 +175,15 @@ class MentionService {
         mm.created_at,
         m.id as message_id,
         m.message,
-        m.ticket_id,
+        cc.ticket_id,
         u.name as sender_name,
         u.id as sender_id,
         t.title as ticket_title
        FROM message_mentions mm
-       LEFT JOIN ticket_messages m ON mm.message_id = m.id
+       LEFT JOIN chat_messages m ON mm.message_id = m.id
+       LEFT JOIN chat_conversations cc ON m.conversation_id = cc.id
        LEFT JOIN users u ON m.sender_id = u.id
-       LEFT JOIN tickets t ON m.ticket_id = t.id
+       LEFT JOIN tickets t ON cc.ticket_id = t.id
        WHERE mm.mentioned_user_id = ?
        ORDER BY mm.created_at DESC
        LIMIT ?`,
@@ -201,7 +202,7 @@ class MentionService {
     const [result] = await db.query(
       `SELECT COUNT(*) as count
        FROM message_mentions mm
-       LEFT JOIN ticket_messages m ON mm.message_id = m.id
+       LEFT JOIN chat_messages m ON mm.message_id = m.id
        WHERE mm.mentioned_user_id = ?
          AND m.created_at > DATE_SUB(NOW(), INTERVAL 7 DAY)`,
       [userId]

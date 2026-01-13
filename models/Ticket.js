@@ -170,132 +170,70 @@ class Ticket {
   }
 
   static async getMessages(ticketId, isInternal = false) {
-    let query = `
-      SELECT
-        tm.*,
-        u.name as user_name,
-        u.role as user_role
-      FROM ticket_messages tm
-      LEFT JOIN users u ON tm.user_id = u.id
-      WHERE tm.ticket_id = ? AND tm.is_deleted = 0
-    `;
-
-    if (!isInternal) {
-      query += ' AND tm.is_internal = FALSE';
+    // This method is deprecated. Use Chat model instead.
+    // Redirect to get chat conversation for this ticket
+    const Chat = require('./Chat');
+    const conversation = await Chat.getConversationByTicketId(ticketId);
+    
+    if (!conversation) {
+      return [];
     }
 
-    query += ' ORDER BY tm.created_at ASC';
-
-    const [rows] = await db.query(query, [ticketId]);
-    return rows;
+    return await Chat.getMessages(conversation.id);
   }
 
   static async addMessage(messageData) {
-    const { ticket_id, user_id, message, is_internal = false } = messageData;
-
-    const [result] = await db.query(
-      'INSERT INTO ticket_messages (ticket_id, user_id, message, is_internal) VALUES (?, ?, ?, ?)',
-      [ticket_id, user_id, message, is_internal]
+    // This method is deprecated. Use Chat model instead.
+    const Chat = require('./Chat');
+    const conversation = await Chat.getOrCreateTicketConversation(
+      messageData.ticket_id,
+      messageData.user_id
     );
 
-    return result.insertId;
+    // Ensure user is a participant
+    await Chat.addParticipant(conversation, messageData.user_id);
+
+    return await Chat.addMessage({
+      conversation_id: conversation,
+      sender_id: messageData.user_id,
+      message: messageData.message
+    });
   }
 
   /**
-   * Edit a message (within 15 minutes of creation)
+   * Edit a message (DEPRECATED - use Chat model instead)
    * @param {number} messageId - Message ID
    * @param {string} newMessage - New message text
    * @param {number} userId - User ID (for permission check)
    * @returns {Promise<boolean>} - Success status
    */
   static async editMessage(messageId, newMessage, userId) {
-    // Get message details
-    const [messages] = await db.query(
-      'SELECT user_id, created_at FROM ticket_messages WHERE id = ?',
-      [messageId]
-    );
-
-    if (!messages || messages.length === 0) {
-      throw new Error('Message not found');
-    }
-
-    const message = messages[0];
-
-    // Check permission (only sender can edit)
-    if (message.user_id !== userId) {
-      throw new Error('Permission denied - only sender can edit');
-    }
-
-    // Check time limit (15 minutes)
-    const createdTime = new Date(message.created_at);
-    const now = new Date();
-    const minutesPassed = (now - createdTime) / (1000 * 60);
-
-    if (minutesPassed > 15) {
-      throw new Error('Cannot edit message older than 15 minutes');
-    }
-
-    // Update message
-    await db.query(
-      'UPDATE ticket_messages SET message = ?, is_edited = 1, edited_at = NOW() WHERE id = ?',
-      [newMessage, messageId]
-    );
-
-    return true;
+    // Redirect to Chat model
+    const Chat = require('./Chat');
+    return await Chat.editMessage(messageId, newMessage);
   }
 
   /**
-   * Delete a message (soft delete)
+   * Delete a message (DEPRECATED - use Chat model instead)
    * @param {number} messageId - Message ID
    * @param {number} userId - User ID (for permission check)
    * @returns {Promise<boolean>} - Success status
    */
   static async deleteMessage(messageId, userId) {
-    // Get message details
-    const [messages] = await db.query(
-      'SELECT user_id FROM ticket_messages WHERE id = ?',
-      [messageId]
-    );
-
-    if (!messages || messages.length === 0) {
-      throw new Error('Message not found');
-    }
-
-    const message = messages[0];
-
-    // Check permission (only sender can delete)
-    if (message.user_id !== userId) {
-      throw new Error('Permission denied - only sender can delete');
-    }
-
-    // Soft delete
-    await db.query(
-      'UPDATE ticket_messages SET is_deleted = 1, deleted_at = NOW() WHERE id = ?',
-      [messageId]
-    );
-
-    return true;
+    // Redirect to Chat model
+    const Chat = require('./Chat');
+    return await Chat.deleteMessage(messageId);
   }
 
   /**
-   * Get message by ID with all details
+   * Get message by ID (DEPRECATED - use Chat model instead)
    * @param {number} messageId - Message ID
    * @returns {Promise<Object|null>} - Message or null
    */
   static async getMessageById(messageId) {
-    const [rows] = await db.query(
-      `SELECT
-        tm.*,
-        u.name as user_name,
-        u.role as user_role,
-        u.email as user_email
-       FROM ticket_messages tm
-       LEFT JOIN users u ON tm.user_id = u.id
-       WHERE tm.id = ?`,
-      [messageId]
-    );
-
-    return rows[0] || null;
+    // Redirect to Chat model - not directly available
+    // Use Chat.getMessages() instead
+    return null;
   }
 
   static async getAttachments(ticketId) {
