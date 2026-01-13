@@ -152,9 +152,16 @@ exports.create = async (req, res, next) => {
 
     // Auto-assign to agent with lowest workload (if admin creates ticket, they can manually assign)
     if (res.locals.currentUser.role !== 'admin') {
-      const agent = await User.getAgentWithLowestWorkload(department_id);
-      if (agent) {
-        ticketData.agent_id = agent.id;
+      try {
+        const agent = await User.getAgentWithLowestWorkload(department_id);
+        if (agent) {
+          ticketData.agent_id = agent.id;
+        } else {
+          console.warn(`No agents found for department ${department_id}`);
+        }
+      } catch (error) {
+        console.error('Error assigning agent:', error);
+        // Continue without assignment if there's an error
       }
     }
 

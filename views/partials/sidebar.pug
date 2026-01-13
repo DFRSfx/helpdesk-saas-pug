@@ -53,18 +53,6 @@ aside#sidebar.w-64.bg-gradient-to-b.from-gray-900.to-gray-800.text-white.flex.fl
         path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2")
       span.font-medium.nav-text Tickets
 
-    //- Chat
-    a.flex.items-center.space-x-3.px-4.py-3.rounded-lg.transition-all.duration-300.group.relative.overflow-hidden(
-      href="/chat"
-      class=title.includes('Chat') ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-300'
-      style=title.includes('Chat') ? '' : 'background-color: transparent;'
-      onmouseover=title.includes('Chat') ? '' : "this.style.backgroundColor='rgba(55,65,81,0.5)'; this.style.color='#fff';"
-      onmouseout=title.includes('Chat') ? '' : "this.style.backgroundColor='transparent'; this.style.color='#d1d5db';"
-    )
-      svg.w-5.h-5.icon-only.transition-all.duration-300(fill="none" stroke="currentColor" viewBox="0 0 24 24")
-        path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M8 16H8.01M12 16h.01M16 16h.01M9 7h6a2 2 0 012 2v10a2 2 0 01-2 2H9a2 2 0 01-2-2V9a2 2 0 012-2z")
-      span.font-medium.nav-text Chat
-
     if isAdmin() || isAgent()
       //- Divider
       .h-px.bg-gray-700.my-4

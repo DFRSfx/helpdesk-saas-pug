@@ -52,11 +52,11 @@
       //- Assigned Agent
       if isAdmin() || isAgent()
         .flex.items-center.space-x-2.text-xs
-          if ticket.assigned_agent_name
+          if ticket.agent_name
             .flex.items-center.space-x-2
               .w-6.h-6.rounded-full.bg-gradient-to-br.from-blue-500.to-blue-600.text-white.flex.items-center.justify-center.text-xs.font-bold
-                = ticket.assigned_agent_name.charAt(0).toUpperCase()
-              span.text-gray-700.truncate= ticket.assigned_agent_name
+                = ticket.agent_name.charAt(0).toUpperCase()
+              span.text-gray-700.truncate= ticket.agent_name
           else
             .flex.items-center.space-x-2.text-gray-400
               .w-6.h-6.rounded-full.border-2.border-dashed.border-gray-300.flex.items-center.justify-center

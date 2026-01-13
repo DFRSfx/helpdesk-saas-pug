@@ -54,8 +54,8 @@ block content
 
                   if isAdmin() || isAgent()
                     td.px-6.py-4.whitespace-nowrap
-                      if ticket.assigned_agent_name
-                        .text-sm.text-gray-900= ticket.assigned_agent_name
+                      if ticket.agent_name
+                        .text-sm.text-gray-900= ticket.agent_name
                       else
                         span.text-sm.text-gray-400.italic Unassigned
 

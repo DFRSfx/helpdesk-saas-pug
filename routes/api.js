@@ -649,4 +649,37 @@ router.get('/tickets/:id/attachments/:attachmentId', async (req, res) => {
   }
 });
 
+// Notification API endpoints
+const notificationController = require('../controllers/notificationController');
+
+/**
+ * GET /api/notifications
+ * Get notifications (JSON, for AJAX/API)
+ */
+router.get('/notifications', notificationController.apiGetNotifications);
+
+/**
+ * GET /api/notifications/unread-count
+ * Get unread notification count
+ */
+router.get('/notifications/unread-count', notificationController.apiGetUnreadCount);
+
+/**
+ * PATCH /api/notifications/:id/read
+ * Mark specific notification as read
+ */
+router.patch('/notifications/:id/read', notificationController.apiMarkAsRead);
+
+/**
+ * PATCH /api/notifications/read-all
+ * Mark all notifications as read
+ */
+router.patch('/notifications/read-all', notificationController.apiMarkAllAsRead);
+
+/**
+ * DELETE /api/notifications/:id
+ * Delete a notification
+ */
+router.delete('/notifications/:id', notificationController.apiDeleteNotification);
+
 module.exports = router;

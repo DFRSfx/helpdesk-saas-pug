@@ -67,8 +67,8 @@ block content
 
         div
           .text-xs.font-semibold.text-gray-600.dark_text-neutral-400.uppercase.tracking-widest.mb-1 Assigned Agent
-          if ticket.assigned_agent_name
-            .text-sm.font-medium.text-gray-900.dark_text-white= ticket.assigned_agent_name
+          if ticket.agent_name
+            .text-sm.font-medium.text-gray-900.dark_text-white= ticket.agent_name
           else
             .text-sm.text-gray-500.dark_text-neutral-400.italic Unassigned
 
@@ -243,8 +243,8 @@ block content
             if isAdmin() || isAgent()
               .flex-1
                 .text-xs.font-semibold.text-gray-600.dark_text-neutral-400.uppercase.tracking-widest.mb-2 Assigned Agent
-                if ticket.assigned_agent_name
-                  .text-sm.font-medium.text-gray-900.dark_text-white= ticket.assigned_agent_name
+                if ticket.agent_name
+                  .text-sm.font-medium.text-gray-900.dark_text-white= ticket.agent_name
                 else
                   .text-sm.text-gray-500.dark_text-neutral-400.italic Unassigned
 
