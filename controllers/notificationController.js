@@ -321,7 +321,7 @@ exports.notifyTicketAssigned = async (io, ticket, agentId) => {
     message: `Ticket #${ticket.id}: "${ticket.title}" has been assigned to you`,
     related_entity_type: 'ticket',
     related_entity_id: ticket.id,
-    action_url: `/tickets/${ticket.id}`
+    action_url: `/tickets/portal?ticketId=${ticket.id}`
   });
 };
 
@@ -335,12 +335,12 @@ exports.notifyTicketAssigned = async (io, ticket, agentId) => {
 exports.notifyNewMessage = async (io, ticket, message, recipientId) => {
   return exports.createAndEmit(io, {
     user_id: recipientId,
-    type: 'new_message',
+    type: 'chat_message',
     title: `New Message on Ticket #${ticket.id}`,
     message: `${message.user_name} replied: "${message.message.substring(0, 50)}..."`,
     related_entity_type: 'ticket',
     related_entity_id: ticket.id,
-    action_url: `/tickets/${ticket.id}`
+    action_url: `/tickets/portal?ticketId=${ticket.id}`
   });
 };
 
@@ -359,7 +359,7 @@ exports.notifyStatusChange = async (io, ticket, newStatus, recipientId) => {
     message: `Ticket #${ticket.id} status changed to: ${newStatus}`,
     related_entity_type: 'ticket',
     related_entity_id: ticket.id,
-    action_url: `/tickets/${ticket.id}`
+    action_url: `/tickets/portal?ticketId=${ticket.id}`
   });
 };
 
@@ -397,7 +397,7 @@ exports.notifyEscalation = async (io, ticket, managerIds = []) => {
       message: `Ticket #${ticket.id} "${ticket.title}" has been escalated due to time-based rules`,
       related_entity_type: 'ticket',
       related_entity_id: ticket.id,
-      action_url: `/tickets/${ticket.id}`
+      action_url: `/tickets/portal?ticketId=${ticket.id}`
     })
   );
 

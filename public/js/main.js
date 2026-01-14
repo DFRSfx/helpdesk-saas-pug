@@ -24,6 +24,18 @@ socket.on('connect', () => {
   isConnected = true;
   document.body.classList.remove('socket-disconnected');
   document.body.classList.add('socket-connected');
+  
+  // Send user authentication data
+  if (typeof window.currentUser !== 'undefined' && window.currentUser) {
+    socket.emit('socket:authenticate', {
+      id: window.currentUser.id,
+      role: window.currentUser.role,
+      name: window.currentUser.name
+    });
+    console.log('✅ Sent authentication to socket');
+  } else {
+    console.warn('⚠️ Current user not available for socket authentication');
+  }
 });
 
 socket.on('disconnect', (reason) => {

@@ -120,6 +120,22 @@ class Department {
       ORDER BY date ASC
     `, [departmentId]);
 
+    // Get recent tickets
+    const [recentTicketsRows] = await db.query(`
+      SELECT
+        t.id,
+        t.subject,
+        t.status,
+        t.priority,
+        t.created_at,
+        u.name as customer_name
+      FROM tickets t
+      LEFT JOIN users u ON t.customer_id = u.id
+      WHERE t.department_id = ?
+      ORDER BY t.created_at DESC
+      LIMIT 5
+    `, [departmentId]);
+
     // Format chart data
     const chartData = {
       dates: chartRows.map(row => row.date),
@@ -127,7 +143,7 @@ class Department {
       resolved: chartRows.map(row => row.resolved || 0)
     };
 
-    return { stats, chartData };
+    return { stats, chartData, recentTickets: recentTicketsRows };
   }
 }
 

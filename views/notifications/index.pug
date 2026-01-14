@@ -76,30 +76,30 @@ block content
                   .flex-shrink-0
                     case notification.type
                       when 'ticket_assigned'
-                        .p-2.bg-blue-100.dark_bg-blue-900/30.rounded-lg
+                        .p-2.bg-blue-100.dark_bg-blue-900.rounded-lg
                           svg.w-5.h-5.text-blue-600.dark_text-blue-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4")
                       when 'new_message'
-                        .p-2.bg-green-100.dark_bg-green-900/30.rounded-lg
+                        .p-2.bg-green-100.dark_bg-green-900.rounded-lg
                           svg.w-5.h-5.text-green-600.dark_text-green-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z")
                       when 'mention'
-                        .p-2.bg-purple-100.dark_bg-purple-900/30.rounded-lg
+                        .p-2.bg-purple-100.dark_bg-purple-900.rounded-lg
                           svg.w-5.h-5.text-purple-600.dark_text-purple-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h-2m0 0H10m2 0l1.5-1.5M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2z")
                       when 'chat_message'
-                        .p-2.bg-indigo-100.dark_bg-indigo-900/30.rounded-lg
+                        .p-2.bg-indigo-100.dark_bg-indigo-900.rounded-lg
                           svg.w-5.h-5.text-indigo-600.dark_text-indigo-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-2H5a2 2 0 01-2-2V8a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2l-4 2v-2.5z")
                       when 'escalation'
-                        .p-2.bg-red-100.dark_bg-red-900/30.rounded-lg
+                        .p-2.bg-red-100.dark_bg-red-900.rounded-lg
                           svg.w-5.h-5.text-red-600.dark_text-red-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4v2m0-10l7.07 7.07M5.93 5.93L12 12")
                       when 'ticket_status_change'
-                        .p-2.bg-yellow-100.dark_bg-yellow-900/30.rounded-lg
+                        .p-2.bg-yellow-100.dark_bg-yellow-900.rounded-lg
                           svg.w-5.h-5.text-yellow-600.dark_text-yellow-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
-                      else
+                      default
                         .p-2.bg-gray-100.dark_bg-gray-700.rounded-lg
                           svg.w-5.h-5.text-gray-600.dark_text-gray-400(fill="none" stroke="currentColor" viewBox="0 0 24 24")
                             path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z")
@@ -115,7 +115,7 @@ block content
                 //- Delete button
                 button.text-gray-400.dark_text-neutral-500.hover_text-gray-600.dark_hover_text-neutral-400.transition-colors(
                   type="button"
-                  onclick="deleteNotification(event, #{notification.id})"
+                  onclick=`deleteNotification(event, ${notification.id})`
                   title="Delete notification"
                 )
                   svg.w-4.h-4(fill="none" stroke="currentColor" viewBox="0 0 24 24")
@@ -164,24 +164,24 @@ block content
           )
             | Next →
 
-script.
-  // Delete notification
-  async function deleteNotification(e, notificationId) {
-    e.stopPropagation();
-    if (!confirm('Delete this notification?')) return;
+  script.
+    // Delete notification
+    async function deleteNotification(e, notificationId) {
+      e.stopPropagation();
+      if (!confirm('Delete this notification?')) return;
 
-    try {
-      const response = await fetch(`/api/notifications/${notificationId}`, {
-        method: 'DELETE'
-      });
+      try {
+        const response = await fetch(`/api/notifications/${notificationId}`, {
+          method: 'DELETE'
+        });
 
-      if (response.ok) {
-        location.reload();
-      } else {
+        if (response.ok) {
+          location.reload();
+        } else {
+          alert('Error deleting notification');
+        }
+      } catch (error) {
+        console.error('Error:', error);
         alert('Error deleting notification');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error deleting notification');
     }
-  }

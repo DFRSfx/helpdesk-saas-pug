@@ -3,6 +3,7 @@ const Chat = require('../models/Chat');
 const Department = require('../models/Department');
 const User = require('../models/User');
 const Audit = require('../models/Audit');
+const notificationController = require('./notificationController');
 
 // List all tickets (with filters and pagination)
 exports.index = async (req, res, next) => {
@@ -188,6 +189,9 @@ exports.create = async (req, res, next) => {
         action: 'agent_assigned',
         new_value: `Agent ID: ${ticketData.agent_id}`
       });
+      
+      // Create notification for assigned agent
+      await notificationController.notifyTicketAssigned(io, { id: ticketId, title }, ticketData.agent_id);
     }
 
     req.flash('success', 'Ticket created successfully');
@@ -208,43 +212,19 @@ exports.show = async (req, res, next) => {
       return res.redirect('/tickets');
     }
 
-    // All users use the portal view for chat
-    if (res.locals.currentUser.role === 'customer') {
-      if (ticket.customer_id !== res.locals.currentUser.id) {
-        req.flash('error', 'You do not have permission to view this ticket');
-        return res.redirect('/tickets');
-      }
-      return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
+    // Check permissions
+    if (res.locals.currentUser.role === 'customer' && ticket.customer_id !== res.locals.currentUser.id) {
+      req.flash('error', 'You do not have permission to view this ticket');
+      return res.redirect('/tickets');
     }
 
-    // Agents and admins also use portal for chat
-    if (res.locals.currentUser.role === 'agent' || res.locals.currentUser.role === 'admin') {
-      return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
+    if (res.locals.currentUser.role === 'agent' && ticket.agent_id !== res.locals.currentUser.id) {
+      req.flash('error', 'You do not have permission to view this ticket');
+      return res.redirect('/tickets');
     }
 
-    const isInternal = res.locals.currentUser.role !== 'customer';
-    
-    // Get or create chat conversation for this ticket
-    const conversation = await Chat.getOrCreateTicketConversation(ticketId, ticket.customer_id);
-    const messages = await Chat.getMessages(conversation);
-    const participants = await Chat.getParticipants(conversation);
-    
-    const attachments = await Ticket.getAttachments(ticketId);
-    const auditLogs = await Audit.getByTicket(ticketId);
-    const departments = await Department.getAll();
-    const agents = await User.getAll({ role: 'agent' });
-
-    res.render('tickets/view', {
-      title: `Ticket #${ticket.id}`,
-      ticket,
-      messages,
-      participants,
-      conversationId: conversation,
-      attachments,
-      auditLogs,
-      departments,
-      agents
-    });
+    // Redirect all users to portal
+    return res.redirect(`/tickets/portal?ticketId=${ticketId}`);
   } catch (error) {
     next(error);
   }
@@ -328,6 +308,16 @@ exports.update = async (req, res, next) => {
         old_value: oldTicket.status,
         new_value: status
       });
+      
+      // Notify customer of status change
+      await notificationController.notifyStatusChange(io, { id: ticketId, title }, status, oldTicket.customer_id);
+      
+      // If escalated, notify admins
+      if (normalizedStatus === 'escalated') {
+        const admins = await User.getAll({ role: 'admin' });
+        const adminIds = admins.map(admin => admin.id);
+        await notificationController.notifyEscalation(io, { id: ticketId, title }, adminIds);
+      }
     }
 
     if (normalizedPriority !== normalizedOldPriority) {
@@ -349,10 +339,13 @@ exports.update = async (req, res, next) => {
         new_value: newAgentId ? `Agent ID: ${newAgentId}` : 'None'
       });
 
-      // Emit socket event
+      // Emit socket event and notify new agent if assigned
       if (newAgentId) {
         const io = req.app.get('io');
         io.emit('ticket:assigned', { id: ticketId, title, agentId: newAgentId });
+        
+        // Create notification for newly assigned agent
+        await notificationController.notifyTicketAssigned(io, { id: ticketId, title }, newAgentId);
       }
     }
 

@@ -62,12 +62,12 @@ block content
       //- My tickets by status
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         h3.text-lg.font-semibold.text-gray-900.mb-4 My Tickets by Status
-        canvas#myStatusChart
+        canvas#myStatusChart(style="max-height: 250px")
 
       //- My tickets by priority
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         h3.text-lg.font-semibold.text-gray-900.mb-4 My Tickets by Priority
-        canvas#myPriorityChart
+        canvas#myPriorityChart(style="max-height: 250px")
 
     //- Pending escalations
     if escalations && escalations.length > 0

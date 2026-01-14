@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS `audit_log` (
   CONSTRAINT `audit_log_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.audit_log: ~16 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.audit_log: ~22 rows (aproximadamente)
 DELETE FROM `audit_log`;
 INSERT INTO `audit_log` (`id`, `ticket_id`, `user_id`, `action`, `old_value`, `new_value`, `created_at`, `entity_type`, `entity_id`) VALUES
 	(51, NULL, 1, 'login', NULL, 'Logged in from ::1', '2026-01-13 17:20:38', NULL, NULL),
@@ -64,7 +64,32 @@ INSERT INTO `audit_log` (`id`, `ticket_id`, `user_id`, `action`, `old_value`, `n
 	(73, NULL, 5, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 21:54:37', NULL, NULL),
 	(74, NULL, 1, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:54:47', NULL, NULL),
 	(75, NULL, 1, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 21:55:25', NULL, NULL),
-	(76, NULL, 2, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:55:32', NULL, NULL);
+	(76, NULL, 2, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 21:55:32', NULL, NULL),
+	(77, 14, 2, 'message_added', NULL, 'Chat message', '2026-01-13 22:39:46', NULL, NULL),
+	(78, 14, 20, 'message_edited', NULL, 'Chat message edited', '2026-01-13 22:44:23', NULL, NULL),
+	(79, NULL, 2, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 22:46:48', NULL, NULL),
+	(80, NULL, 1, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 22:46:58', NULL, NULL),
+	(81, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 22:49:40', NULL, NULL),
+	(82, 14, 1, 'status_changed', 'Open', 'In Progress', '2026-01-13 22:53:24', NULL, NULL),
+	(83, 14, 1, 'message_added', NULL, 'Chat message', '2026-01-13 22:55:59', NULL, NULL),
+	(84, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 22:59:14', NULL, NULL),
+	(85, NULL, 8, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 23:01:56', NULL, NULL),
+	(86, 14, 20, 'message_edited', NULL, 'Chat message edited', '2026-01-13 23:03:41', NULL, NULL),
+	(87, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 23:03:47', NULL, NULL),
+	(88, NULL, 20, 'logout', NULL, 'Logged out from ::1', '2026-01-13 23:05:52', NULL, NULL),
+	(89, NULL, 20, 'login', NULL, 'Logged in from ::1', '2026-01-13 23:06:01', NULL, NULL),
+	(90, NULL, 20, 'logout', NULL, 'Logged out from ::1', '2026-01-13 23:07:27', NULL, NULL),
+	(91, NULL, 20, 'login', NULL, 'Logged in from ::1', '2026-01-13 23:07:36', NULL, NULL),
+	(92, 14, 1, 'message_added', NULL, 'Chat message', '2026-01-13 23:09:33', NULL, NULL),
+	(93, 14, 20, 'message_edited', NULL, 'Chat message edited', '2026-01-13 23:11:09', NULL, NULL),
+	(94, 14, 20, 'message_edited', NULL, 'Chat message edited', '2026-01-13 23:11:18', NULL, NULL),
+	(95, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 23:11:23', NULL, NULL),
+	(96, 14, 1, 'message_added', NULL, 'Chat message', '2026-01-13 23:12:57', NULL, NULL),
+	(97, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 23:13:00', NULL, NULL),
+	(98, NULL, 1, 'logout', NULL, 'Logged out from ::ffff:127.0.0.1', '2026-01-13 23:22:10', NULL, NULL),
+	(99, NULL, 2, 'login', NULL, 'Logged in from ::ffff:127.0.0.1', '2026-01-13 23:22:21', NULL, NULL),
+	(100, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 23:40:32', NULL, NULL),
+	(101, 14, 20, 'message_added', NULL, 'Chat message', '2026-01-13 23:47:14', NULL, NULL);
 
 -- A despejar estrutura para tabela zolentra_db.chat_conversations
 CREATE TABLE IF NOT EXISTS `chat_conversations` (
@@ -89,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `chat_conversations` (
 -- A despejar dados para tabela zolentra_db.chat_conversations: ~1 rows (aproximadamente)
 DELETE FROM `chat_conversations`;
 INSERT INTO `chat_conversations` (`id`, `type`, `ticket_id`, `name`, `created_by`, `created_at`, `updated_at`, `last_message_at`) VALUES
-	(5, '', 14, NULL, 20, '2026-01-13 19:07:02', '2026-01-13 21:02:31', '2026-01-13 21:02:31');
+	(5, '', 14, NULL, 20, '2026-01-13 19:07:02', '2026-01-13 23:47:14', '2026-01-13 23:47:14');
 
 -- A despejar estrutura para tabela zolentra_db.chat_messages
 CREATE TABLE IF NOT EXISTS `chat_messages` (
@@ -112,8 +137,19 @@ CREATE TABLE IF NOT EXISTS `chat_messages` (
 -- A despejar dados para tabela zolentra_db.chat_messages: ~2 rows (aproximadamente)
 DELETE FROM `chat_messages`;
 INSERT INTO `chat_messages` (`id`, `conversation_id`, `sender_id`, `message`, `is_edited`, `edited_at`, `created_at`) VALUES
-	(5, 5, 20, 'teste', 0, NULL, '2026-01-13 19:07:02'),
-	(6, 5, 20, 'teste1', 0, NULL, '2026-01-13 21:02:31');
+	(5, 5, 20, 'teste3', 1, '2026-01-13 22:44:23', '2026-01-13 19:07:02'),
+	(6, 5, 20, 'teste1', 0, NULL, '2026-01-13 21:02:31'),
+	(7, 5, 2, 'teste', 0, NULL, '2026-01-13 22:39:46'),
+	(8, 5, 20, '[deleted]', 1, '2026-01-13 23:11:18', '2026-01-13 22:49:40'),
+	(9, 5, 1, 'teste atualizar', 0, NULL, '2026-01-13 22:55:59'),
+	(10, 5, 20, '[deleted]', 1, '2026-01-13 23:03:41', '2026-01-13 22:59:14'),
+	(11, 5, 20, 'teste', 0, NULL, '2026-01-13 23:03:47'),
+	(12, 5, 1, 'teste', 0, NULL, '2026-01-13 23:09:33'),
+	(13, 5, 20, 'teste', 0, NULL, '2026-01-13 23:11:23'),
+	(14, 5, 1, 'teste', 0, NULL, '2026-01-13 23:12:57'),
+	(15, 5, 20, 'teste', 0, NULL, '2026-01-13 23:13:00'),
+	(16, 5, 20, 'teste', 0, NULL, '2026-01-13 23:40:32'),
+	(17, 5, 20, 'teste', 0, NULL, '2026-01-13 23:47:14');
 
 -- A despejar estrutura para tabela zolentra_db.chat_participants
 CREATE TABLE IF NOT EXISTS `chat_participants` (
@@ -135,7 +171,9 @@ CREATE TABLE IF NOT EXISTS `chat_participants` (
 -- A despejar dados para tabela zolentra_db.chat_participants: ~1 rows (aproximadamente)
 DELETE FROM `chat_participants`;
 INSERT INTO `chat_participants` (`id`, `conversation_id`, `user_id`, `joined_at`, `last_read_at`, `is_active`) VALUES
-	(9, 5, 20, '2026-01-13 19:07:02', '2026-01-13 20:10:49', 1);
+	(9, 5, 20, '2026-01-13 19:07:02', '2026-01-13 20:10:49', 1),
+	(12, 5, 2, '2026-01-13 22:39:46', NULL, 1),
+	(14, 5, 1, '2026-01-13 22:55:59', NULL, 1);
 
 -- A despejar estrutura para tabela zolentra_db.departments
 CREATE TABLE IF NOT EXISTS `departments` (
@@ -180,6 +218,8 @@ CREATE TABLE IF NOT EXISTS `notifications` (
 
 -- A despejar dados para tabela zolentra_db.notifications: ~0 rows (aproximadamente)
 DELETE FROM `notifications`;
+INSERT INTO `notifications` (`id`, `user_id`, `type`, `title`, `message`, `related_entity_type`, `related_entity_id`, `action_url`, `is_read`, `created_at`, `read_at`) VALUES
+	(1, 2, 'new_message', 'New Message on Ticket #14', 'Dário Soares replied: "teste..."', 'ticket', 14, '/tickets/14', 1, '2026-01-13 23:47:14', '2026-01-13 23:50:24');
 
 -- A despejar estrutura para tabela zolentra_db.notification_preferences
 CREATE TABLE IF NOT EXISTS `notification_preferences` (
@@ -223,22 +263,33 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   PRIMARY KEY (`session_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- A despejar dados para tabela zolentra_db.sessions: ~2 rows (aproximadamente)
+-- A despejar dados para tabela zolentra_db.sessions: ~16 rows (aproximadamente)
 DELETE FROM `sessions`;
 INSERT INTO `sessions` (`session_id`, `expires`, `data`) VALUES
 	('6548rrV1D3L2SghDivLtnWcadW3Da4ay', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.582Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
 	('8_4X3o9jWvt61Bv1YqKsV_TkVAZEiG7m', 1768362432, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T03:07:32.535Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":20,"userRole":"customer"}'),
-	('GPpUuFNfrzj-c3YkLxA4pL5duXfgVuxx', 1768370911, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T03:57:28.499Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":20,"userRole":"customer"}'),
+	('8ikD-kXz8q6Rm2PxZ_RXIp8aGnyPV04U', 1768371128, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:12:07.948Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('Ep8yfnnM36So_M6_nh2UwxN_kiHIt0Z8', 1768377075, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:22:21.793Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":2,"userRole":"agent"}'),
 	('GjUEAdh0Uj5b2Qq_IpUWb7oDKWRQ8fWl', 1768370854, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:07:33.941Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
 	('Hh_rnDaaexnU5qAWqNqxVQ8VZCMys_Gf', 1768370217, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.538Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
-	('J9g9os412p6EMXC6dX0IV2PbQoKkb_jY', 1768370967, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:55:32.645Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":2,"userRole":"agent"}'),
 	('JL31ZtuUFtxBFtxKaJtNQVCiqzanCCh2', 1768370216, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.370Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
 	('KHc-T9533oyEjz_w1P6jeI6LPpyKkG7X', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.806Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('MWalayCKOKUYxHmXgiLe-9o8jGsNDqWh', 1768377047, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:50:47.126Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('VCcLOMNVqw2Rm8Y-nqIsfcjPoUrVZC6Q', 1768376842, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:47:22.047Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('VW56WjncEg_0KYwYjYhvtfuB3SCaPXfP', 1768374085, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:01:24.722Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
 	('YoyWE3syZ6lA0H96CYYWjrhPFDsHMmGJ', 1768370216, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:56:56.378Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
 	('b6kIs4uJ_mj8UQO0YOxRB8nx55eQAKOU', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.963Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('bG2yIeuP8C6gcNXFXTgTEIYH8Ken_OGQ', 1768376864, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:07:36.253Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":20,"userRole":"customer"}'),
 	('d0yLdaImkc-l7Go3EdW2klv0MisATq6E', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.709Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
 	('eJU_G9VWM57MK7JH5Mz29SnPomwDiDds', 1768369893, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T05:51:32.812Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
-	('yHX1WEl5i0z5hscCXetM_qLIFazsbjI6', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.595Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}');
+	('lYkteBSLJlhLKZwiq-u_Cg2mFUy9Qf1_', 1768377047, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:50:46.809Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('npEdcl3HtFxKZwH4fQfHBDS1fCMcWU4d', 1768376842, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:47:22.138Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('rbZdOHd2iJqjnj1bFA17qDqmZjTc8hkW', 1768371128, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:12:07.849Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}'),
+	('uhQIjCTtznfRZInX5hOvfplPlatePneq', 1768374123, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:01:56.350Z","secure":false,"httpOnly":true,"path":"/"},"flash":{},"userId":8,"userRole":"customer"}'),
+	('vICqjbr3zr9NmCXTv-uezqIHjic6wm6L', 1768371128, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:12:07.872Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('yHX1WEl5i0z5hscCXetM_qLIFazsbjI6', 1768370783, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T06:06:22.595Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('ymdmSnSl1svlI7cjkOv5Gk1CR9tu0ZYc', 1768377047, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:50:46.879Z","secure":false,"httpOnly":true,"path":"/"},"flash":{}}'),
+	('zo74Acoiy3kRwDQYP8t_-ZOAjq5Tvx-K', 1768376842, '{"cookie":{"originalMaxAge":28800000,"expires":"2026-01-14T07:47:22.009Z","secure":false,"httpOnly":true,"path":"/"},"flash":{"error":["Please log in to access this page"]}}');
 
 -- A despejar estrutura para tabela zolentra_db.tickets
 CREATE TABLE IF NOT EXISTS `tickets` (
@@ -287,7 +338,7 @@ CREATE TABLE IF NOT EXISTS `tickets` (
 -- A despejar dados para tabela zolentra_db.tickets: ~1 rows (aproximadamente)
 DELETE FROM `tickets`;
 INSERT INTO `tickets` (`id`, `customer_id`, `agent_id`, `department_id`, `priority`, `sla_policy_id`, `sla_response_due`, `sla_resolution_due`, `sla_first_response_at`, `sla_response_breached`, `sla_resolution_breached`, `status`, `title`, `description`, `created_at`, `updated_at`, `feedback_requested_at`, `has_feedback`) VALUES
-	(14, 20, 2, 1, 'Medium', NULL, NULL, NULL, NULL, 0, 0, 'Open', 'teste', 'teste', '2026-01-13 19:07:02', '2026-01-13 19:55:58', NULL, 0);
+	(14, 20, 2, 1, 'Medium', NULL, NULL, NULL, NULL, 0, 0, 'In Progress', 'teste', 'teste', '2026-01-13 19:07:02', '2026-01-13 22:53:24', NULL, 0);
 
 -- A despejar estrutura para tabela zolentra_db.ticket_attachments
 CREATE TABLE IF NOT EXISTS `ticket_attachments` (

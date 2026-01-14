@@ -3,7 +3,6 @@
  * Validates socket connections and manages room assignments
  */
 
-const db = require('../config/database');
 const SocketService = require('../services/socketService');
 
 /**
@@ -15,63 +14,53 @@ function socketAuthMiddleware(io) {
   // Store socket service on io for use in event handlers
   io.socketService = socketService;
 
-  io.use(async (socket, next) => {
-    try {
-      // Get session ID from handshake
-      const sessionID = socket.handshake.headers.cookie
-        ?.split('; ')
-        ?.find(c => c.startsWith('connect.sid'))
-        ?.split('=')[1];
-
-      if (!sessionID) {
-        return next(new Error('No session found'));
-      }
-
-      // Session will be available in socket.request.session via express-session middleware
-      // For now, we'll rely on the session being attached to the request
-
-      next();
-    } catch (error) {
-      console.error('Socket auth error:', error);
-      next(new Error('Authentication error'));
-    }
-  });
-
   // Handle new socket connections
   io.on('connection', (socket) => {
-    const userId = socket.request.session?.userId;
-    const userRole = socket.request.session?.userRole;
+    console.log(`🔗 New socket connection: ${socket.id}`);
 
-    if (!userId) {
-      socket.disconnect();
-      return;
-    }
+    // Get user data from the client-side window.currentUser
+    // The client will send this via the socket when it's ready
+    socket.once('socket:authenticate', (userData) => {
+      const userId = userData?.id;
+      const userRole = userData?.role;
+      const userName = userData?.name;
 
-    // Register user socket
-    socketService.registerUserSocket(userId, socket.id);
+      console.log(`🔐 Socket authentication received - User ${userId} (${userRole})`);
 
-    // Join personal room
-    socket.join(`user:${userId}`);
+      if (!userId) {
+        console.warn('❌ No user ID provided, disconnecting socket');
+        socket.disconnect();
+        return;
+      }
 
-    // Join role-based room
-    if (userRole) {
-      socket.join(`role:${userRole}`);
-    }
+      // Store user info on socket
+      socket.userId = userId;
+      socket.userRole = userRole;
+      socket.userName = userName;
 
-    console.log(`User ${userId} connected with socket ${socket.id}`);
+      // Register user socket
+      socketService.registerUserSocket(userId, socket.id);
 
-    // Log to database (optional)
-    logUserSession(userId, socket.id, 1); // is_online = 1
+      // Join personal room
+      socket.join(`user:${userId}`);
 
-    /**
-     * AUTHENTICATION EVENT: User joins their personal room (already done above)
-     * Client can use this to confirm connection
-     */
-    socket.emit('authenticated', {
-      userId,
-      userRole,
-      socketId: socket.id,
-      message: 'Connected to notification system'
+      // Join role-based room
+      if (userRole) {
+        socket.join(`role:${userRole}`);
+      }
+
+      console.log(`✅ User ${userId} connected with socket ${socket.id}`);
+
+      /**
+       * AUTHENTICATION EVENT: User joins their personal room (already done above)
+       * Client can use this to confirm connection
+       */
+      socket.emit('authenticated', {
+        userId,
+        userRole,
+        socketId: socket.id,
+        message: 'Connected to notification system'
+      });
     });
 
     /**
@@ -83,11 +72,12 @@ function socketAuthMiddleware(io) {
       if (ticketId && !isNaN(ticketId)) {
         const room = `ticket:${ticketId}`;
         socket.join(room);
-        console.log(`User ${userId} joined ticket room ${room}`);
+        const userId = socket.userId || 'unknown';
+        console.log(`📍 User ${userId} joined ticket room ${room}`);
 
         // Notify others in the room
         socket.broadcast.to(room).emit('user:joined_ticket', {
-          userId,
+          userId: socket.userId,
           ticketId,
           joinedAt: new Date()
         });
@@ -99,11 +89,12 @@ function socketAuthMiddleware(io) {
       if (ticketId && !isNaN(ticketId)) {
         const room = `ticket:${ticketId}`;
         socket.leave(room);
-        console.log(`User ${userId} left ticket room ${room}`);
+        const userId = socket.userId || 'unknown';
+        console.log(`📍 User ${userId} left ticket room ${room}`);
 
         // Notify others in the room
         socket.broadcast.to(room).emit('user:left_ticket', {
-          userId,
+          userId: socket.userId,
           ticketId,
           leftAt: new Date()
         });
@@ -114,7 +105,7 @@ function socketAuthMiddleware(io) {
     socket.on('typing:start', (ticketId) => {
       if (ticketId && !isNaN(ticketId)) {
         socket.broadcast.to(`ticket:${ticketId}`).emit('typing:start', {
-          userId,
+          userId: socket.userId,
           ticketId,
           startedAt: new Date()
         });
@@ -124,7 +115,7 @@ function socketAuthMiddleware(io) {
     socket.on('typing:stop', (ticketId) => {
       if (ticketId && !isNaN(ticketId)) {
         socket.broadcast.to(`ticket:${ticketId}`).emit('typing:stop', {
-          userId,
+          userId: socket.userId,
           ticketId,
           stoppedAt: new Date()
         });
@@ -140,11 +131,12 @@ function socketAuthMiddleware(io) {
       if (conversationId && !isNaN(conversationId)) {
         const room = `chat:${conversationId}`;
         socket.join(room);
-        console.log(`User ${userId} joined chat room ${room}`);
+        const userId = socket.userId || 'unknown';
+        console.log(`💬 User ${userId} joined chat room ${room}`);
 
         // Notify others that user is online
         socket.broadcast.to(room).emit('chat:user_online', {
-          userId,
+          userId: socket.userId,
           conversationId,
           onlineAt: new Date()
         });
@@ -156,11 +148,12 @@ function socketAuthMiddleware(io) {
       if (conversationId && !isNaN(conversationId)) {
         const room = `chat:${conversationId}`;
         socket.leave(room);
-        console.log(`User ${userId} left chat room ${room}`);
+        const userId = socket.userId || 'unknown';
+        console.log(`💬 User ${userId} left chat room ${room}`);
 
         // Notify others that user is offline
         socket.broadcast.to(room).emit('chat:user_offline', {
-          userId,
+          userId: socket.userId,
           conversationId,
           offlineAt: new Date()
         });
@@ -171,7 +164,7 @@ function socketAuthMiddleware(io) {
     socket.on('chat:typing', (conversationId) => {
       if (conversationId && !isNaN(conversationId)) {
         socket.broadcast.to(`chat:${conversationId}`).emit('chat:typing', {
-          userId,
+          userId: socket.userId,
           conversationId,
           startedAt: new Date()
         });
@@ -181,7 +174,7 @@ function socketAuthMiddleware(io) {
     socket.on('chat:stop_typing', (conversationId) => {
       if (conversationId && !isNaN(conversationId)) {
         socket.broadcast.to(`chat:${conversationId}`).emit('chat:stop_typing', {
-          userId,
+          userId: socket.userId,
           conversationId,
           stoppedAt: new Date()
         });
@@ -208,16 +201,14 @@ function socketAuthMiddleware(io) {
      * DISCONNECT EVENT
      */
     socket.on('disconnect', () => {
+      const userId = socket.userId;
       socketService.unregisterUserSocket(userId, socket.id);
-      console.log(`User ${userId} disconnected with socket ${socket.id}`);
-
-      // Log to database
-      logUserSession(userId, socket.id, 0); // is_online = 0
+      console.log(`👋 User ${userId} disconnected with socket ${socket.id}`);
 
       // Check if user has any other connections
-      if (!socketService.isUserOnline(userId)) {
-        console.log(`User ${userId} is now offline`);
-        socketService.emitUserOffline(userId, socket.request.session?.userName || 'User');
+      if (userId && !socketService.isUserOnline(userId)) {
+        console.log(`⭕ User ${userId} is now offline`);
+        socketService.emitUserOffline(userId, socket.userName || 'User');
       }
     });
 
@@ -225,42 +216,12 @@ function socketAuthMiddleware(io) {
      * ERROR HANDLING
      */
     socket.on('error', (error) => {
-      console.error(`Socket error for user ${userId}:`, error);
+      const userId = socket.userId || 'unknown';
+      console.error(`❌ Socket error for user ${userId}:`, error);
     });
   });
 
   return socketService;
-}
-
-/**
- * Log user session to database (optional feature)
- * @param {number} userId - User ID
- * @param {string} socketId - Socket ID
- * @param {number} isOnline - 1 = online, 0 = offline
- */
-async function logUserSession(userId, socketId, isOnline) {
-  try {
-    if (isOnline === 1) {
-      // Insert or update session
-      await db.query(
-        `INSERT INTO user_sessions (user_id, socket_id, is_online)
-         VALUES (?, ?, ?)
-         ON DUPLICATE KEY UPDATE
-         is_online = ?,
-         last_seen = CURRENT_TIMESTAMP`,
-        [userId, socketId, 1, 1]
-      );
-    } else {
-      // Mark session as offline
-      await db.query(
-        `UPDATE user_sessions SET is_online = 0 WHERE user_id = ? AND socket_id = ?`,
-        [userId, socketId]
-      );
-    }
-  } catch (error) {
-    // Log but don't fail - this is optional
-    console.error('Error logging user session:', error);
-  }
 }
 
 module.exports = socketAuthMiddleware;

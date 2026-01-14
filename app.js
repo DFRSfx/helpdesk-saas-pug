@@ -26,7 +26,14 @@ const socketAuthMiddleware = require('./middlewares/socketAuthMiddleware');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+
+// Socket.IO configuration
+const io = socketIo(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 // Make io accessible to our routes
 app.set('io', io);

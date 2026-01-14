@@ -204,13 +204,18 @@ exports.departmentStats = async (req, res, next) => {
       return res.redirect('/departments');
     }
 
-    const { stats, chartData } = await Department.getDetailedStats(req.params.id);
+    const { stats, chartData, recentTickets } = await Department.getDetailedStats(req.params.id);
+    
+    // Get agents assigned to this department
+    const agents = await User.getAgentsByDepartment(req.params.id);
 
     res.render('departments/stats', {
       title: `${department.name} - Statistics`,
       stats,
       chartData,
-      department
+      department,
+      agents,
+      recentTickets
     });
   } catch (error) {
     next(error);

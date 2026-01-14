@@ -26,9 +26,9 @@
         = unreadCount > 99 ? '99+' : unreadCount
 
   //- Dropdown Menu
-  div.absolute.right-0.mt-2.w-96.bg-white.dark_bg-neutral-800.border.border-gray-200.dark_border-neutral-700.rounded-lg.shadow-lg.z-50(
+  div.absolute.right-0.mt-2.bg-white.dark_bg-neutral-800.border.border-gray-200.dark_border-neutral-700.rounded-lg.shadow-lg.z-50(
     id="notificationDropdown"
-    style="display: none;"
+    style="display: none; min-width: 520px;"
   )
     //- Header
     .px-4.py-3.border-b.border-gray-200.dark_border-neutral-700
@@ -209,3 +209,5 @@ script.
       return date.toLocaleDateString();
     }
   })();
+
+

@@ -7,6 +7,7 @@ const Audit = require('../models/Audit');
 const Chat = require('../models/Chat');
 const userController = require('../controllers/userController');
 const emailService = require('../services/emailService');
+const notificationController = require('../controllers/notificationController');
 const { generateTemporaryPassword } = require('../utils/passwordGenerator');
 const upload = require('../middlewares/uploadMiddleware');
 const Ticket = require('../models/Ticket');
@@ -148,10 +149,22 @@ router.post('/tickets/public/create', upload.array('attachments', 5), async (req
         );
 
         if (agents.length > 0) {
+          const assignedAgentId = agents[0].id;
           await db.query(
             'UPDATE tickets SET agent_id = ? WHERE id = ?',
-            [agents[0].id, ticketId]
+            [assignedAgentId, ticketId]
           );
+
+          // Send notification to assigned agent
+          const io = req.app.get('io');
+          if (io) {
+            const ticketData = {
+              id: ticketId,
+              title: subject,
+              customer_id: customerId
+            };
+            await notificationController.notifyTicketAssigned(io, ticketData, assignedAgentId);
+          }
         }
 
         // Send welcome email if new user
@@ -263,6 +276,15 @@ router.patch('/tickets/:id/status', async (req, res) => {
       old_value: oldStatus,
       new_value: status
     });
+
+    // Send notification to the other party
+    const io = req.app.get('io');
+    if (io) {
+      const recipientId = user.role === 'customer' ? ticket.agent_id : ticket.customer_id;
+      if (recipientId) {
+        await notificationController.notifyStatusChange(io, ticket, status, recipientId);
+      }
+    }
 
     res.json({ 
       success: true, 
@@ -525,6 +547,28 @@ router.post('/tickets/:id/messages', upload.array('attachments', 5), async (req,
       new_value: auditAction
     });
 
+    // Emit Socket.IO event for real-time message update to ticket room
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`ticket:${ticketId}`).emit('message:new', {
+        ticket_id: ticketId,
+        message_id: messageId,
+        sender_id: userId,
+        timestamp: new Date()
+      });
+      
+      // Send notification to the other party in the conversation
+      const recipientId = userRole === 'customer' ? ticket.agent_id : ticket.customer_id;
+      if (recipientId && content && content.trim()) {
+        const messagePreview = content.trim().substring(0, 50);
+        await notificationController.notifyNewMessage(io, 
+          { id: ticketId, title: ticket.title }, 
+          { user_name: res.locals.currentUser.name, message: messagePreview }, 
+          recipientId
+        );
+      }
+    }
+
     res.json({
       success: true,
       message: 'Message sent successfully',
@@ -575,6 +619,16 @@ router.put('/messages/:messageId', async (req, res) => {
         user_id: userId,
         action: 'message_edited',
         new_value: 'Chat message edited'
+      });
+    }
+
+    // Emit Socket.IO event for real-time message update to ticket room
+    const io = req.app.get('io');
+    if (io && message.ticket_id) {
+      io.to(`ticket:${message.ticket_id}`).emit('message:updated', {
+        ticket_id: message.ticket_id,
+        message_id: messageId,
+        timestamp: new Date()
       });
     }
 
@@ -650,8 +704,6 @@ router.get('/tickets/:id/attachments/:attachmentId', async (req, res) => {
 });
 
 // Notification API endpoints
-const notificationController = require('../controllers/notificationController');
-
 /**
  * GET /api/notifications
  * Get notifications (JSON, for AJAX/API)

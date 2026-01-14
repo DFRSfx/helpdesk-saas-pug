@@ -8,7 +8,7 @@ block content
       .p-4.border-b.border-gray-200.bg-white
         .flex.items-center.justify-between.mb-4
           h2.text-xl.font-bold.text-gray-800 Inbox
-          a.text-gray-400.hover_text-gray-600.transition-colors(href="/dashboard" title="Back to Dashboard")
+          a.inline-flex.items-center.gap-1.px-3.py-2.rounded-lg.text-sm.font-medium.text-gray-600.hover_bg-gray-100.hover_text-gray-800.transition-colors(href="/dashboard" title="Back to Dashboard")
             svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6")
 
@@ -67,6 +67,9 @@ block content
         header.px-6.py-4.border-b.border-gray-100.flex.justify-between.items-start.bg-white.z-10.flex-shrink-0
           div
             .flex.items-center.gap-3.mb-1
+              a.inline-flex.items-center.text-gray-400.hover_text-gray-600.transition-colors.mr-2(href="/tickets" title="Back to Tickets List")
+                svg.w-5.h-5(fill="none" stroke="currentColor" viewBox="0 0 24 24")
+                  path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7")
               h1.text-xl.font-bold.text-gray-900#ticketTitle= tickets[0].subject
               span#ticketStatus(class="px-2 py-0.5 rounded-full text-xs font-bold uppercase bg-gray-100 text-gray-800") Loading...
             p.text-sm.text-gray-500 Ticket ##{tickets[0].id}
@@ -235,7 +238,51 @@ block scripts
     const currentUser = !{JSON.stringify(currentUser)};
     let selectedFiles = [];
 
+    // Setup Socket.IO listeners for real-time message updates
+    function setupMessageListeners() {
+      // Use a timeout to ensure socket is loaded from main.js
+      setTimeout(() => {
+        if (typeof socket !== 'undefined' && socket) {
+          console.log('Setting up message listeners...');
+          
+          // Remove old listeners first to avoid duplicates
+          socket.off('message:new');
+          socket.off('message:updated');
+          socket.off('message:deleted');
+          
+          // Listen for new messages
+          socket.on('message:new', (data) => {
+            if (parseInt(data.ticket_id) === parseInt(currentSelectedTicketId)) {
+              loadMessages(currentSelectedTicketId);
+            }
+          });
+
+          // Listen for message updates
+          socket.on('message:updated', (data) => {
+            if (parseInt(data.ticket_id) === parseInt(currentSelectedTicketId)) {
+              loadMessages(currentSelectedTicketId);
+            }
+          });
+
+          // Listen for message deletions
+          socket.on('message:deleted', (data) => {
+            if (parseInt(data.ticket_id) === parseInt(currentSelectedTicketId)) {
+              loadMessages(currentSelectedTicketId);
+            }
+          });
+          
+          console.log('✅ Real-time message listeners active');
+        } else {
+          console.warn('Socket not available yet, retrying...');
+          setupMessageListeners();
+        }
+      }, 100);
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
+      // Setup Socket.IO message listeners with delay to ensure socket is ready
+      setupMessageListeners();
+
       if (currentSelectedTicketId === null && tickets.length > 0) {
         currentSelectedTicketId = tickets[0].id;
       }
@@ -313,7 +360,13 @@ block scripts
       const descEl = document.getElementById('ticketDescription');
       if(descEl) descEl.textContent = ticket.description || 'No description provided.';
 
-      loadMessages(ticketId);
+       // Join Socket.IO room for this ticket
+       if (typeof socket !== 'undefined' && socket) {
+         socket.emit('join:ticket', ticketId);
+         console.log(`Joined room for ticket ${ticketId}`);
+       }
+
+       loadMessages(ticketId);
     }
 
     function canAccessAttachment(attachment) {
@@ -411,16 +464,17 @@ block scripts
         fetch(`/api/tickets/${ticketId}`).then(res => res.json()).catch(() => ({ ticket: {} }))
       ])
       .then(([messagesData, ticketData]) => {
-        console.log('Ticket data:', ticketData);
         const messagesArea = document.getElementById('messagesArea');
+        if (!messagesArea) {
+          console.error('messagesArea element not found');
+          return;
+        }
+        
         messagesArea.innerHTML = '';
 
         // Render attachments at the top
         if (ticketData.ticket && ticketData.ticket.attachments) {
-          console.log('Rendering attachments:', ticketData.ticket.attachments);
           renderAttachments(ticketData.ticket.attachments);
-        } else {
-          console.log('No attachments in ticket data');
         }
 
         if (messagesData.messages && messagesData.messages.length > 0) {
@@ -501,7 +555,7 @@ block scripts
                     </div>
                     <p class="text-gray-800 text-sm leading-relaxed break-words whitespace-pre-wrap">${escapeHtml(msg.content)}</p>
                   </div>
-                  ${isOwn ? `
+                  ${isOwn && !msg.is_deleted ? `
                     <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 ml-2">
                       <button class="edit-btn text-gray-500 hover:text-gray-700 p-1" aria-label="Edit">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -546,7 +600,7 @@ block scripts
         messagesArea.scrollTop = messagesArea.scrollHeight;
       })
       .catch(err => {
-        console.error(err);
+        console.error('Error loading messages:', err);
         document.getElementById('messagesArea').innerHTML = '<p class="text-center text-red-500 mt-4 text-sm">Failed to load messages.</p>';
       });
     }
@@ -754,8 +808,14 @@ block scripts
       });
     }
 
-    // Edit Ticket Modal Functions (for agents/admins)
+    // Edit Ticket Modal Functions (for agents/admins only)
     function openTicketModal() {
+      // Only admin and agents can edit tickets
+      if (currentUser.role !== 'admin' && currentUser.role !== 'agent') {
+        alert('You do not have permission to edit tickets');
+        return;
+      }
+
       const ticket = tickets.find(t => t.id === currentSelectedTicketId);
       if (!ticket) return;
 
@@ -773,6 +833,12 @@ block scripts
 
     function submitTicketEdit(e) {
       e.preventDefault();
+
+      // Only admin and agents can edit tickets
+      if (currentUser.role !== 'admin' && currentUser.role !== 'agent') {
+        alert('You do not have permission to edit tickets');
+        return false;
+      }
 
       const formData = {
         status: document.getElementById('edit_status').value,
@@ -803,5 +869,11 @@ block scripts
 
       return false;
     }
+
+
+
+
+
+
 
 
