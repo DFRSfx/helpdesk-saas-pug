@@ -164,7 +164,7 @@ block content
                   = ticket.status.replace('_', ' ').toUpperCase()
 
                 div.flex-1
-                  .font-medium.text-gray-900= ticket.subject
+                  .font-medium.text-gray-900= ticket.title
                   .text-sm.text-gray-500
                     = '#' + ticket.id + ' • ' + ticket.customer_name + ' • ' + timeAgo(ticket.created_at)
 

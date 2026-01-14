@@ -72,8 +72,8 @@ Before you begin, ensure you have the following installed:
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/mini-zendesk-redo.git
-cd mini-zendesk-redo
+git clone https://github.com/DFRSfx/helpdesk-saas-pug.git
+cd helpdesk-saas-pug
 ```
 
 ### 2. Install Dependencies
@@ -116,7 +116,6 @@ APP_URL=http://localhost:3000
 
 ### 4. Set Up the Database
 
-#### Option A: Manual Setup
 1. Log into MySQL:
 ```bash
 mysql -u root -p
@@ -130,12 +129,6 @@ SOURCE database.sql;
 3. (Optional) Load sample data:
 ```sql
 SOURCE database_sample_data.sql;
-```
-
-#### Option B: Using Scripts (if available)
-```bash
-npm run setup:db
-npm run create:admin
 ```
 
 ### 5. Build TailwindCSS
@@ -217,7 +210,6 @@ mini-zendesk-redo/
 │
 ├── uploads/                  # User-uploaded files
 ├── database.sql             # Database schema
-└── database_sample_data.sql # Sample data for testing
 ```
 
 ## 🗄️ Database Schema

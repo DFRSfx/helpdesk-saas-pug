@@ -132,10 +132,18 @@ class User {
   }
 
   static async getAgentsByDepartment(departmentId) {
-    const [rows] = await db.query(
-      'SELECT id, name, email FROM users WHERE role = "agent" AND department_id = ?',
-      [departmentId]
-    );
+    const [rows] = await db.query(`
+      SELECT
+        u.id,
+        u.name,
+        u.email,
+        COUNT(CASE WHEN t.status IN ('Open', 'In Progress', 'Waiting', 'Escalated') THEN 1 END) as assigned_count,
+        COUNT(CASE WHEN t.status IN ('Resolved', 'Closed') THEN 1 END) as resolved_count
+      FROM users u
+      LEFT JOIN tickets t ON u.id = t.agent_id
+      WHERE u.role = 'agent' AND u.department_id = ?
+      GROUP BY u.id, u.name, u.email
+    `, [departmentId]);
     return rows;
   }
 
