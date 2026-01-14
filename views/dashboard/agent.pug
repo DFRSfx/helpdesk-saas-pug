@@ -9,8 +9,8 @@ block content
           h2.text-2xl.font-bold.text-gray-900 Welcome back, #{currentUser.name}!
           p.text-gray-600 Here's what's happening with your tickets today
 
-    //- Stats cards
-    .grid.grid-cols-1.md_grid-cols-2.lg_grid-cols-4.gap-6.mb-6
+    //- Stats cards (responsive grid)
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;")
       //- My Assigned Tickets
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         .flex.items-center.justify-between
@@ -28,7 +28,7 @@ block content
           div
             p.text-sm.text-gray-600 In Progress
             p.text-3xl.font-bold.text-yellow-600= stats.inProgress || 0
-            a.text-sm.text-yellow-600.hover_text-yellow-800(href="/tickets?status=in_progress&assignedTo=me") View All
+            p.text-sm.text-gray-500= ((stats.inProgress / (stats.myAssigned || 1)) * 100).toFixed(1) + '% of assigned'
           .w-12.h-12.bg-yellow-100.rounded-lg.flex.items-center.justify-center
             svg.w-6.h-6.text-yellow-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z")
@@ -44,7 +44,7 @@ block content
             svg.w-6.h-6.text-green-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z")
 
-      //- Pending Escalations
+      //- Escalations
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
         .flex.items-center.justify-between
           div
@@ -58,16 +58,19 @@ block content
             svg.w-6.h-6.text-red-600(fill="none" stroke="currentColor" viewBox="0 0 24 24")
               path(stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z")
 
-    .grid.grid-cols-1.lg_grid-cols-2.gap-6.mb-6
+    //- Charts row (responsive)
+    div(style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;")
       //- My tickets by status
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 My Tickets by Status
-        canvas#myStatusChart(style="max-height: 250px")
+        h3.text-sm.font-semibold.text-gray-900.mb-3 My Tickets by Status
+        div(style="height: 250px;")
+          canvas#myStatusChart
 
       //- My tickets by priority
       .bg-white.rounded-lg.shadow-sm.border.border-gray-200.p-6
-        h3.text-lg.font-semibold.text-gray-900.mb-4 My Tickets by Priority
-        canvas#myPriorityChart(style="max-height: 250px")
+        h3.text-sm.font-semibold.text-gray-900.mb-3 My Tickets by Priority
+        div(style="height: 250px; display: flex; align-items: center; justify-content: center;")
+          canvas#myPriorityChart(style="height: 320px; width: 100%;")
 
     //- Pending escalations
     if escalations && escalations.length > 0
@@ -203,6 +206,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           plugins: {
             legend: {
               position: 'bottom'
@@ -232,6 +236,7 @@ block scripts
         },
         options: {
           responsive: true,
+          maintainAspectRatio: true,
           plugins: {
             legend: {
               display: false
