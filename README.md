@@ -12,18 +12,23 @@ A modern, professional helpdesk and ticketing system built with Node.js, Express
 ### Core Functionality
 - **Multi-Role System**: Admin, Agent, and Customer roles with appropriate permissions
 - **Ticket Management**: Create, assign, update, and track support tickets
-- **Real-time Updates**: Socket.io integration for live ticket updates
+- **Real-time Chat Portal**: Unified portal for customers and agents to communicate on tickets
+- **Real-time Message Sync**: Socket.io integration for instant message updates across all connected users
 - **Department Management**: Organize tickets and agents by departments
 - **Priority & Status Tracking**: Multiple priority levels (Low, Medium, High, Critical) and status states (Open, In Progress, Waiting, Escalated, Resolved, Closed)
 
 ### Advanced Features
 - **Audit Logging**: Complete trail of all ticket changes and actions
 - **File Attachments**: Upload and manage files on tickets
-- **Internal Notes**: Private communication between agents on tickets
-- **Dashboard Analytics**: Visual insights with Chart.js integration
-- **Email Notifications**: Nodemailer integration for ticket updates
-- **Markdown Support**: Rich text formatting with marked.js
+- **Internal Notes**: Private agent-only notes on tickets
+- **Real-time Notifications**: Socket.io-powered notification system for ticket events
+- **Notification Preferences**: Customizable email and in-app notifications
+- **Dashboard Analytics**: Visual insights with Chart.js integration for admins and agents
+- **Email Notifications**: Nodemailer integration for ticket updates and system events
+- **Markdown Support**: Rich text formatting with marked.js in messages
 - **User Management**: Full CRUD operations for users and permissions
+- **Portal Chat Interface**: Customers and agents use the same intuitive chat-based interface
+- **Notification Events**: Track chat messages, ticket assignments, status changes, and escalations
 
 ### Security & Performance
 - **bcrypt Password Hashing**: Secure password storage
@@ -240,23 +245,32 @@ mini-zendesk-redo/
 - Department management
 - System configuration
 - View all tickets and audit logs
-- Analytics and reporting
+- Analytics and reporting for all departments
+- Can edit, assign, and manage all tickets
+- Access to agent dashboard with comprehensive statistics
 
 ### Agent
 - View and manage assigned tickets
-- Create internal notes
+- Create internal notes (visible only to agents/admins)
 - Update ticket status and priority
 - Assign tickets to self or other agents
 - View department-specific tickets
-- Access to agent dashboard
+- Access to agent dashboard with personal statistics
+- Edit and manage tickets in their departments
+- Chat with customers through unified portal
+- Receive real-time notifications for ticket events
+- Customize notification preferences
 
 ### Customer
 - Create new support tickets
-- View own tickets
-- Add messages to tickets
-- Upload attachments
-- Receive email notifications
-- Self-service portal
+- View own tickets via unified portal
+- Real-time chat communication with agents
+- Add messages and attachments to tickets
+- Upload file attachments to tickets
+- Receive email notifications for ticket updates
+- View ticket status and priority in real-time
+- Customize notification preferences
+- Cannot edit ticket details (agents/admins only)
 
 ## 🔐 Security Features
 
@@ -275,13 +289,26 @@ mini-zendesk-redo/
 - `POST /auth/register` - New user registration
 - `GET /auth/logout` - User logout
 
-### Tickets
-- `GET /tickets` - List tickets
-- `GET /tickets/:id` - View ticket details
-- `POST /tickets` - Create new ticket
-- `PUT /tickets/:id` - Update ticket
-- `POST /tickets/:id/messages` - Add message
+### Tickets & Portal
+- `GET /tickets` - List tickets (admin/agent) or customer's tickets
+- `GET /tickets/portal` - Unified portal view for customers and agents
+- `POST /tickets` - Create new ticket (customers)
+- `PUT /tickets/:id` - Update ticket (admin/agents only)
+- `POST /tickets/:id/messages` - Add message to ticket
 - `POST /tickets/:id/attachments` - Upload attachment
+- `DELETE /tickets/:id/messages/:messageId` - Delete message (own messages or admin/agent)
+
+### Real-time Events (Socket.io)
+- `join-ticket-room` - Join real-time updates for a specific ticket
+- `message:new` - Broadcast new message to ticket participants
+- `ticket:updated` - Broadcast ticket changes
+- `user:online` - Track user presence
+
+### Notifications
+- `GET /notifications` - List all notifications
+- `GET /api/notifications` - Get notifications (JSON)
+- `POST /notifications/preferences` - Update notification preferences
+- `PUT /notifications/:id/read` - Mark notification as read
 
 ### Users (Admin only)
 - `GET /users` - List users
@@ -289,22 +316,31 @@ mini-zendesk-redo/
 - `POST /users` - Create user
 - `PUT /users/:id` - Update user
 - `DELETE /users/:id` - Delete user
+- `GET /users/profile` - View current user profile
 
 ### Departments (Admin only)
 - `GET /departments` - List departments
 - `POST /departments` - Create department
 - `PUT /departments/:id` - Update department
 - `DELETE /departments/:id` - Delete department
+- `GET /departments/:id/stats` - Department statistics
 
 ### Dashboard
 - `GET /dashboard` - Main dashboard with analytics
-- `GET /dashboard/stats` - Get statistics
+- `GET /dashboard/stats` - Get statistics (JSON)
 
 ### Audit
 - `GET /audit` - View audit logs
 - `GET /audit/ticket/:id` - Ticket-specific audit trail
 
 ## 🎨 Customization
+
+### Portal Interface
+The unified portal (`/tickets/portal`) is used by both customers and agents:
+- **Customers**: See only their own tickets and can communicate with assigned agents
+- **Agents/Admins**: Can access and manage all tickets, with additional controls for editing, assigning, and status updates
+- Real-time message synchronization ensures both parties see updates instantly
+- File attachments are supported for both customers and agents
 
 ### Branding
 Edit the following in `.env`:
@@ -430,9 +466,23 @@ For support, please:
 
 ## 🗺️ Roadmap
 
+### ✅ Completed Features
+- [x] Real-time Socket.io integration for live updates
+- [x] Unified portal for customers and agents
+- [x] Real-time message synchronization
+- [x] Notification system with preferences
+- [x] File attachment support
+- [x] Internal agent notes
+- [x] Role-based access control
+- [x] Dashboard analytics
+
+### 📋 In Progress
+- [ ] Enhanced search and filtering
+- [ ] Ticket templates
+
+### 🔮 Planned Features
 - [ ] Multi-language support (i18n)
-- [ ] Advanced search and filtering
-- [ ] SLA (Service Level Agreement) tracking
+- [ ] Advanced SLA (Service Level Agreement) tracking
 - [ ] Knowledge base integration
 - [ ] Customer satisfaction surveys
 - [ ] Mobile responsive improvements
@@ -440,6 +490,7 @@ For support, please:
 - [ ] Webhook integrations
 - [ ] Third-party app integrations (Slack, Teams)
 - [ ] Custom field support
+- [ ] Ticket merging and splitting
 
 ---
 
