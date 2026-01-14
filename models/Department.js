@@ -124,7 +124,7 @@ class Department {
     const [recentTicketsRows] = await db.query(`
       SELECT
         t.id,
-        t.subject,
+        t.title,
         t.status,
         t.priority,
         t.created_at,
